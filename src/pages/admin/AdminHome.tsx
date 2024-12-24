@@ -3,7 +3,7 @@ import { FaUserXmark, FaUserCheck } from "react-icons/fa6";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserStatus, selectUserUsers } from '../../features/user/userSlice';
 import moment from 'moment';
-import { getAllUsers } from '../../features/user/userApi';
+import { blockUser, getAllUsers, unblockUser } from '../../features/user/userApi';
 import { AppDispatch } from '../../app/store';
 
 type Props = {}
@@ -17,11 +17,12 @@ const AdminHome = (props: Props) => {
     dispatch(getAllUsers())
   }, [])
 
-  const handleBlock = () => {
-    console.log('block user')
+  const handleBlock = (userId: string) => {
+    dispatch(blockUser(userId))
   }
-  const handleUnblock = () => {
-    console.log('block user')
+  
+  const handleUnblock = (userId: string) => {
+    dispatch(unblockUser(userId))
   }
 
   return (
@@ -91,12 +92,12 @@ const AdminHome = (props: Props) => {
                 </td>
                 <td className="px-6 py-4">
                   {user.status === 'active'
-                    ? <button onClick={handleBlock} className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
+                    ? <button onClick={() => handleBlock(user._id)} className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
                       <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                         <FaUserXmark />
                       </span>
                     </button>
-                    : <button onClick={handleUnblock} className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
+                    : <button onClick={() => handleUnblock(user._id)} className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
                       <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                         <FaUserCheck />
                       </span>

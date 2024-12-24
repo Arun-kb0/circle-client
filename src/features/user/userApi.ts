@@ -32,3 +32,23 @@ export const getUser = createAsyncThunk('/user/all', async (userId: string) => {
   }
 })
 
+export const blockUser = createAsyncThunk('/user/block', async (userId: string) => {
+  try {
+    const res = await axiosInstance.post(`/user/block?userId=${userId}`)
+    const { userId : blockedId } = res.data
+    return blockedId
+  } catch (error) {
+    return errorHandler(error)
+  }
+})
+
+export const unblockUser = createAsyncThunk('/user/unblock', async (userId: string) => {
+  try {
+    const res = await axiosInstance.post(`/user/block?userId=${userId}`)
+    const { userId: unblockedId } = res.data
+    return unblockedId
+  } catch (error) {
+    return errorHandler(error)
+  }
+})
+
