@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer components {
+  .main-section {
+    @apply bg-gray-800 min-h-screen h-auto text-gray-50 flex justify-center;
+  }
+
+  .title {
+    @apply font-semibold text-2xl py-3 capitalize text-center text-cyan-200;
+  }
+
+  .center-contents {
+    @apply w-full h-96 flex justify-center items-center text-orange-300;
+  }
+
+}
