@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { AppDispatch } from './app/store'
@@ -9,6 +8,10 @@ import Login from './pages/Login'
 import RequireAuth from './components/RequireAuth'
 import { roles } from './constants/enums'
 import Unauthorized from './components/Unauthorized'
+import 'react-toastify/dist/ReactToastify.css';
+import Home from './pages/Home'
+import AdminHome from './pages/admin/AdminHome'
+
 
 function App() {
   const location = useLocation()
@@ -17,20 +20,26 @@ function App() {
 
   return (
     <>
-      {hideNavbarPaths.includes(location.pathname) && <Navbar />}
+      {!hideNavbarPaths.includes(location.pathname) && <Navbar />}
       <ToastContainer theme='dark' />
 
       <Routes>
-        <Route path='/signup' element={<Signup/>} />
+        <Route path='/signup' element={<Signup />} />
         <Route path='/login' element={<Login />} />
-        
-        <Route element={<RequireAuth role={roles.user} />} >
-          {/* * protected user routes */}
-        </Route> 
 
+        {/* * protected user routes */}
+        <Route element={<RequireAuth role={roles.user} />} >
+          <Route path='/' element={<Home />} />
+        
+        </Route>
+
+        {/* * protected admin routes */}
         <Route element={<RequireAuth role={roles.admin} />} >
-          {/* * protected admin routes */}
-        </Route> 
+          <Route path='/admin'>
+            <Route index element={<AdminHome />} />
+         
+          </Route>
+        </Route>
 
         <Route path="*" element={<Unauthorized message='not found' desc="this route doesn't exists" />} />
 

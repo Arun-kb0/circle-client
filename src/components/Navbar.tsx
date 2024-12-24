@@ -20,7 +20,7 @@ const Navbar = () => {
   }
 
   return (
-    <header className='flex justify-center items-center bg-gray-700'>
+    <header className='flex justify-center items-center bg-gray-900'>
       {user && user.role === roles.user
         ? <UserNav handleLogout={handleLogout} />
         : <AdminNav handleLogout={handleLogout} />

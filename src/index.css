@@ -5,7 +5,7 @@
 
 @layer components {
   .main-section {
-    @apply bg-gray-800 min-h-screen h-auto text-gray-50 flex justify-center;
+    @apply bg-gray-950 min-h-screen h-auto text-gray-50 flex justify-center;
   }
 
   .title {

@@ -4,7 +4,8 @@ import axiosInstance from "../../constants/axiosInstance"
 import { toast } from "react-toastify"
 import { UserType } from "../../constants/types"
 
-export const signup = createAsyncThunk('/signup', async (user:UserType) => {
+type SignupArgs = Pick<UserType, 'name'| 'email' | 'password'>
+export const signup = createAsyncThunk('/signup', async (user: SignupArgs) => {
   try {
     const res = await axiosInstance.post('/auth/signup',user,
       { withCredentials: true }
@@ -25,6 +26,7 @@ export const login = createAsyncThunk('/login', async ({ email, password }: Logi
       { withCredentials: true }
     )
     toast('login success')
+    console.log(user.data)
     return user.data
   } catch (error) {
     return errorHandler(error)

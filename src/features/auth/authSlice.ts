@@ -2,7 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 import { login, logout, refresh, signup } from "./authApi";
 import { StateType, UserType } from "../../constants/types";
 import { RootState } from "../../app/store";
-import { roles } from "../../constants/enums";
 import { uploadProfileImage } from "../user/userApi";
 
 type AuthStateType = {
