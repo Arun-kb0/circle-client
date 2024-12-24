@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { selectAuthUser } from '../features/auth/authSlice'
+import { selectAuthUser } from '../../features/auth/authSlice'
 
 
 const Home = () => {

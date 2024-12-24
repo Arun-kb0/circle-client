@@ -9,7 +9,7 @@ import RequireAuth from './components/RequireAuth'
 import { roles } from './constants/enums'
 import Unauthorized from './components/Unauthorized'
 import 'react-toastify/dist/ReactToastify.css';
-import Home from './pages/Home'
+import Home from './pages/user/Home'
 import AdminHome from './pages/admin/AdminHome'
 
 
