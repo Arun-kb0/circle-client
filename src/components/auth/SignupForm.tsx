@@ -1,16 +1,21 @@
 import { FieldValues, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { AppDispatch } from '../app/store'
-import { UserType } from '../constant/types'
+import { AppDispatch } from '../../app/store'
+import { UserType } from '../../constants/types'
 import { Link, useNavigate } from 'react-router-dom'
-import { signup } from '../features/auth/authApi'
+import { signup } from '../../features/auth/authApi'
 import { useEffect } from 'react'
-import { roles } from '../constant/enums'
-import { selectAuthStatus, selectAuthUser } from '../features/auth/authSlice'
-import Spinner from './Spinner'
+import { roles } from '../../constants/enums'
+import { selectAuthStatus, selectAuthUser } from '../../features/auth/authSlice'
+import Spinner from '../Spinner'
 
 
-const SignupForm = () => {
+type Props = {
+  role: roles
+  name: string
+}
+
+const SignupForm = ({role,name}:Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const user = useSelector(selectAuthUser)
@@ -28,7 +33,7 @@ const SignupForm = () => {
 
   const onSubmit = (data: FieldValues) => {
     const { confirmPassword, ...rest } = data
-    const userData = { photo: '', ...rest } as UserType
+    const userData = { image: { url: '' }, ...rest } as UserType
     console.log(userData)
     dispatch(signup(userData))
   }
@@ -37,12 +42,12 @@ const SignupForm = () => {
     if (user) {
       navigate('/', { replace: true })
     }
-  }, [user]) 
+  }, [user])
 
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='space-y-3 min-w-[300px]'>
-      <h2 className='title'> Sign up </h2>
+      <h2 className='title'> {name} </h2>
       <div className="grid space-y-4">
         <div>
           <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
@@ -124,7 +129,7 @@ const SignupForm = () => {
       </div>
 
       <button type="submit" className="text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 capitalize">
-        {status ==='loading' && <Spinner/> }
+        {status === 'loading' && <Spinner />}
         Signup
       </button>
 

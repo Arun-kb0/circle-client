@@ -13,6 +13,7 @@ import Home from './pages/user/Home'
 import AdminHome from './pages/admin/AdminHome'
 import { useEffect } from 'react'
 import { refresh } from './features/auth/authApi'
+import AdminLogin from './pages/AdminLogin'
 
 
 function App() {
@@ -32,6 +33,8 @@ function App() {
       <Routes>
         <Route path='/signup' element={<Signup />} />
         <Route path='/login' element={<Login />} />
+        <Route path='/admin/login' element={<AdminLogin />} />
+        
 
         {/* * protected user routes */}
         <Route element={<RequireAuth role={roles.user} />} >
@@ -43,7 +46,7 @@ function App() {
         <Route element={<RequireAuth role={roles.admin} />} >
           <Route path='/admin'>
             <Route index element={<AdminHome />} />
-         
+
           </Route>
         </Route>
 

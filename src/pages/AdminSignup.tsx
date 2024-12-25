@@ -2,15 +2,16 @@ import React from 'react'
 import SignupForm from '../components/auth/SignupForm'
 import { roles } from '../constants/enums'
 
-const Signup = () => {
+
+const AdminSignup = () => {
   return (
-    <main className='main-section items-center'>
+    <main>
       <SignupForm
-        role={roles.user}
-        name={'Signup'}
+        role={roles.admin}
+        name={'Admin Signup'}
       />
     </main>
   )
 }
 
-export default Signup
+export default AdminSignup
