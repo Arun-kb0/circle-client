@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 import { AppDispatch } from "../app/store";
 import { axiosPrivate } from "./axiosInstance";
 import { refresh } from "../features/auth/authApi";
@@ -24,9 +23,9 @@ const configureAxios = async (dispatch: AppDispatch, accessToken: string) => {
 
         // Dispatch the refresh action and wait for it to complete
         const resultAction = await dispatch(refresh());
-
+        
         if (refresh.fulfilled.match(resultAction)) {
-          const newAccessToken = resultAction.payload.accessToken;
+          const newAccessToken = resultAction?.payload?.accessToken
           prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
           return axiosPrivate(prevRequest); // Retry the original request
         }

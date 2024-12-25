@@ -11,12 +11,18 @@ import Unauthorized from './components/Unauthorized'
 import 'react-toastify/dist/ReactToastify.css';
 import Home from './pages/user/Home'
 import AdminHome from './pages/admin/AdminHome'
+import { useEffect } from 'react'
+import { refresh } from './features/auth/authApi'
 
 
 function App() {
   const location = useLocation()
   const dispatch = useDispatch<AppDispatch>()
   const hideNavbarPaths = ['/login', '/signup']
+
+  useEffect(() => {
+    dispatch(refresh())
+  },[])
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { login, logout, refresh, signup } from "./authApi";
 import { StateType, UserType } from "../../constants/types";
 import { RootState } from "../../app/store";
@@ -54,10 +54,15 @@ const authSlice = createSlice({
         state.error = action.error.message
       })
 
-      .addCase(refresh.fulfilled, (state, action) => {
+      .addCase(refresh.fulfilled, (state, action: PayloadAction<{ user: UserType, accessToken: string }>) => {
         state.status = 'success'
-        state.accessToken = action.payload.accessToken
-        state.user = action.payload.user
+        const { user, accessToken } = action.payload
+        state.accessToken = accessToken
+        state.user = user
+      })
+      .addCase(refresh.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
       })
 
       .addCase(logout.fulfilled, (state) => {

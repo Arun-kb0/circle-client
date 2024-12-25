@@ -15,8 +15,7 @@ const RequireAuth = ({ role }: Props) => {
   console.log(user?.role)
 
   return (
-    // user && user.role === role
-    true
+    user && user.role === role
       ? <Outlet />
       : user
         ? < Navigate

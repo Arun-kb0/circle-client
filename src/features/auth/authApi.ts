@@ -1,13 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import errorHandler from "../../errorHandler/errorHandler"
-import axiosInstance from "../../constants/axiosInstance"
+import axiosInstance from "../../config/axiosInstance"
 import { toast } from "react-toastify"
 import { UserType } from "../../constants/types"
 
-type SignupArgs = Pick<UserType, 'name'| 'email' | 'password'>
+type SignupArgs = Pick<UserType, 'name' | 'email' | 'password'>
 export const signup = createAsyncThunk('/signup', async (user: SignupArgs) => {
   try {
-    const res = await axiosInstance.post('/auth/signup',user,
+    const res = await axiosInstance.post('/auth/signup', user,
       { withCredentials: true }
     )
     toast('signup success')

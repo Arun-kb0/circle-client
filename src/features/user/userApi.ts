@@ -1,6 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import errorHandler from "../../errorHandler/errorHandler";
-import axiosInstance from "../../constants/axiosInstance";
+import axiosInstance, { axiosPrivate } from "../../config/axiosInstance";
+import { AppDispatch ,RootState} from "../../app/store";
+import configureAxios from "../../config/configureAxios";
 
 export const uploadProfileImage = createAsyncThunk('/user/image', async (file: File, { dispatch, getState }) => {
   try {
@@ -12,9 +14,19 @@ export const uploadProfileImage = createAsyncThunk('/user/image', async (file: F
 
 
 // * admin 
-export const getAllUsers = createAsyncThunk('/user/all', async () => {
+export const getAllUsers = createAsyncThunk('/user/all', async ({},{dispatch,getState}) => {
   try {
-    const res = await axiosInstance.get('/user/all')
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.get('/user/all')
+    removeInterceptors()
+    console.log(res)
+
+    // const res = await axiosInstance.get('/user/all')
     const { users } = res.data
     return users
   } catch (error) {
