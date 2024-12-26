@@ -8,6 +8,8 @@ const Signup = () => {
       <SignupForm
         role={roles.user}
         name={'Signup'}
+        homePath='/'
+        loginPath='/login'
       />
     </main>
   )

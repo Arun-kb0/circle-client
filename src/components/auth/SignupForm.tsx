@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../../app/store'
 import { UserType } from '../../constants/types'
 import { Link, useNavigate } from 'react-router-dom'
-import { signup } from '../../features/auth/authApi'
+import { adminSignup, signup } from '../../features/auth/authApi'
 import { useEffect } from 'react'
 import { roles } from '../../constants/enums'
 import { selectAuthStatus, selectAuthUser } from '../../features/auth/authSlice'
@@ -13,15 +13,16 @@ import Spinner from '../Spinner'
 type Props = {
   role: roles
   name: string
+  homePath: '/' | '/admin'
+  loginPath: '/login' | '/admin/login'
 }
 
-const SignupForm = ({role,name}:Props) => {
+const SignupForm = ({ role, name, homePath, loginPath }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const user = useSelector(selectAuthUser)
   const status = useSelector(selectAuthStatus)
 
-  // const from = user?.role === roles.user ? '/' : '/admin'
 
   const {
     register,
@@ -35,12 +36,14 @@ const SignupForm = ({role,name}:Props) => {
     const { confirmPassword, ...rest } = data
     const userData = { image: { url: '' }, ...rest } as UserType
     console.log(userData)
-    dispatch(signup(userData))
+    role === roles.admin
+      ? dispatch(adminSignup(userData))
+      : dispatch(signup(userData))
   }
 
   useEffect(() => {
     if (user) {
-      navigate('/', { replace: true })
+      navigate(homePath, { replace: true })
     }
   }, [user])
 
@@ -50,18 +53,24 @@ const SignupForm = ({role,name}:Props) => {
       <h2 className='title'> {name} </h2>
       <div className="grid space-y-4">
         <div>
-          <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+          <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{role === roles.admin ? 'Root user' : 'Name'}</label>
           <input
             type="text"
             id="name"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder={'enter name'}
+            placeholder={role === roles.admin ? 'enter root user' : 'enter name'}
             defaultValue={user && user.name}
             {...register('name', {
-              required: 'name is required',
+              required: role === roles.admin
+                ? 'root user is required'
+                : 'name is required',
               pattern: {
-                value: /^[A-Za-z]+(?:[ '-][A-Za-z]+)*$/,
-                message: 'Invalid name'
+                value: role === roles.admin
+                  ? /^[a-zA-Z0-9]+([._%+-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+$/
+                  : /^ [A - Za - z] + (?: ['-][A-Za-z]+)*$/,
+                message: role === roles.admin
+                  ? 'invalid root user'
+                  : 'invalid name',
               }
             })}
           />
@@ -136,7 +145,7 @@ const SignupForm = ({role,name}:Props) => {
 
       <div className='flex space-x-2'>
         <p>already have an account </p>
-        <Link to='/login' className='text-blue-400'> login </Link>
+        <Link to={loginPath} className='text-blue-400'> login </Link>
       </div>
 
 

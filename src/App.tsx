@@ -14,12 +14,13 @@ import AdminHome from './pages/admin/AdminHome'
 import { useEffect } from 'react'
 import { refresh } from './features/auth/authApi'
 import AdminLogin from './pages/AdminLogin'
+import AdminSignup from './pages/AdminSignup'
 
 
 function App() {
   const location = useLocation()
   const dispatch = useDispatch<AppDispatch>()
-  const hideNavbarPaths = ['/login', '/signup']
+  const hideNavbarPaths = ['/login', '/signup', '/admin/signup', '/admin/login']
 
   useEffect(() => {
     dispatch(refresh())
@@ -34,6 +35,7 @@ function App() {
         <Route path='/signup' element={<Signup />} />
         <Route path='/login' element={<Login />} />
         <Route path='/admin/login' element={<AdminLogin />} />
+        <Route path='/admin/signup' element={<AdminSignup/>} />
         
 
         {/* * protected user routes */}

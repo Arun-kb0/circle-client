@@ -8,6 +8,10 @@ const Login = () => {
       <LoginFrom
         role={roles.user}
         name={'Login'}
+        homePath='/'
+        signupPath='/signup'
+        loginMsg='Login as admin'
+        loginPath='/admin/login'
       />
     </main>
   )

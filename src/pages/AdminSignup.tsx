@@ -5,10 +5,12 @@ import { roles } from '../constants/enums'
 
 const AdminSignup = () => {
   return (
-    <main>
+    <main className='main-section items-center'>
       <SignupForm
         role={roles.admin}
         name={'Admin Signup'}
+        homePath='/admin'
+        loginPath='/admin/login'
       />
     </main>
   )

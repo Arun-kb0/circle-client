@@ -5,15 +5,19 @@ import { selectAuthStatus, selectAuthUser } from '../../features/auth/authSlice'
 import { Link, useNavigate } from 'react-router-dom'
 import { FieldValues, useForm } from 'react-hook-form'
 import { roles } from '../../constants/enums'
-import { login } from '../../features/auth/authApi'
+import { adminLogin, login, signup } from '../../features/auth/authApi'
 import Spinner from '../Spinner'
 
 type Props = {
   role: roles
   name: string
+  homePath: '/' | '/admin'
+  signupPath: '/signup' | '/admin/signup'
+  loginMsg: string
+  loginPath: '/login' | '/admin/login'
 }
 
-const LoginFrom = ({role,name}: Props) => {
+const LoginFrom = ({ role, name, homePath, signupPath, loginMsg, loginPath }: Props) => {
 
   const dispatch = useDispatch<AppDispatch>()
   const status = useSelector(selectAuthStatus)
@@ -32,14 +36,16 @@ const LoginFrom = ({role,name}: Props) => {
     console.log("data")
     console.log(data)
     const { email, password } = data
-    dispatch(login({ email, password }))
+    role === roles.admin
+      ? dispatch(adminLogin({ email, password }))
+      : dispatch(login({ email, password }))
   }
 
   useEffect(() => {
     if (user) {
       navigate(from, { replace: true })
     }
-  }, [user]) 
+  }, [user])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='space-y-3 min-w-[300px]'>
@@ -96,9 +102,15 @@ const LoginFrom = ({role,name}: Props) => {
         Login
       </button>
 
-      <div className='flex space-x-2'>
-        <p>don't have an account </p>
-        <Link to='/signup' className='text-blue-400'> Sign up </Link>
+      <div className='space-y-1'>
+        <div className='flex space-x-2'>
+          <p>don't have an account </p>
+          <Link to={signupPath} className='text-blue-400'> Sign up </Link>
+        </div>
+        <div className='flex space-x-2 '>
+          <p>{loginMsg}</p>
+          <Link to={loginPath} className='text-blue-400'> {role === roles.admin ? 'Login as user' : 'Login as admin'} </Link>
+        </div>
       </div>
 
     </form>

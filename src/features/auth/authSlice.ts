@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { login, logout, refresh, signup } from "./authApi";
+import { adminLogin, adminSignup, login, logout, refresh, signup } from "./authApi";
 import { StateType, UserType } from "../../constants/types";
 import { RootState } from "../../app/store";
 import { uploadProfileImage } from "../user/userApi";
@@ -78,6 +78,36 @@ const authSlice = createSlice({
         state.status = 'success'
       })
       .addCase(uploadProfileImage.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
+    
+    // * admin
+      .addCase(adminLogin.pending, (state) => {
+        state.status = 'loading'
+      })
+      .addCase(adminLogin.fulfilled, (state, action) => {
+        state.status = 'success'
+        const { user, accessToken } = action.payload
+        state.accessToken = accessToken
+        state.user = user
+      })
+
+      .addCase(adminLogin.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
+
+      .addCase(adminSignup.pending, (state) => {
+        state.status = 'loading'
+      })
+      .addCase(adminSignup.fulfilled, (state, action) => {
+        state.status = 'success'
+        const { user, accessToken } = action.payload
+        state.accessToken = accessToken
+        state.user = user
+      })
+      .addCase(adminSignup.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message
       })
