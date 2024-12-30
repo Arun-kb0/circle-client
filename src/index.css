@@ -16,4 +16,32 @@
     @apply w-full h-96 flex justify-center items-center text-orange-300;
   }
 
+  .backdrop {
+    @apply flex items-center justify-center ;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #000000e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal {
+    @apply flex flex-col items-center;
+
+    width: clamp(50%,700px,90%);
+    height: min(50%,300px);
+
+    margin:auto ;
+    padding: 0 2rem;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
 }

@@ -3,6 +3,7 @@ import errorHandler from "../../errorHandler/errorHandler"
 import axiosInstance from "../../config/axiosInstance"
 import { toast } from "react-toastify"
 import { UserType } from "../../constants/types"
+import { RootState } from "../../app/store"
 
 type SignupArgs = Pick<UserType, 'name' | 'email' | 'password'>
 export const signup = createAsyncThunk('/signup', async (user: SignupArgs) => {
@@ -10,7 +11,33 @@ export const signup = createAsyncThunk('/signup', async (user: SignupArgs) => {
     const res = await axiosInstance.post('/auth/signup', user,
       { withCredentials: true }
     )
-    toast('signup success')
+    if (!res || (typeof res.status === 'string' && res.status !== 'success')) throw new Error('signup failed')
+    return res.data
+  } catch (error) {
+    return errorHandler(error)
+  }
+})
+
+export const verifyEmail = createAsyncThunk('/verify-email', async (otp: number, { getState }) => {
+  try {
+    const state = getState() as RootState
+    const { otpId, mailToVerify } = state.auth
+    const otpData = { otp, otpId, email: mailToVerify }
+    console.log("otpData = ")
+    console.log(otpData)
+    const res = await axiosInstance.post('auth/verify-email', otpData)
+    return res.data
+  } catch (error) {
+    return errorHandler(error)
+  }
+})
+
+export const resendOtp = createAsyncThunk('/resend-otp', async (_, { getState }) => {
+  try {
+    const state = getState() as RootState
+    const { otpId, mailToVerify } = state.auth
+    const otpData = { otpId, email: mailToVerify }
+    const res = await axiosInstance.post('auth/resend-otp', otpData)
     return res.data
   } catch (error) {
     return errorHandler(error)

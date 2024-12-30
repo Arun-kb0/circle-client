@@ -1,10 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { adminLogin, adminSignup, login, logout, refresh, signup } from "./authApi";
+import { adminLogin, adminSignup, login, logout, refresh, resendOtp, signup, verifyEmail } from "./authApi";
 import { StateType, UserType } from "../../constants/types";
 import { RootState } from "../../app/store";
 import { uploadProfileImage } from "../user/userApi";
+import { PiStrategyLight } from "react-icons/pi";
 
 type AuthStateType = {
+  otpId: string | undefined
+  mailToVerify: string | undefined
   user: UserType | undefined,
   accessToken: string | undefined,
   status: StateType,
@@ -12,6 +15,8 @@ type AuthStateType = {
 }
 
 const initialState: AuthStateType = {
+  otpId: undefined,
+  mailToVerify: undefined,
   user: undefined,
   accessToken: undefined,
   status: 'idle',
@@ -43,13 +48,41 @@ const authSlice = createSlice({
       .addCase(signup.pending, (state) => {
         state.status = 'loading'
       })
-      .addCase(signup.fulfilled, (state, action) => {
+      .addCase(signup.fulfilled, (state, action: PayloadAction<{ message: string, status: string, email: string, otpId: string }>) => {
         state.status = 'success'
-        const { user, accessToken } = action.payload
+        const { email, otpId } = action.payload
+        state.mailToVerify = email
+        state.otpId = otpId
+      })
+      .addCase(signup.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
+
+      .addCase(verifyEmail.pending, (state) => {
+        state.status = 'loading'
+      })
+      .addCase(verifyEmail.fulfilled, (state, action: PayloadAction<{ user: UserType, accessToken: string }>) => {
+        state.status = 'success'
+        const { accessToken, user } = action.payload
         state.accessToken = accessToken
         state.user = user
       })
-      .addCase(signup.rejected, (state, action) => {
+      .addCase(verifyEmail.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
+
+      .addCase(resendOtp.pending, (state) => {
+        state.status = 'loading'
+      })
+      .addCase(resendOtp.fulfilled, (state, action: PayloadAction<{ email: string, otpId: string }>) => {
+        state.status = 'success'
+        const { email, otpId } = action.payload
+        state.mailToVerify = email
+        state.otpId = otpId
+      })
+      .addCase(resendOtp.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message
       })
@@ -81,8 +114,8 @@ const authSlice = createSlice({
         state.status = 'failed'
         state.error = action.error.message
       })
-    
-    // * admin
+
+      // * admin
       .addCase(adminLogin.pending, (state) => {
         state.status = 'loading'
       })

@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import errorHandler from "../../errorHandler/errorHandler";
 import axiosInstance, { axiosPrivate } from "../../config/axiosInstance";
-import { AppDispatch ,RootState} from "../../app/store";
+import { AppDispatch, RootState } from "../../app/store";
 import configureAxios from "../../config/configureAxios";
 
 export const uploadProfileImage = createAsyncThunk('/user/image', async (file: File, { dispatch, getState }) => {
@@ -14,7 +14,7 @@ export const uploadProfileImage = createAsyncThunk('/user/image', async (file: F
 
 
 // * admin 
-export const getAllUsers = createAsyncThunk('/user/all', async ({},{dispatch,getState}) => {
+export const getAllUsers = createAsyncThunk('/user/all', async (_, { dispatch, getState }) => {
   try {
     const state = getState() as RootState
     const accessToken = state.auth.accessToken
@@ -24,9 +24,7 @@ export const getAllUsers = createAsyncThunk('/user/all', async ({},{dispatch,get
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.get('/user/all')
     removeInterceptors()
-    console.log(res)
 
-    // const res = await axiosInstance.get('/user/all')
     const { users } = res.data
     return users
   } catch (error) {
@@ -34,9 +32,16 @@ export const getAllUsers = createAsyncThunk('/user/all', async ({},{dispatch,get
   }
 })
 
-export const getUser = createAsyncThunk('/user/all', async (userId: string) => {
+export const getUser = createAsyncThunk('/user/all', async (userId: string, { dispatch, getState }) => {
   try {
-    const res = await axiosInstance.get(`/user/${userId}`)
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.get(`/user/${userId}`)
+    removeInterceptors()
     const user = res.data()
     return user
   } catch (error) {
@@ -44,19 +49,37 @@ export const getUser = createAsyncThunk('/user/all', async (userId: string) => {
   }
 })
 
-export const blockUser = createAsyncThunk('/user/block', async (userId: string) => {
+export const blockUser = createAsyncThunk('/user/block', async (userId: string, { dispatch, getState }) => {
   try {
-    const res = await axiosInstance.post(`/user/block?userId=${userId}`)
-    const { userId : blockedId } = res.data
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.post(`/user/block?userId=${userId}`)
+    removeInterceptors()
+
+    // const res = await axiosInstance.post(`/user/block?userId=${userId}`)
+    const { userId: blockedId } = res.data
     return blockedId
   } catch (error) {
     return errorHandler(error)
   }
 })
 
-export const unblockUser = createAsyncThunk('/user/unblock', async (userId: string) => {
+export const unblockUser = createAsyncThunk('/user/unblock', async (userId: string, { dispatch, getState }) => {
   try {
-    const res = await axiosInstance.post(`/user/block?userId=${userId}`)
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.post(`/user/unblock?userId=${userId}`)
+    removeInterceptors()
+
+    // const res = await axiosInstance.post(`/user/block?userId=${userId}`)
     const { userId: unblockedId } = res.data
     return unblockedId
   } catch (error) {

@@ -4,7 +4,7 @@ import { AppDispatch } from '../../app/store'
 import { UserType } from '../../constants/types'
 import { Link, useNavigate } from 'react-router-dom'
 import { adminSignup, signup } from '../../features/auth/authApi'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { roles } from '../../constants/enums'
 import { selectAuthStatus, selectAuthUser } from '../../features/auth/authSlice'
 import Spinner from '../Spinner'
@@ -14,10 +14,11 @@ type Props = {
   role: roles
   name: string
   homePath: '/' | '/admin'
-  loginPath: '/login' | '/admin/login'
+  loginPath: '/login' | '/admin/login',
+  openModel?: () => void
 }
 
-const SignupForm = ({ role, name, homePath, loginPath }: Props) => {
+const SignupForm = ({ role, name, homePath, loginPath, openModel }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const user = useSelector(selectAuthUser)
@@ -32,13 +33,17 @@ const SignupForm = ({ role, name, homePath, loginPath }: Props) => {
     reset: resetForm
   } = useForm()
 
-  const onSubmit = (data: FieldValues) => {
+  const onSubmit = async (data: FieldValues) => {
     const { confirmPassword, ...rest } = data
     const userData = { image: { url: '' }, ...rest } as UserType
     console.log(userData)
-    role === roles.admin
-      ? dispatch(adminSignup(userData))
-      : dispatch(signup(userData))
+    if (role === roles.admin) {
+      dispatch(adminSignup(userData))
+    } else {
+      const res = await dispatch(signup(userData))
+      openModel && openModel()
+    }
+
   }
 
   useEffect(() => {
@@ -66,8 +71,8 @@ const SignupForm = ({ role, name, homePath, loginPath }: Props) => {
                 : 'name is required',
               pattern: {
                 value: role === roles.admin
-                  ? /^[a-zA-Z0-9]+([._%+-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+$/
-                  : /^ [A - Za - z] + (?: ['-][A-Za-z]+)*$/,
+                  ? /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+                  : /^[A-Za-z]+(?:[-'\s][A-Za-z]+)*$/,
                 message: role === roles.admin
                   ? 'invalid root user'
                   : 'invalid name',

@@ -15,6 +15,7 @@ import { useEffect } from 'react'
 import { refresh } from './features/auth/authApi'
 import AdminLogin from './pages/AdminLogin'
 import AdminSignup from './pages/AdminSignup'
+import OtpModel from './pages/OtpModel'
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
       <Routes>
         <Route path='/signup' element={<Signup />} />
         <Route path='/login' element={<Login />} />
+        <Route path='/verify' element={<OtpModel/>} />
         <Route path='/admin/login' element={<AdminLogin />} />
         <Route path='/admin/signup' element={<AdminSignup/>} />
         
