@@ -6,6 +6,8 @@ import { RootState } from "../../app/store"
 
 type UserStateType = {
   users: UserType[] | []
+  usersCurrentPage: number | undefined
+  usersNumberOfPages: number | undefined
   usersStatus: StateType
   blockStatus: StateType
   error: string | undefined
@@ -13,6 +15,8 @@ type UserStateType = {
 
 const initialState: UserStateType = {
   users: [],
+  usersCurrentPage: undefined,
+  usersNumberOfPages: undefined,
   usersStatus: 'idle',
   blockStatus: 'idle',
   error: undefined
@@ -28,9 +32,11 @@ const userSlice = createSlice({
       .addCase(getAllUsers.pending, (state) => {
         state.usersStatus = 'loading'
       })
-      .addCase(getAllUsers.fulfilled, (state, action: PayloadAction<UserType[]>) => {
+      .addCase(getAllUsers.fulfilled, (state, action: PayloadAction<{ users: UserType[], numberOfPages: number, currentPage: number }>) => {
         state.usersStatus = 'success'
-        state.users = action.payload
+        state.users = action.payload.users
+        state.usersCurrentPage = action.payload.currentPage
+        state.usersNumberOfPages = action.payload.numberOfPages
       })
       .addCase(getAllUsers.rejected, (state, action) => {
         state.usersStatus = 'loading'

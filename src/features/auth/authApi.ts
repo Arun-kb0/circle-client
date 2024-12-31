@@ -72,8 +72,6 @@ export const resetPassword = createAsyncThunk('/auth/resetPwd', async ({ email, 
 
 export const resetPwdVerifyOtp = createAsyncThunk('/auth/resetPwdVerify', async (otp:number , { getState }) => {
   try {
-    console.log("resetPwdVerifyOtp = " , otp)
-
     const state = getState() as RootState
     const { resetPwdEmail: email, resetPwdOtpId: otpId } = state.auth
     const res = await axiosInstance.post('/auth/reset-pwd-verify-otp', {

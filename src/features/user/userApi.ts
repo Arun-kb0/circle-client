@@ -14,7 +14,7 @@ export const uploadProfileImage = createAsyncThunk('/user/image', async (file: F
 
 
 // * admin 
-export const getAllUsers = createAsyncThunk('/user/all', async (_, { dispatch, getState }) => {
+export const getAllUsers = createAsyncThunk('/user/all', async (page: number, { dispatch, getState }) => {
   try {
     const state = getState() as RootState
     const accessToken = state.auth.accessToken
@@ -22,11 +22,9 @@ export const getAllUsers = createAsyncThunk('/user/all', async (_, { dispatch, g
     if (!accessToken) throw new Error(' no accessToken found ')
 
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
-    const res = await axiosPrivate.get('/user/all')
+    const res = await axiosPrivate.get(`/user/all?page=${page}`)
     removeInterceptors()
-
-    const { users } = res.data
-    return users
+    return res.data
   } catch (error) {
     return errorHandler(error)
   }
