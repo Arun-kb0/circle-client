@@ -1,17 +1,21 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { adminLogin, adminSignup, login, logout, refresh, resendOtp, signup, verifyEmail } from "./authApi";
+import { adminLogin, adminSignup, login, logout, refresh, resendOtp, resetPassword, resetPwdVerifyOtp, resetResendOtp, signup, verifyEmail } from "./authApi";
 import { StateType, UserType } from "../../constants/types";
 import { RootState } from "../../app/store";
 import { uploadProfileImage } from "../user/userApi";
-import { PiStrategyLight } from "react-icons/pi";
 
 type AuthStateType = {
   otpId: string | undefined
   mailToVerify: string | undefined
   user: UserType | undefined,
   accessToken: string | undefined,
+  resetPwd: string | undefined,
+  resetPwdEmail: string | undefined
+  resetPwdOtpId: string | undefined
+  resetPwdStatus: StateType
   status: StateType,
   error: string | undefined
+
 }
 
 const initialState: AuthStateType = {
@@ -20,7 +24,12 @@ const initialState: AuthStateType = {
   user: undefined,
   accessToken: undefined,
   status: 'idle',
-  error: undefined
+  error: undefined,
+
+  resetPwd: undefined,
+  resetPwdEmail: undefined,
+  resetPwdOtpId: undefined,
+  resetPwdStatus: 'idle'
 }
 
 const authSlice = createSlice({
@@ -87,6 +96,46 @@ const authSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(resetPassword.pending, (state) => {
+        state.resetPwdStatus = 'loading'
+      })
+      .addCase(resetPassword.fulfilled, (state, action: PayloadAction<{ email: string, otpId: string }>) => {
+        state.resetPwdStatus = 'success'
+        state.resetPwdEmail = action.payload.email
+        state.resetPwdOtpId = action.payload.otpId
+
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.resetPwdStatus = 'failed'
+        state.error = action.error.message
+      })
+
+      .addCase(resetPwdVerifyOtp.pending, (state) => {
+        state.resetPwdStatus = 'loading'
+      })
+      .addCase(resetPwdVerifyOtp.fulfilled, (state, action: PayloadAction<{ email: string }>) => {
+        state.resetPwdStatus = 'success'
+      })
+      .addCase(resetPwdVerifyOtp.rejected, (state, action) => {
+        state.resetPwdStatus = 'failed'
+        state.error = action.error.message
+      })
+
+      .addCase(resetResendOtp.pending, (state) => {
+        state.resetPwdStatus = 'loading'
+      })
+      .addCase(resetResendOtp.fulfilled, (state, action: PayloadAction<{ email: string, otpId: string }>) => {
+        state.resetPwdStatus = 'success'
+        state.resetPwdEmail = action.payload.email
+        state.resetPwdOtpId = action.payload.otpId
+      })
+      .addCase(resetResendOtp.rejected, (state, action) => {
+        state.resetPwdStatus = 'failed'
+        state.error = action.error.message
+      })
+
+
+
       .addCase(refresh.fulfilled, (state, action: PayloadAction<{ user: UserType, accessToken: string }>) => {
         state.status = 'success'
         const { user, accessToken } = action.payload
@@ -151,6 +200,8 @@ export const selectAuthUser = (state: RootState) => state.auth.user
 export const selectAuthAccessToken = (state: RootState) => state.auth.accessToken
 export const selectAuthStatus = (state: RootState) => state.auth.status
 export const selectAuthError = (state: RootState) => state.auth.error
+
+export const selectAuthResetStatus = (state: RootState) => state.auth.resetPwdStatus
 
 
 export const {

@@ -60,6 +60,43 @@ export const login = createAsyncThunk('/login', async ({ email, password }: Logi
   }
 })
 
+type ResetPasswordArgs = { email: string, password: string }
+export const resetPassword = createAsyncThunk('/auth/resetPwd', async ({ email, password }: ResetPasswordArgs) => {
+  try {
+    const res = await axiosInstance.post('/auth/reset-password', { email, password })
+    return res.data
+  } catch (error) {
+    return errorHandler(error)
+  }
+})
+
+export const resetPwdVerifyOtp = createAsyncThunk('/auth/resetPwdVerify', async (otp:number , { getState }) => {
+  try {
+    console.log("resetPwdVerifyOtp = " , otp)
+
+    const state = getState() as RootState
+    const { resetPwdEmail: email, resetPwdOtpId: otpId } = state.auth
+    const res = await axiosInstance.post('/auth/reset-pwd-verify-otp', {
+      email, otp, otpId
+    })
+    if(res.data?.status==='success') toast("password reset success")
+    return res.data
+  } catch (error) {
+    return errorHandler(error)
+  }
+})
+
+export const resetResendOtp = createAsyncThunk('/auth/resetPwdResend', async (_, { getState }) => {
+  try {
+    const state = getState() as RootState
+    const { resetPwdEmail: email, resetPwdOtpId: otpId } = state.auth
+    const res = await axiosInstance.post('/auth/reset-resend-otp', { email, otpId })
+    return res.data
+  } catch (error) {
+    return errorHandler(error)
+  }
+})
+
 export const refresh = createAsyncThunk('/auth/refresh', async () => {
   try {
     const res = await axiosInstance.get('/auth/refresh', {
@@ -67,8 +104,7 @@ export const refresh = createAsyncThunk('/auth/refresh', async () => {
     })
     return res.data
   } catch (error) {
-    if (error instanceof Error)
-      return error.message
+    return errorHandler(error)
   }
 })
 

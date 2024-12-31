@@ -2,16 +2,17 @@ import React, { useEffect, useState } from 'react'
 import BackdropVerifyOtp from '../backdrop/BackdropVerifyOtp'
 import { motion, useForceUpdate } from 'framer-motion'
 import { useDispatch } from 'react-redux'
-import { resendOtp, verifyEmail } from '../../features/auth/authApi'
+import { resendOtp, resetPwdVerifyOtp, resetResendOtp, verifyEmail } from '../../features/auth/authApi'
 import { AppDispatch } from '../../app/store'
-import { FieldValue, FieldValues, useForm } from 'react-hook-form'
+import { FieldValues, useForm } from 'react-hook-form'
 
 type Props = {
-  text: string
+  componentType: 'email' | 'password'
   handleClose: () => void
 }
 
-const VerifyOtpModal = ({ text, handleClose }: Props) => {
+
+const VerifyOtpModal = ({ componentType, handleClose }: Props) => {
   const dropIn = {
     hidden: {
       y: "-100vh",
@@ -52,12 +53,17 @@ const VerifyOtpModal = ({ text, handleClose }: Props) => {
   }, [timeLeft])
 
   const handleResend = () => {
-    dispatch(resendOtp())
+    componentType === 'email'
+      ? dispatch(resendOtp())
+      : dispatch(resetResendOtp())
     resetForm()
     setTimeLeft(120)
   }
   const handleVerify = (data: FieldValues) => {
-    dispatch(verifyEmail(data.otp))
+    console.log("handle verify = ",data.otp)
+    componentType === 'email'
+      ? dispatch(verifyEmail(data.otp))
+      : dispatch(resetPwdVerifyOtp(data.otp))
   }
 
 
@@ -95,7 +101,7 @@ const VerifyOtpModal = ({ text, handleClose }: Props) => {
                 }
               </div>
               <button type='submit' data-modal-hide="popup-modal" className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
-                Verify email
+                {componentType === 'email' ? `Verify email` : 'Verify'}
               </button>
               <button
                 onClick={handleResend}

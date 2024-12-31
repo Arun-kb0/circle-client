@@ -6,7 +6,6 @@ type Props = {
 }
 
 const BackdropVerifyOtp: React.FunctionComponent<React.PropsWithChildren<Props>> = ({ children, onClick }) => {
-  console.log(children)
   return (
     <motion.div
       className='backdrop z-0'

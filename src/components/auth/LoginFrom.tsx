@@ -107,6 +107,12 @@ const LoginFrom = ({ role, name, homePath, signupPath, loginMsg, loginPath }: Pr
           <p>don't have an account </p>
           <Link to={signupPath} className='text-blue-400'> Sign up </Link>
         </div>
+        {role === roles.user &&
+          <div className='flex space-x-2'>
+            <p>reset password </p>
+            <Link to='/resetPwd' className='text-blue-400'> reset </Link>
+          </div>
+        }
         <div className='flex space-x-2 '>
           <p>{loginMsg}</p>
           <Link to={loginPath} className='text-blue-400'> {role === roles.admin ? 'Login as user' : 'Login as admin'} </Link>

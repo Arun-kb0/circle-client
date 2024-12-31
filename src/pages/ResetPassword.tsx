@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import SignupForm from '../components/auth/SignupForm'
-import { roles } from '../constants/enums'
-import { AnimatePresence } from 'framer-motion'
+import ResetPwdForm from '../components/auth/ResetPwdForm'
 import VerifyOtpModal from '../components/models/VerifyOtpModal'
+import { AnimatePresence } from 'framer-motion'
 
-const Signup = () => {
+type Props = {}
+
+const ResetPassword = (props: Props) => {
   const [modelOpen, setModelOpen] = useState<Boolean>(false)
   const close = () => setModelOpen(false)
   const open = () => setModelOpen(true)
@@ -12,7 +13,6 @@ const Signup = () => {
 
   return (
     <main className='main-section items-center'>
-
       <AnimatePresence
         initial={false}
         mode='wait'
@@ -20,21 +20,17 @@ const Signup = () => {
       >
         {modelOpen &&
           <VerifyOtpModal
-            componentType='email'
+            componentType='password'
             handleClose={close}
           />
         }
       </AnimatePresence>
 
-      <SignupForm
-        role={roles.user}
-        name={'Signup'}
-        homePath='/'
-        loginPath='/login'
+      <ResetPwdForm
         openModel={open}
       />
     </main>
   )
 }
 
-export default Signup
+export default ResetPassword
