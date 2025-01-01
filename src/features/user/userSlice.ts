@@ -74,6 +74,9 @@ export const selectUserUsers = (state: RootState) => state.user.users
 export const selectUserStatus = (state: RootState) => state.user.usersStatus
 export const selectUserError = (state: RootState) => state.user.error
 
+export const selectUserCurrentPage = (state: RootState) => state.user.usersCurrentPage
+export const selectUserNumberOfPages = (state: RootState) => state.user.usersNumberOfPages
+
 
 
 export const {
