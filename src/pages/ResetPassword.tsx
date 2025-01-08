@@ -2,10 +2,13 @@ import React, { useState } from 'react'
 import ResetPwdForm from '../components/auth/ResetPwdForm'
 import VerifyOtpModal from '../components/models/VerifyOtpModal'
 import { AnimatePresence } from 'framer-motion'
+import { useSelector } from 'react-redux'
+import { selectAuthResetStatus } from '../features/auth/authSlice'
 
 type Props = {}
 
 const ResetPassword = (props: Props) => {
+  const status = useSelector(selectAuthResetStatus)
   const [modelOpen, setModelOpen] = useState<Boolean>(false)
   const close = () => setModelOpen(false)
   const open = () => setModelOpen(true)
@@ -18,7 +21,7 @@ const ResetPassword = (props: Props) => {
         mode='wait'
         onExitComplete={() => null}
       >
-        {modelOpen &&
+        {modelOpen && status === 'success' &&
           <VerifyOtpModal
             componentType='password'
             handleClose={close}

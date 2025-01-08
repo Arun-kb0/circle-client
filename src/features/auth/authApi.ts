@@ -5,16 +5,24 @@ import { toast } from "react-toastify"
 import { UserType } from "../../constants/types"
 import { RootState } from "../../app/store"
 
-type SignupArgs = Pick<UserType, 'name' | 'email' | 'password'>
-export const signup = createAsyncThunk('/signup', async (user: SignupArgs) => {
+export const googleOauthLogin = createAsyncThunk('/google-oauth-login', async (token: string) => {
   try {
-    const res = await axiosInstance.post('/auth/signup', user,
-      { withCredentials: true }
-    )
-    if (!res || (typeof res.status === 'string' && res.status !== 'success')) throw new Error('signup failed')
+    const res = await axiosInstance.post('/auth/google-oauth-login', { token })
     return res.data
   } catch (error) {
     return errorHandler(error)
+  }
+})
+
+
+type SignupArgs = Pick<UserType, 'name' | 'email' | 'password'>
+export const signup = createAsyncThunk('/signup', async (user: SignupArgs, {rejectWithValue}) => {
+  try {
+    const res = await axiosInstance.post('/auth/signup', user)
+    if (!res || (typeof res.status === 'string' && res.status !== 'success')) throw new Error('signup failed')
+    return res.data
+  } catch (error) {
+    return rejectWithValue(errorHandler(error))
   }
 })
 
@@ -70,14 +78,14 @@ export const resetPassword = createAsyncThunk('/auth/resetPwd', async ({ email, 
   }
 })
 
-export const resetPwdVerifyOtp = createAsyncThunk('/auth/resetPwdVerify', async (otp:number , { getState }) => {
+export const resetPwdVerifyOtp = createAsyncThunk('/auth/resetPwdVerify', async (otp: number, { getState }) => {
   try {
     const state = getState() as RootState
     const { resetPwdEmail: email, resetPwdOtpId: otpId } = state.auth
     const res = await axiosInstance.post('/auth/reset-pwd-verify-otp', {
       email, otp, otpId
     })
-    if(res.data?.status==='success') toast("password reset success")
+    if (res.data?.status === 'success') toast("password reset success")
     return res.data
   } catch (error) {
     return errorHandler(error)

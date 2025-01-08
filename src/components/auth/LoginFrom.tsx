@@ -7,7 +7,7 @@ import { FieldValues, useForm } from 'react-hook-form'
 import { roles } from '../../constants/enums'
 import { adminLogin, login, signup } from '../../features/auth/authApi'
 import Spinner from '../Spinner'
-import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google'
+import OauthProviders from './OauthProviders'
 
 
 type Props = {
@@ -21,7 +21,6 @@ type Props = {
 
 
 const LoginFrom = ({ role, name, homePath, signupPath, loginMsg, loginPath }: Props) => {
-  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
   const dispatch = useDispatch<AppDispatch>()
   const status = useSelector(selectAuthStatus)
@@ -37,8 +36,6 @@ const LoginFrom = ({ role, name, homePath, signupPath, loginMsg, loginPath }: Pr
   } = useForm()
 
   const onSubmit = (data: FieldValues) => {
-    console.log("data")
-    console.log(data)
     const { email, password } = data
     role === roles.admin
       ? dispatch(adminLogin({ email, password }))
@@ -52,14 +49,6 @@ const LoginFrom = ({ role, name, homePath, signupPath, loginMsg, loginPath }: Pr
   }, [user])
 
 
-  const handleGoogleOauthRes = (credRes: CredentialResponse) => {
-    console.log('oauth success ')
-    console.log(credRes)
-  }
-
-  const handleGoogleOauthError = () => {
-    console.log('login failed')
-  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='space-y-3 min-w-[300px]'>
@@ -116,30 +105,16 @@ const LoginFrom = ({ role, name, homePath, signupPath, loginMsg, loginPath }: Pr
         Login
       </button>
 
-      <div className='flex items-center'>
-        <span className='bg-gray-400 h-0.5 w-full rounded'></span>
-        <h1 className='mx-3'>or</h1>
-        <span className='bg-gray-400 h-0.5 w-full rounded'></span>
-      </div>
-      <section  className='flex justify-start items-center '>
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-          <GoogleLogin
-            type='icon'
-            theme='filled_blue'
-            onSuccess={handleGoogleOauthRes}
-            onError={handleGoogleOauthError}
-          />
-        </GoogleOAuthProvider>
-      </section>
+      <OauthProviders />
 
-      <div className='space-y-1'>
+      <div className='space-y-1 text-black'>
         <div className='flex space-x-2'>
           <p>don't have an account </p>
           <Link to={signupPath} className='text-blue-400'> Sign up </Link>
         </div>
         {role === roles.user &&
           <div className='flex space-x-2'>
-            <p>reset password </p>
+            <p>forgot password?</p>
             <Link to='/resetPwd' className='text-blue-400'> reset </Link>
           </div>
         }

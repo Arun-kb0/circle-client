@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { adminLogin, adminSignup, login, logout, refresh, resendOtp, resetPassword, resetPwdVerifyOtp, resetResendOtp, signup, verifyEmail } from "./authApi";
+import { adminLogin, adminSignup, googleOauthLogin, login, logout, refresh, resendOtp, resetPassword, resetPwdVerifyOtp, resetResendOtp, signup, verifyEmail } from "./authApi";
 import { StateType, UserType } from "../../constants/types";
 import { RootState } from "../../app/store";
 import { uploadProfileImage } from "../user/userApi";
@@ -39,6 +39,21 @@ const authSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
+      
+      .addCase(googleOauthLogin.pending, (state) => {
+        state.status = 'loading'
+      })
+      .addCase(googleOauthLogin.fulfilled, (state, action) => {
+        state.status = 'success'
+        const { user, accessToken } = action.payload
+        state.accessToken = accessToken
+        state.user = user
+      })
+      .addCase(googleOauthLogin.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
+      
       .addCase(login.pending, (state) => {
         state.status = 'loading'
       })
@@ -48,7 +63,6 @@ const authSlice = createSlice({
         state.accessToken = accessToken
         state.user = user
       })
-
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message
@@ -57,7 +71,7 @@ const authSlice = createSlice({
       .addCase(signup.pending, (state) => {
         state.status = 'loading'
       })
-      .addCase(signup.fulfilled, (state, action: PayloadAction<{ message: string, status: string, email: string, otpId: string }>) => {
+      .addCase(signup.fulfilled, (state, action: PayloadAction<{ email: string, otpId: string }>) => {
         state.status = 'success'
         const { email, otpId } = action.payload
         state.mailToVerify = email
