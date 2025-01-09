@@ -38,14 +38,14 @@ const ResetPwdForm = ({ openModel }:Props) => {
 
   return (
     <form className="min-w-[300px] mt-4 space-y-4 lg:mt-5 md:space-y-5" onSubmit={handleSubmit(onSubmit)} >
-      <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white"> Change Password </h2>
+      <h2 className="mb-1 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl"> Change Password </h2>
       {/* Email Field */}
       <div>
-        <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" >
+        <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 " >
           Your email
         </label>
         <input
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="example@gmail.com"
           type="email"
           id="email"
@@ -66,7 +66,7 @@ const ResetPwdForm = ({ openModel }:Props) => {
       <div>
         <label
           htmlFor="password"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          className="block mb-2 text-sm font-medium text-gray-900"
         >
           New Password
         </label>
@@ -81,7 +81,7 @@ const ResetPwdForm = ({ openModel }:Props) => {
             }
           })}
           placeholder="••••••••"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
         {errors.password && (
           <p className="text-red-500 text-sm mt-1">
@@ -94,7 +94,7 @@ const ResetPwdForm = ({ openModel }:Props) => {
       <div>
         <label
           htmlFor="confirm-password"
-          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          className="block mb-2 text-sm font-medium text-gray-900 "
         >
           Confirm Password
         </label>
@@ -107,7 +107,7 @@ const ResetPwdForm = ({ openModel }:Props) => {
               value === watch("password") || "Passwords do not match",
           })}
           placeholder="••••••••"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
         {errors.confirmPassword && (
           <p className="text-red-500 text-sm mt-1">
@@ -119,7 +119,7 @@ const ResetPwdForm = ({ openModel }:Props) => {
         {status === 'loading' && <Spinner />}
         Reset Password
       </button>
-      <div className='flex space-x-2'>
+      <div className='flex space-x-2 text-black'>
         <p> got to </p>
         <Link to='/login' className='text-blue-400'> login </Link>
       </div>

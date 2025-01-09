@@ -15,7 +15,12 @@ const Signup = () => {
 
 
   return (
-    <main className='main-section items-center min-h-screen bg-cover bg-center' style={{ backgroundImage: `url(${signupImage})` }}>
+    <main className='main-section items-center min-h-screen bg-cover bg-center' style={{
+      backgroundImage: `url(${signupImage})`,
+      backgroundSize: "contain",
+      backgroundRepeat: "no-repeat", 
+      backgroundPosition: "center",
+    }}>
 
       <div className='backdrop-blur-sm bg-white/30 p-4 rounded-md shadow-lg '>
         <AnimatePresence

@@ -4,6 +4,7 @@ import VerifyOtpModal from '../components/models/VerifyOtpModal'
 import { AnimatePresence } from 'framer-motion'
 import { useSelector } from 'react-redux'
 import { selectAuthResetStatus } from '../features/auth/authSlice'
+import resetPassword from '../assets/resetPassword.png'
 
 type Props = {}
 
@@ -15,23 +16,33 @@ const ResetPassword = (props: Props) => {
 
 
   return (
-    <main className='main-section items-center'>
-      <AnimatePresence
-        initial={false}
-        mode='wait'
-        onExitComplete={() => null}
-      >
-        {modelOpen && status === 'success' &&
-          <VerifyOtpModal
-            componentType='password'
-            handleClose={close}
-          />
-        }
-      </AnimatePresence>
+    <main className='main-section items-center min-h-screen bg-cover bg-center'
+      style={{
+        backgroundImage: `url(${resetPassword})`,
+        backgroundSize: "contain", 
+        backgroundRepeat: "no-repeat", 
+        backgroundPosition: "center",
+      }}
+    >
+      <div className='backdrop-blur-sm bg-white/30 p-4 rounded-md shadow-lg '>
 
-      <ResetPwdForm
-        openModel={open}
-      />
+        <AnimatePresence
+          initial={false}
+          mode='wait'
+          onExitComplete={() => null}
+        >
+          {modelOpen && status === 'success' &&
+            <VerifyOtpModal
+              componentType='password'
+              handleClose={close}
+            />
+          }
+        </AnimatePresence>
+
+        <ResetPwdForm
+          openModel={open}
+        />
+      </div>
     </main>
   )
 }
