@@ -4,6 +4,7 @@ import { selectAuthUser } from '../../features/auth/authSlice'
 import { selectPostPosts, selectPostStatus } from '../../features/post/postSlice'
 import { AppDispatch } from '../../app/store'
 import { getPosts } from '../../features/post/postApi'
+import Feed from '../../components/user/feed/Feed'
 
 
 const Home = () => {
@@ -17,11 +18,14 @@ const Home = () => {
   }, [])
 
   return (
-    <main className='main-section items-center' >
-      <h1 className='text-xl font-semibold text-gray-50'> welcome
-        <span className='font-bold text-orange-300 capitalize'>  {user?.name}  </span>
-        post status = {postStatus}
-      </h1>
+    <main className='main-section justify-center ' >
+      <div className="p-4 sm:ml-64" >
+        <div className="p-4 mt-14">
+
+          <Feed/>
+
+        </div>
+      </div>
     </main>
   )
 }

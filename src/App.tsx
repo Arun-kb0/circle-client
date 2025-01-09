@@ -18,6 +18,8 @@ import AdminLogin from './pages/AdminLogin'
 import AdminSignup from './pages/AdminSignup'
 import OtpModel from './pages/OtpModel'
 import ResetPassword from './pages/ResetPassword'
+import Profile from './pages/user/Profile'
+import GlobalFeed from './pages/user/GlobalFeed'
 
 
 function App() {
@@ -27,7 +29,7 @@ function App() {
 
   useEffect(() => {
     dispatch(refresh())
-  },[])
+  }, [])
 
   return (
     <>
@@ -37,19 +39,20 @@ function App() {
       <Routes>
         <Route path='/signup' element={<Signup />} />
         <Route path='/login' element={<Login />} />
-        <Route path='/verify' element={<OtpModel/>} />
+        <Route path='/verify' element={<OtpModel />} />
         <Route path='/resetPwd' element={<ResetPassword />} />
-        <Route path='/resetPwdVerify' element={<h1>headl</h1>} />
-        
+
 
         <Route path='/admin/login' element={<AdminLogin />} />
-        <Route path='/admin/signup' element={<AdminSignup/>} />
-        
+        <Route path='/admin/signup' element={<AdminSignup />} />
+
 
         {/* * protected user routes */}
         <Route element={<RequireAuth role={roles.user} />} >
           <Route path='/' element={<Home />} />
-        
+          <Route path='/profile' element={<Profile />} />
+          <Route path='/global-feed' element={<GlobalFeed />} />
+    
         </Route>
 
         {/* * protected admin routes */}

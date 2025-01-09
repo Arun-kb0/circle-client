@@ -1,6 +1,4 @@
-export type PostType = {
-  _id:string
-}
+
 
 export type StateType = 'loading' | 'success' | 'failed' | 'idle'
 
