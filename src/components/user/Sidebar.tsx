@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaRegUser  } from "react-icons/fa6";
+import { FaRegUser } from "react-icons/fa6";
 import { TbMessageCircle } from "react-icons/tb";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { LuUserRoundPlus } from "react-icons/lu";
@@ -7,6 +7,7 @@ import { HiOutlineGift } from "react-icons/hi2";
 import { IoBookmarkOutline } from "react-icons/io5";
 import { PiArticleBold } from "react-icons/pi";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
+import SpringButton from '../basic/SpringButton';
 
 type Props = {}
 
@@ -16,54 +17,70 @@ const Sidebar = (props: Props) => {
       <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
         <ul className="space-y-2 font-medium">
           <li>
-            <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-              <FaRegUser  />
-              <span className="ms-3">Profile</span>
-            </a>
+            <SpringButton>
+              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <FaRegUser size={22} />
+                <span className="ms-3">Profile</span>
+              </a>
+            </SpringButton>
           </li>
           <li>
-            <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-              <HiOutlineUsers  />
-              <span className="ms-3">Following</span>
-            </a>
+            <SpringButton>
+              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <HiOutlineUsers size={22} />
+                <span className="ms-3">Following</span>
+              </a>
+            </SpringButton>
           </li>
           <li>
-            <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-              <LuUserRoundPlus  />
-              <span className="ms-3">Follow</span>
-            </a>
+            <SpringButton>
+              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <LuUserRoundPlus size={22} />
+                <span className="ms-3">Follow</span>
+              </a>
+            </SpringButton>
           </li>
           <li>
-            <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-              <IoBookmarkOutline  />
-              <span className="ms-3">Saved</span>
-            </a>
+            <SpringButton>
+              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <IoBookmarkOutline size={22} />
+                <span className="ms-3">Saved</span>
+              </a>
+            </SpringButton>
           </li>
           <li>
-            <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-              <HiOutlineCalendarDateRange  />
-              <span className="ms-3">Memories</span>
-            </a>
+            <SpringButton>
+              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <HiOutlineCalendarDateRange size={22} />
+                <span className="ms-3">Memories</span>
+              </a>
+            </SpringButton>
           </li>
           <li>
-            <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-              <HiOutlineGift />
-              <span className="ms-3">Birthday</span>
-            </a>
+            <SpringButton>
+              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <HiOutlineGift size={22} />
+                <span className="ms-3">Birthday</span>
+              </a>
+            </SpringButton>
           </li>
           <li>
-            <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-              <PiArticleBold />
-              <span className="ms-3">Global Feed</span>
-            </a>
+            <SpringButton>
+              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <PiArticleBold size={22} />
+                <span className="ms-3">Global Feed</span>
+              </a>
+            </SpringButton>
           </li>
           <li>
-            <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-              <TbMessageCircle  />
-              <span className="ms-3">Messaging</span>
-            </a>
+            <SpringButton>
+              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <TbMessageCircle size={22} />
+                <span className="ms-3">Messaging</span>
+              </a>
+            </SpringButton>
           </li>
-          
+
         </ul>
       </div>
     </aside>

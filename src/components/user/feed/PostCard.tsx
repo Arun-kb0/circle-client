@@ -5,6 +5,7 @@ import { BiCommentDots } from "react-icons/bi";
 import { IoShareSocialOutline } from "react-icons/io5";
 import PostImages from './PostImages';
 import { motion } from 'framer-motion'
+import SpringButton from '../../basic/SpringButton';
 
 type Props = {
   post: PostType
@@ -46,48 +47,21 @@ const PostCard = ({ post }: Props) => {
         <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{post.desc}</p>
         <div className='flex justify-start space-x-5 items-center'>
           <button onClick={handleLike} className='flex items-center mr-3 gap-2'>
-            <motion.div
-              initial={{ scale: 1 }}
-              whileTap={{ scale: 1.2 }}
-              animate={{ scale: 1, color: true ? "#ef4444" : "#6b7280" }} // Animate back to default scale and change color
-              transition={{
-                type: "spring",
-                stiffness: 400,
-                damping: 10,
-              }}
-            >
+            <SpringButton>
               <GoHeart size={20} />
-            </motion.div>
+            </SpringButton>
             {post.likesCount}
           </button>
           <button onClick={handleComment} className='flex items-center mr-3 gap-2'>
-            <motion.div
-              initial={{ scale: 1 }}
-              whileTap={{ scale: 1.2 }}
-              animate={{ scale: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 400,
-                damping: 10,
-              }}
-            >
+            <SpringButton>
               <BiCommentDots size={20} />
-            </motion.div>
+            </SpringButton>
             {post.commentCount}
           </button>
           <button onClick={handleShare} className='flex items-center mr-3 gap-2'>
-            <motion.div
-              initial={{ scale: 1 }}
-              whileTap={{ scale: 1.2 }}
-              animate={{ scale: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 400,
-                damping: 10,
-              }}
-            >
+            <SpringButton>
               <IoShareSocialOutline size={20} />
-            </motion.div>
+            </SpringButton>
             {post.shareCount}
           </button>
         </div>
