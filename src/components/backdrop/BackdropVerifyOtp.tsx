@@ -8,7 +8,7 @@ type Props = {
 const BackdropVerifyOtp: React.FunctionComponent<React.PropsWithChildren<Props>> = ({ children, onClick }) => {
   return (
     <motion.div
-      className='backdrop z-0'
+      className='backdrop z-50 h-full'
       onClick={onClick}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

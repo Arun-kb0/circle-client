@@ -71,7 +71,6 @@ const VerifyOtpModal = ({ componentType, handleClose }: Props) => {
   return (
     <BackdropVerifyOtp onClick={handleClose}>
       <motion.div
-        className=''
         onClick={(e) => e.stopPropagation()}
         variants={dropIn}
         initial="hidden"

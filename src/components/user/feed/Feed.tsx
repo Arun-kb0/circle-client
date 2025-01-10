@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PostCard from './PostCard'
 import { PostType } from '../../../constants/FeedTypes'
-
+import Comments from './Comments';
+import { AnimatePresence } from 'framer-motion'
 
 const posts: PostType[] = [
   {
@@ -61,12 +62,28 @@ const posts: PostType[] = [
 type Props = {}
 
 const Feed = (props: Props) => {
+  const [modelOpen, setModelOpen] = useState<Boolean>(false)
+  const close = () => setModelOpen(false)
+  const open = () => setModelOpen(true)
+
   return (
-    <main className='space-y-3'>
+    <main className={`space-y-3 ${modelOpen ? 'overflow-hidden h-screen' : 'overflow-y-auto'} `}>
+
+      <AnimatePresence
+        initial={false}
+        mode='wait'
+        onExitComplete={() => null}
+      >
+        {modelOpen &&
+          <Comments handleClose={close} />
+        }
+      </AnimatePresence>
+
       {posts.map((post) => (
         <PostCard
           key={post._id}
           post={post}
+          openCommentModel={open}
         />
       ))}
     </main>

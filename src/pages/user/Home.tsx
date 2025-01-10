@@ -6,19 +6,16 @@ import { AppDispatch } from '../../app/store'
 import { getPosts } from '../../features/post/postApi'
 import Feed from '../../components/user/feed/Feed'
 
-
 const Home = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const user = useSelector(selectAuthUser)
-  const posts = useSelector(selectPostPosts)
-  const postStatus = useSelector(selectPostStatus)
+ 
 
   useEffect(() => {
     dispatch(getPosts())
   }, [])
 
   return (
-    <main className='main-section justify-center ' >
+    <main className='main-section justify-center relative' >
       <div className="p-4 sm:ml-64" >
         <div className="p-4 mt-14">
 

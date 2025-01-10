@@ -48,7 +48,7 @@ const PostImages = ({ media }: Props) => {
           {media.map((image, index) =>
             index === activeIndex ? (
               <motion.div
-                key={index}
+                key={`${index}${image}`}
                 className="absolute top-0 left-0 w-full h-full"
                 variants={variants}
                 initial="enter"
