@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { PostType } from '../../../constants/FeedTypes'
 import { GoHeart } from "react-icons/go";
 import { BiCommentDots } from "react-icons/bi";
@@ -15,10 +15,12 @@ type Props = {
 }
 
 const PostCard = ({ post, openCommentModel }: Props) => {
+  
 
   const handleImageView = () => {
 
   }
+  
   const handleLike = () => {
 
   }
@@ -43,7 +45,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
           </SpringButton>
           {post.authorId}
         </p>
-        <p className="text-sm text-gray-600 dark:text-gray-400">{moment(post.updatedAt).format('MMMM Do, YYYY [at] h:mm A')}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">{moment(post.updatedAt).format('MM Do, YYYY [at] h:mm A')}</p>
       </div>
 
       {post.mediaType === 'image' && post.media &&

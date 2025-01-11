@@ -3,6 +3,7 @@ import CommentCard from './CommentCard'
 import BackdropVerifyOtp from '../../backdrop/BackdropVerifyOtp'
 import { motion } from 'framer-motion'
 import { CommentType } from '../../../constants/FeedTypes';
+import { dropIn } from '../../../constants/animationDropins';
 
 
 const comments: CommentType[] = [
@@ -84,26 +85,6 @@ type Props = {
 }
 
 const Comments = ({ handleClose }: Props) => {
-  const dropIn = {
-    hidden: {
-      y: "-100vh",
-      opacity: 0
-    },
-    visible: {
-      y: "0",
-      opacity: 1,
-      transition: {
-        duration: 0.1,
-        type: "spring",
-        damping: 25,
-        stiffness: 500
-      }
-    },
-    exit: {
-      y: "100vh",
-      opacity: 1
-    }
-  }
 
   return (
     <BackdropVerifyOtp onClick={handleClose}>

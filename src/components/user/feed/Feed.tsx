@@ -1,91 +1,83 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PostCard from './PostCard'
 import { PostType } from '../../../constants/FeedTypes'
 import Comments from './Comments';
 import { AnimatePresence } from 'framer-motion'
-
-const posts: PostType[] = [
-  {
-    _id: '1',
-    desc: 'A beautiful sunset view at the beach!',
-    tags: ['sunset', 'nature', 'beach'],
-    mediaType: 'image',
-    media: [
-      'https://i.pinimg.com/736x/7b/09/6a/7b096a018911e8186890877e0de4cff0.jpg',
-      'https://i.pinimg.com/236x/46/2d/a8/462da81163457e1a2edd682c00ed5e31.jpg'
-    ],
-    authorId: 'user123',
-    status: 'active',
-    likesCount: 123,
-    reportsCount: 0,
-    commentCount: 10,
-    shareCount: 5,
-    updatedAt: new Date(),
-    createdAt: new Date('2025-01-01T10:00:00Z'),
-  },
-  {
-    _id: '2',
-    desc: 'Check out this amazing recipe tutorial!',
-    tags: ['cooking', 'recipe', 'food'],
-    mediaType: 'image',
-    media: [
-      'https://i.pinimg.com/736x/b9/a6/70/b9a67049bf4fd0db1afcb733c97c8492.jpg',
-      "https://i.pinimg.com/736x/8b/e9/19/8be9195cb73fe725ec469f38dcad0f67.jpg"
-    ],
-    authorId: 'user456',
-    status: 'active',
-    likesCount: 250,
-    reportsCount: 2,
-    commentCount: 25,
-    shareCount: 12,
-    updatedAt: new Date(),
-    createdAt: new Date('2025-01-02T14:30:00Z'),
-  },
-  {
-    _id: '3',
-    desc: 'Motivational quote of the day!',
-    tags: ['motivation', 'quotes', 'life'],
-    mediaType: 'text',
-    media: ["new post by me"],
-    authorId: 'user789',
-    status: 'active',
-    likesCount: 300,
-    reportsCount: 0,
-    commentCount: 50,
-    shareCount: 30,
-    updatedAt: new Date(),
-    createdAt: new Date('2025-01-03T08:15:00Z'),
-  },
-];
+import { Waypoint } from 'react-waypoint';
+import Spinner from '../../Spinner';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectPostNumberOfPages, selectPostPage, selectPostPosts, selectPostStatus } from '../../../features/post/postSlice';
+import { AppDispatch } from '../../../app/store';
+import { getPosts } from '../../../features/post/postApi';
 
 
-type Props = {}
-
-const Feed = (props: Props) => {
+const Feed = () => {
   const [modelOpen, setModelOpen] = useState<Boolean>(false)
   const close = () => setModelOpen(false)
   const open = () => setModelOpen(true)
 
+  const posts = useSelector(selectPostPosts)
+  const numberOfPages = useSelector(selectPostNumberOfPages)
+  const page = useSelector(selectPostPage)
+  const status = useSelector(selectPostStatus)
+
+  const [hasMore, setHasMore] = useState<boolean>(() => page <= numberOfPages);
+  const dispatch = useDispatch<AppDispatch>()
+
+  useEffect(() => {
+    dispatch(getPosts(1))
+  }, []);
+
+  // ! consoles
+  useEffect(() => {
+    console.log(status)
+    console.log(hasMore)
+    console.log(page)
+  }, [status, hasMore, page])
+
+  // ! way point bug need to fix
+  const loadMorePosts = () => {
+    console.log('waypoint triggered !!')
+    if (status === 'loading') return
+    if (hasMore) {
+      dispatch(getPosts(page + 1))
+      setHasMore(page <= numberOfPages)
+    }
+  }
+
+
   return (
-    <main className={`space-y-3 ${modelOpen ? 'overflow-hidden h-screen' : 'overflow-y-auto'} `}>
+    // <main className={`space-y-3 scroll-smooth  ${modelOpen ? 'overflow-hidden h-screen' : 'overflow-y-auto '} `}>
+    <main className={`space-y-3 scroll-smooth  ${modelOpen ? 'overflow-hidden ' : ''} `}>
 
       <AnimatePresence
         initial={false}
         mode='wait'
         onExitComplete={() => null}
       >
-        {modelOpen &&
-          <Comments handleClose={close} />
-        }
+        {modelOpen && <Comments handleClose={close} />}
       </AnimatePresence>
 
-      {posts.map((post) => (
+      {status === 'success' && posts.map((post) => (
         <PostCard
           key={post._id}
           post={post}
           openCommentModel={open}
         />
       ))}
+
+      {hasMore && status === 'success' &&
+        <Waypoint
+          onEnter={loadMorePosts}
+          bottomOffset="-100px"
+        >
+          <div> <Spinner /></div>
+        </Waypoint>
+      }
+
+      {status === 'loading' && <Spinner />}
+      {!hasMore && <div className="text-center">No more post</div>}
+
     </main>
   )
 }

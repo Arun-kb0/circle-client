@@ -20,6 +20,7 @@ import OtpModel from './pages/OtpModel'
 import ResetPassword from './pages/ResetPassword'
 import Profile from './pages/user/Profile'
 import GlobalFeed from './pages/user/GlobalFeed'
+import CreatePost from './pages/user/CreatePost'
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/global-feed' element={<GlobalFeed />} />
+          <Route path='/create-post' element={<CreatePost />} />
     
         </Route>
 

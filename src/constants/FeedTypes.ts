@@ -5,6 +5,8 @@ export type PostType = {
   mediaType: 'image' | 'video' | 'text',
   media?: string[],
   authorId: string,
+  authorName: string,
+  authorImage: string,
   status: 'active' | 'deleted' | 'blocked'
   likesCount: number
   reportsCount: number
@@ -28,4 +30,16 @@ export type CommentType = {
   contentType: 'post' | 'story' | 'comment'
   updatedAt: Date
   createdAt: Date
+}
+
+export type PostPaginationRes = {
+  posts: PostType[],
+  numberOfPages: number
+  currentPage: number
+}
+
+export type CommentPaginationRes = {
+  posts: PostType[],
+  numberOfPages: number
+  currentPage: number
 }
