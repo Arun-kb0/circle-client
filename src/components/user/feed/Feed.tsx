@@ -6,15 +6,20 @@ import { AnimatePresence } from 'framer-motion'
 import { Waypoint } from 'react-waypoint';
 import Spinner from '../../Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectPostNumberOfPages, selectPostPage, selectPostPosts, selectPostStatus } from '../../../features/post/postSlice';
+import { selectPost, selectPostNumberOfPages, selectPostPage, selectPostPosts, selectPostSelectedPost, selectPostStatus } from '../../../features/post/postSlice';
 import { AppDispatch } from '../../../app/store';
 import { getPosts } from '../../../features/post/postApi';
 
 
 const Feed = () => {
+  const dispatch = useDispatch<AppDispatch>()
+
   const [modelOpen, setModelOpen] = useState<Boolean>(false)
   const close = () => setModelOpen(false)
-  const open = () => setModelOpen(true)
+  const open = (post: PostType) => {
+    setModelOpen(true)
+    dispatch(selectPost(post))
+  }
 
   const posts = useSelector(selectPostPosts)
   const numberOfPages = useSelector(selectPostNumberOfPages)
@@ -22,11 +27,11 @@ const Feed = () => {
   const status = useSelector(selectPostStatus)
 
   const [hasMore, setHasMore] = useState<boolean>(() => page <= numberOfPages);
-  const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
+    if (posts.length !== 0) return
     dispatch(getPosts(1))
-  }, []);
+  }, [])
 
   // ! consoles
   useEffect(() => {
@@ -48,7 +53,7 @@ const Feed = () => {
 
   return (
     // <main className={`space-y-3 scroll-smooth  ${modelOpen ? 'overflow-hidden h-screen' : 'overflow-y-auto '} `}>
-    <main className={`space-y-3 scroll-smooth  ${modelOpen ? 'overflow-hidden ' : ''} `}>
+    <main className={`space-y-3 scroll-smooth  ${modelOpen ? 'overflow-hidden h-screen ' : ''} `}>
 
       <AnimatePresence
         initial={false}
@@ -58,27 +63,30 @@ const Feed = () => {
         {modelOpen && <Comments handleClose={close} />}
       </AnimatePresence>
 
-      {status === 'success' && posts.map((post) => (
-        <PostCard
-          key={post._id}
-          post={post}
-          openCommentModel={open}
-        />
-      ))}
+      {
+    status === 'success' && posts.map((post) => (
+      <PostCard
+        key={post._id}
+        post={post}
+        openCommentModel={open}
+      />
+    ))
+  }
 
-      {hasMore && status === 'success' &&
-        <Waypoint
-          onEnter={loadMorePosts}
-          bottomOffset="-100px"
-        >
-          <div> <Spinner /></div>
-        </Waypoint>
-      }
+  {
+    hasMore && status === 'success' &&
+    <Waypoint
+      onEnter={loadMorePosts}
+      bottomOffset="-100px"
+    >
+      <div> <Spinner /></div>
+    </Waypoint>
+  }
 
-      {status === 'loading' && <Spinner />}
-      {!hasMore && <div className="text-center">No more post</div>}
+  { status === 'loading' && <Spinner /> }
+  { !hasMore && <div className="text-center">No more post</div> }
 
-    </main>
+    </main >
   )
 }
 

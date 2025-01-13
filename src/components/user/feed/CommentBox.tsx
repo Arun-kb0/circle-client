@@ -2,13 +2,15 @@ import React, { useState } from 'react'
 import { CommentType } from '../../../constants/FeedTypes'
 import moment from 'moment'
 import { IoIosMore } from "react-icons/io";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { BiCommentDots } from "react-icons/bi";
 import { GoHeart } from "react-icons/go";
 import SpringButton from '../../basic/SpringButton';
 import { HiOutlineUserCircle } from "react-icons/hi2";
 import CommentDropDown from './CommentDropDown';
+import { AppDispatch } from '../../../app/store';
+import { updateComment } from '../../../features/post/postApi';
 
 
 type Props = {
@@ -17,16 +19,31 @@ type Props = {
 }
 
 const CommentBox = ({ comment, onFocusInput }: Props) => {
+  const dispatch = useDispatch<AppDispatch>()
   const user = useSelector(selectAuthUser)
   const [isOpen, setIsOpen] = useState(false);
-
+  const [isEdit, setIsEdit] = useState(false)
+  const [editValue, setEditValue] = useState(comment.media)
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleFocusInput = () => {
+  const handleFocusInput = (type: 'edit' | 'create') => {
     onFocusInput(comment._id, comment.contentId)
+    setIsEdit(prev => !prev)
+  }
+
+  const handleEdit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      if (editValue.length > 0) {
+        dispatch(updateComment({
+          commentId: comment._id,
+          comment: { ...comment, media: editValue }
+        }))
+      }
+    }
   }
 
   return (
@@ -36,12 +53,12 @@ const CommentBox = ({ comment, onFocusInput }: Props) => {
         <div className="flex items-center">
           <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
             <SpringButton>
-              {false
-                ? <img className="mr-2 w-6 h-6 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-2.jpg" alt="Michael Gough" />
+              {comment.authorImage
+                ? <img className="mr-2 w-6 h-6 rounded-full" src={comment.authorImage} alt="Michael Gough" />
                 : <HiOutlineUserCircle size={22} className='mr-2 w-6 h-6 rounded-full' />
               }
             </SpringButton>
-            {comment.authorId}
+            {comment.authorName}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">{moment(comment.updatedAt).format('MMMM Do, YYYY [at] h:mm A')}</p>
         </div>
@@ -53,13 +70,23 @@ const CommentBox = ({ comment, onFocusInput }: Props) => {
 
         {user && isOpen &&
           <CommentDropDown
+            handleFocusInput={handleFocusInput}
             user={user}
             comment={comment}
           />
         }
       </footer>
       {comment.mediaType === 'text' &&
-        <p className="text-gray-600 dark:text-gray-100">{comment.media} </p>
+        isEdit
+        ? <input
+          onChange={(e) => setEditValue(e.target.value)}
+          onKeyDown={handleEdit}
+          type="text"
+          id="first_name"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          value={editValue} required
+        />
+        : <p className="text-gray-600 dark:text-gray-100">{comment.media} </p>
       }
 
       <div className="flex items-center mt-4 space-x-4">
@@ -75,7 +102,7 @@ const CommentBox = ({ comment, onFocusInput }: Props) => {
           </SpringButton>
           {comment.replayCount}
         </button>
-        <button onClick={handleFocusInput} className="flex items-center gap-3 text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
+        <button onClick={() => handleFocusInput('create')} className="flex items-center gap-3 text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
           <SpringButton>
             Replay
           </SpringButton>

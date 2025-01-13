@@ -5,7 +5,7 @@ type Props = {}
 
 const GlobalFeed = (props: Props) => {
   return (
-    <div>
+    <div className=''>
       <h1>global feed</h1>
       <Feed/>
     </div>

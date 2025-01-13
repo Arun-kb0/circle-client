@@ -1,30 +1,53 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { CommentType } from '../../../constants/FeedTypes'
 import CommentForm from './CommentForm'
 import CommentBox from './CommentBox'
 import { SubmitHandler } from 'react-hook-form'
+import { useDispatch, useSelector } from 'react-redux'
+import { createComment, getComments } from '../../../features/post/postApi'
+import { selectPostComment, selectPostSelectedPost } from '../../../features/post/postSlice'
+import { AppDispatch } from '../../../app/store'
 
 type Props = {
-  comments: CommentType[]
 }
 
 type FormData = {
   comment: string;
 };
 
-const CommentCard = ({ comments }: Props) => {
+const CommentCard = () => {
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
+  const dispatch = useDispatch<AppDispatch>()
+  const comments = useSelector(selectPostComment)
+  const selectedPost = useSelector(selectPostSelectedPost)
 
-  const handleFocusInput = (commentId: string, contentId: string) => {
+  const [page, setPage] = useState(1)
+
+  const handleFocusInput = (commentId: string, contentId: string, comment?: CommentType) => {
     if (commentInputRef.current) {
-      console.log(contentId, commentId)
+      console.log("comment")
+      console.log(comment)
+      // if (comment) {
+      //   commentInputRef.current.value = comment.media[0]
+      // }
       commentInputRef.current.focus();
     }
   }
 
-  const handleCommentSubmit:SubmitHandler<FormData> = (data) => {
+  const handleCommentSubmit: SubmitHandler<FormData> = (data) => {
     console.log(data)
+    if (!selectedPost) return
+    dispatch(createComment({
+      comment: { mediaType: 'text', media: data.comment },
+      contentId: selectedPost._id,
+      contentType: 'post'
+    }))
   }
+
+  useEffect(() => {
+    if (!selectedPost) return
+    dispatch(getComments({ contentId: selectedPost._id, page }))
+  }, [])
 
   return (
     <section className="rounded-lg scrollbar-hide bg-white dark:bg-gray-900 py-8 lg:py-16 antialiased h-[80vh] w-[60vw] overflow-y-auto">

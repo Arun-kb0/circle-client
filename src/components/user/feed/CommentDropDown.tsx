@@ -1,16 +1,20 @@
 import React from 'react'
 import { UserType } from '../../../constants/types'
 import { CommentType } from '../../../constants/FeedTypes'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../../app/store'
+import { deleteComment } from '../../../features/post/postApi'
 
 type Props = {
   user: UserType
   comment: CommentType
+  handleFocusInput: (type: 'edit' | 'create') => void
 }
 
-const CommentDropDown = ({ user, comment }: Props) => {
+const CommentDropDown = ({ user, comment, handleFocusInput }: Props) => {
+  const dispatch = useDispatch<AppDispatch>()
 
-  const handleEdit = () => { }
-  const handleRemove = () => { }
+  const handleRemove = () => { dispatch(deleteComment(comment._id)) }
   const handleReport = () => { }
 
   return (
@@ -19,7 +23,7 @@ const CommentDropDown = ({ user, comment }: Props) => {
         {user && user._id === comment.authorId &&
           <>
             <li>
-              <button onClick={handleEdit} className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full">Edit</button>
+              <button onClick={() => handleFocusInput('edit')} className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full">Edit</button>
             </li>
             <li>
               <button onClick={handleRemove} className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full">Remove</button>

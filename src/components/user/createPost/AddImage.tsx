@@ -5,6 +5,7 @@ import { dropIn } from '../../../constants/animationDropins'
 import { FieldValues, useForm } from 'react-hook-form'
 import { PostType } from '../../../constants/FeedTypes'
 import { IoCloudUploadOutline } from "react-icons/io5";
+import { toast } from 'react-toastify'
 
 type Props = {
   handleClose: () => void
@@ -21,6 +22,17 @@ const AddImage = ({ handleClose, handlePost }: Props) => {
 
 
   const onSubmit = (formData: FieldValues) => {
+    const MAX_SIZE = 10 * 1024 * 1024;
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/webm', 'video/ogg'];
+    const invalidFiles = formData.image.filter((file: File) =>
+      !validTypes.includes(file.type) || file.size > MAX_SIZE
+    );
+    if (invalidFiles.length > 0) {
+      invalidFiles.array.forEach((file: File) => {
+        if (!validTypes.includes(file.type)) toast(`invalid file type for ${file.name}`)
+        if (file.size > MAX_SIZE) toast(`file is too large ${file.name}`)
+      })
+    }
     const content = formData.message.replace(/#[a-zA-Z0-9_]+/g, "").replace(/\n/g, " ").trim();
     const hashtags = formData.message.match(/#[a-zA-Z0-9_]+/g);
     console.log(formData.image)

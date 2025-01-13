@@ -29,15 +29,7 @@ const CreatePost = (props: Props) => {
 
   const handlePost = (data: FieldValues) => {
     if (!user) return
-    console.log(data)
-    const dataWithUser: Partial<PostType> = {
-      ...data,
-      authorId: user._id,
-      authorName: user.name,
-      authorImage: user?.image?.url || '',
-    }
-    // ! add extra reducers for all th crud operations
-    dispatch(createPost(dataWithUser))
+    dispatch(createPost(data))
   }
 
   return (

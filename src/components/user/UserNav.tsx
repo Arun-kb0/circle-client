@@ -5,6 +5,7 @@ import { TbHome } from "react-icons/tb";
 import { FiSearch } from "react-icons/fi";
 import { TbBrandInstagramFilled } from "react-icons/tb";
 import SpringButton from '../basic/SpringButton';
+import { Link } from 'react-router-dom';
 
 type Props = {
   handleLogout: () => void
@@ -34,20 +35,20 @@ const UserNav = ({ handleLogout }: Props) => {
           <div className="flex items-center">
             <div className="flex items-center ms-3">
               <div>
-                <button type="button" className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
+                <Link to='/' type="button" className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                   <SpringButton>
                     <TbHome className='text-gray-200 ' size={25} />
                   </SpringButton>
-                </button>
+                </Link>
               </div>
             </div>
             <div className="flex items-center ms-3">
               <div>
-                <button type="button" className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
+                <Link to='/' type="button" className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                   <SpringButton>
                     <FiSearch className='text-gray-200 ' size={25} />
                   </SpringButton>
-                </button>
+                </Link>
               </div>
             </div>
 

@@ -21,22 +21,8 @@ const AddText = ({ handleClose, handlePost }: Props) => {
   } = useForm();
 
   const onSubmit = (formData: FieldValues) => {
-    const MAX_SIZE = 10 * 1024 * 1024;
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/webm', 'video/ogg'];
-
     const content = formData.message.replace(/#[a-zA-Z0-9_]+/g, "").replace(/\n/g, " ").trim();
     const hashtags = formData.message.match(/#[a-zA-Z0-9_]+/g);
-
-    const invalidFiles = formData.image.filter((file: File) =>
-      !validTypes.includes(file.type) || file.size > MAX_SIZE
-    );
-    if (invalidFiles.length > 0) {
-      invalidFiles.array.forEach((file: File) => {
-        if (!validTypes.includes(file.type)) toast(`invalid file type for ${file.name}`)
-        if (file.size > MAX_SIZE) toast(`file is too large ${file.name}`)
-      })
-    }
-
     const data: Partial<PostType> = {
       mediaType: 'text',
       media: [content],

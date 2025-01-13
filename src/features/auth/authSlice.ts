@@ -148,8 +148,6 @@ const authSlice = createSlice({
         state.error = action.error.message
       })
 
-
-
       .addCase(refresh.fulfilled, (state, action: PayloadAction<{ user: UserType, accessToken: string }>) => {
         state.status = 'success'
         const { user, accessToken } = action.payload

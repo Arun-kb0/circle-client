@@ -11,16 +11,16 @@ import moment from 'moment';
 
 type Props = {
   post: PostType,
-  openCommentModel: () => void
+  openCommentModel: (post:PostType) => void
 }
 
 const PostCard = ({ post, openCommentModel }: Props) => {
-  
+
 
   const handleImageView = () => {
 
   }
-  
+
   const handleLike = () => {
 
   }
@@ -38,12 +38,12 @@ const PostCard = ({ post, openCommentModel }: Props) => {
       <div className="flex items-center m-2">
         <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
           <SpringButton>
-            {false
-              ? <img className="mr-2 w-6 h-6 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-2.jpg" alt="Michael Gough" />
+            {post.authorImage 
+              ? <img className="mr-2 w-6 h-6 rounded-full" src={post.authorImage} alt="Michael Gough" />
               : <HiOutlineUserCircle size={22} className='mr-2 w-6 h-6 rounded-full' />
             }
           </SpringButton>
-          {post.authorId}
+          {post.authorName}
         </p>
         <p className="text-sm text-gray-600 dark:text-gray-400">{moment(post.updatedAt).format('MM Do, YYYY [at] h:mm A')}</p>
       </div>
@@ -68,7 +68,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
             </SpringButton>
             {post.likesCount}
           </button>
-          <button onClick={openCommentModel} className='flex items-center mr-3 gap-2'>
+          <button onClick={()=> openCommentModel(post)} className='flex items-center mr-3 gap-2'>
             <SpringButton>
               <BiCommentDots size={20} />
             </SpringButton>

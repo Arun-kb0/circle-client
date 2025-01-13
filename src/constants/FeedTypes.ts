@@ -23,6 +23,8 @@ export type CommentType = {
   mediaType: 'gif' | 'text'
   status: 'active' | 'deleted' | 'blocked'
   authorId: string
+  authorImage: string
+  authorName: string
   parentId: string
   likesCount: number
   replayCount: number
@@ -42,4 +44,14 @@ export type CommentPaginationRes = {
   posts: PostType[],
   numberOfPages: number
   currentPage: number
+}
+
+
+export type LikeType = {
+  _id: string
+  authorId: string
+  contentId: string
+  contentType: 'post' | 'story' | 'comment'
+  updatedAt: Date
+  createdAt: Date
 }
