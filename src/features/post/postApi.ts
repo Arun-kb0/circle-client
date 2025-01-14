@@ -75,7 +75,7 @@ export const deletePost = createAsyncThunk('/post/delete', async (postId: string
 })
 
 // * like
-type LikeArgs = { contentId: string, contentType: Pick<LikeType, 'contentType'> }
+type LikeArgs = { contentId: string, contentType: LikeType['contentType'] }
 export const like = createAsyncThunk('/like', async ({ contentId, contentType }: LikeArgs, { dispatch, getState }) => {
   try {
     const state = getState() as RootState
@@ -85,7 +85,6 @@ export const like = createAsyncThunk('/like', async ({ contentId, contentType }:
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.post(`/like/`, { contentId, contentType })
     removeInterceptors()
-    toast('like post success')
     return res.data
   } catch (error) {
     console.log(error)
@@ -102,7 +101,6 @@ export const unlike = createAsyncThunk('/unlike', async (contentId: string, { di
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.delete(`/like/${contentId}`)
     removeInterceptors()
-    toast('like post success')
     return res.data
   } catch (error) {
     console.log(error)

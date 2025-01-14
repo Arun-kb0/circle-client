@@ -5,12 +5,13 @@ import { IoIosMore } from "react-icons/io";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { BiCommentDots } from "react-icons/bi";
-import { GoHeart } from "react-icons/go";
+import { GoHeart, GoHeartFill } from "react-icons/go";
 import SpringButton from '../../basic/SpringButton';
 import { HiOutlineUserCircle } from "react-icons/hi2";
 import CommentDropDown from './CommentDropDown';
 import { AppDispatch } from '../../../app/store';
-import { updateComment } from '../../../features/post/postApi';
+import { like, unlike, updateComment } from '../../../features/post/postApi';
+import { selectPostCommentLikes } from '../../../features/post/postSlice';
 
 
 type Props = {
@@ -21,9 +22,16 @@ type Props = {
 const CommentBox = ({ comment, onFocusInput }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const user = useSelector(selectAuthUser)
+  const commentLikes = useSelector(selectPostCommentLikes)
   const [isOpen, setIsOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false)
   const [editValue, setEditValue] = useState(comment.media)
+
+  const [isLiked, setIsLiked] = useState(() => {
+    if (!user) return false
+    const status = commentLikes.find(like => like.contentId === comment._id && like.authorId === user._id)
+    return status ? true : false
+  })
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -45,6 +53,17 @@ const CommentBox = ({ comment, onFocusInput }: Props) => {
       }
     }
   }
+
+  
+    const handleLike = () => {
+      dispatch(like({ contentId: comment._id, contentType: 'comment' }))
+      setIsLiked(true)
+    }
+  
+    const handleUnlike = () => {
+      dispatch(unlike(comment._id))
+      setIsLiked(false)
+    }
 
   return (
     <article className="relative p-6 pb-0 text-base bg-white rounded-lg dark:bg-gray-900">
@@ -90,12 +109,23 @@ const CommentBox = ({ comment, onFocusInput }: Props) => {
       }
 
       <div className="flex items-center mt-4 space-x-4">
-        <button className="flex items-center gap-3 text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
-          <SpringButton>
-            <GoHeart size={20} />
-          </SpringButton>
-          {comment.likesCount}
-        </button>
+       
+        {isLiked ? (
+          <button onClick={handleUnlike} className="flex items-center mr-3 gap-2">
+            <SpringButton>
+              <GoHeartFill size={20} fill="red" />
+            </SpringButton>
+            {comment.likesCount}
+          </button>
+        ) : (
+          <button onClick={handleLike} className="flex items-center mr-3 gap-2">
+            <SpringButton>
+              <GoHeart size={20} />
+            </SpringButton>
+            {comment.likesCount}
+          </button>
+        )}
+        
         <button className="flex items-center gap-3 text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
           <SpringButton>
             <BiCommentDots size={20} />

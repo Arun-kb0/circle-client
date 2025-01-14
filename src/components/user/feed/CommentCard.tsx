@@ -25,8 +25,6 @@ const CommentCard = () => {
 
   const handleFocusInput = (commentId: string, contentId: string, comment?: CommentType) => {
     if (commentInputRef.current) {
-      console.log("comment")
-      console.log(comment)
       // if (comment) {
       //   commentInputRef.current.value = comment.media[0]
       // }

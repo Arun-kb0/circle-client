@@ -8,21 +8,42 @@ import { motion } from 'framer-motion'
 import SpringButton from '../../basic/SpringButton';
 import { HiOutlineUserCircle } from 'react-icons/hi2';
 import moment from 'moment';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../../app/store';
+import { like, unlike } from '../../../features/post/postApi'
+import { selectPostLikes } from '../../../features/post/postSlice';
+import { selectAuthUser } from '../../../features/auth/authSlice';
+import { GoHeartFill } from "react-icons/go";
+
 
 type Props = {
   post: PostType,
-  openCommentModel: (post:PostType) => void
+  openCommentModel: (post: PostType) => void
 }
 
 const PostCard = ({ post, openCommentModel }: Props) => {
+  const dispatch = useDispatch<AppDispatch>()
+  const likes = useSelector(selectPostLikes)
+  const user = useSelector(selectAuthUser)
 
+  const [isLiked, setIsLiked] = useState(() => {
+    if (!user) return false
+    const status = likes.find(like => like.contentId === post._id && like.authorId === user._id)
+    return status ? true : false
+  })
 
   const handleImageView = () => {
 
   }
 
   const handleLike = () => {
+    dispatch(like({ contentId: post._id, contentType: 'post' }))
+    setIsLiked(true)
+  }
 
+  const handleUnlike = () => {
+    dispatch(unlike(post._id))
+    setIsLiked(false)
   }
 
   const handleShare = () => {
@@ -38,7 +59,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
       <div className="flex items-center m-2">
         <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
           <SpringButton>
-            {post.authorImage 
+            {post.authorImage
               ? <img className="mr-2 w-6 h-6 rounded-full" src={post.authorImage} alt="Michael Gough" />
               : <HiOutlineUserCircle size={22} className='mr-2 w-6 h-6 rounded-full' />
             }
@@ -62,13 +83,25 @@ const PostCard = ({ post, openCommentModel }: Props) => {
         </div>
         <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{post.desc}</p>
         <div className='flex justify-start space-x-5 items-center'>
-          <button onClick={handleLike} className='flex items-center mr-3 gap-2'>
-            <SpringButton>
-              <GoHeart size={20} />
-            </SpringButton>
-            {post.likesCount}
-          </button>
-          <button onClick={()=> openCommentModel(post)} className='flex items-center mr-3 gap-2'>
+
+          {isLiked ? (
+            <button onClick={handleUnlike} className="flex items-center mr-3 gap-2">
+              <SpringButton>
+                <GoHeartFill size={20} fill="red" />
+              </SpringButton>
+              {post.likesCount}
+            </button>
+          ) : (
+              <button onClick={handleLike} className="flex items-center mr-3 gap-2">
+              <SpringButton>
+                <GoHeart size={20} />
+              </SpringButton>
+              {post.likesCount}
+            </button>
+          )}
+
+
+          <button onClick={() => openCommentModel(post)} className='flex items-center mr-3 gap-2'>
             <SpringButton>
               <BiCommentDots size={20} />
             </SpringButton>

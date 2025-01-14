@@ -6,7 +6,10 @@ import { AnimatePresence } from 'framer-motion'
 import { Waypoint } from 'react-waypoint';
 import Spinner from '../../Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectPost, selectPostNumberOfPages, selectPostPage, selectPostPosts, selectPostSelectedPost, selectPostStatus } from '../../../features/post/postSlice';
+import {
+  selectPost, selectPostNumberOfPages,
+  selectPostPage, selectPostPosts, selectPostStatus
+} from '../../../features/post/postSlice';
 import { AppDispatch } from '../../../app/store';
 import { getPosts } from '../../../features/post/postApi';
 
@@ -35,10 +38,11 @@ const Feed = () => {
 
   // ! consoles
   useEffect(() => {
-    console.log(status)
-    console.log(hasMore)
-    console.log(page)
-  }, [status, hasMore, page])
+    // console.log(status)
+    // console.log(hasMore)
+    // console.log(page)
+    console.log(posts)
+  }, [status, hasMore, page, posts])
 
   // ! way point bug need to fix
   const loadMorePosts = () => {
@@ -52,7 +56,6 @@ const Feed = () => {
 
 
   return (
-    // <main className={`space-y-3 scroll-smooth  ${modelOpen ? 'overflow-hidden h-screen' : 'overflow-y-auto '} `}>
     <main className={`space-y-3 scroll-smooth  ${modelOpen ? 'overflow-hidden h-screen ' : ''} `}>
 
       <AnimatePresence
@@ -64,27 +67,27 @@ const Feed = () => {
       </AnimatePresence>
 
       {
-    status === 'success' && posts.map((post) => (
-      <PostCard
-        key={post._id}
-        post={post}
-        openCommentModel={open}
-      />
-    ))
-  }
+        status === 'success' && posts.map((post) => (
+          <PostCard
+            key={post._id}
+            post={post}
+            openCommentModel={open}
+          />
+        ))
+      }
 
-  {
-    hasMore && status === 'success' &&
-    <Waypoint
-      onEnter={loadMorePosts}
-      bottomOffset="-100px"
-    >
-      <div> <Spinner /></div>
-    </Waypoint>
-  }
+      {
+        hasMore && status === 'success' &&
+        <Waypoint
+          onEnter={loadMorePosts}
+          bottomOffset="-100px"
+        >
+          <div> <Spinner /></div>
+        </Waypoint>
+      }
 
-  { status === 'loading' && <Spinner /> }
-  { !hasMore && <div className="text-center">No more post</div> }
+      {status === 'loading' && <Spinner />}
+      {!hasMore && <div className="text-center">No more post</div>}
 
     </main >
   )

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { CommentType, LikeType, PostPaginationRes, PostType } from '../../constants/FeedTypes'
+import { CommentPaginationRes, CommentType, LikeType, PostPaginationRes, PostType } from '../../constants/FeedTypes'
 import {
   createComment, createPost, deleteComment,
   deletePost, getComments, getPosts, like,
@@ -16,7 +16,8 @@ type PostStateType = {
   postPage: number
   postNumberOfPages: number
 
-  likes: Record<string, LikeType[]> | null
+  likes: LikeType[]
+  commentLikes: LikeType[]
   likeState: StateType
 
   comments: CommentType[]
@@ -34,7 +35,8 @@ const initialState: PostStateType = {
   postPage: 1,
   postStatus: 'idle',
 
-  likes: null,
+  likes: [],
+  commentLikes: [],
   likeState: 'idle',
 
   comments: [],
@@ -62,10 +64,13 @@ const postSlice = createSlice({
       })
       .addCase(getPosts.fulfilled, (state, action: PayloadAction<PostPaginationRes>) => {
         state.postStatus = 'success'
-        const { posts, numberOfPages, currentPage } = action.payload
-        state.posts.push(...posts)
+        const { posts, numberOfPages, currentPage, likes } = action.payload
+        const postIds = new Set(posts.map(post => post._id))
+        const updatedPosts = state.posts.filter(post => !postIds.has(post._id))
+        state.posts = [...posts, ...updatedPosts]
         state.postNumberOfPages = numberOfPages
         state.postPage = currentPage
+        state.likes = [...state.likes, ...likes]
         sessionStorage.setItem('user-posts', JSON.stringify(state.posts))
       })
       .addCase(getPosts.rejected, (state, action) => {
@@ -76,10 +81,10 @@ const postSlice = createSlice({
       .addCase(createPost.pending, (state) => {
         state.postStatus = 'loading'
       })
-      .addCase(createPost.fulfilled, (state, action: PayloadAction<PostType>) => {
+      .addCase(createPost.fulfilled, (state, action: PayloadAction<{ post: PostType }>) => {
         state.postStatus = 'success'
-        const newPost = action.payload
-        state.posts.unshift(newPost)
+        const { post } = action.payload
+        state.posts.unshift(post)
         sessionStorage.setItem('user-posts', JSON.stringify(state.posts))
       })
       .addCase(createPost.rejected, (state, action) => {
@@ -116,16 +121,14 @@ const postSlice = createSlice({
       .addCase(getComments.pending, (state) => {
         state.commentStatus = 'loading'
       })
-      .addCase(getComments.fulfilled, (state, action: PayloadAction<{ comments: CommentType[], numberOfPages: number, currentPage: number }>) => {
+      .addCase(getComments.fulfilled, (state, action: PayloadAction<CommentPaginationRes>) => {
         if (!state.selectedPost) return
         state.commentStatus = 'success'
-        const { comments, currentPage, numberOfPages } = action.payload
-        // comments.length > 0 && state.selectedPost._id !== comments[0].contentId
-        //   ? state.comments = [...comments]
-        //   : state.comments = [...comments, ...state.comments]
+        const { comments, currentPage, numberOfPages, likes } = action.payload
         state.comments = comments
         state.commentCurrentPage = currentPage
         state.commentNumberOfPages = numberOfPages
+        state.commentLikes = likes
         sessionStorage.setItem('user-comments', JSON.stringify(state.comments))
       })
       .addCase(getComments.rejected, (state, action) => {
@@ -140,6 +143,13 @@ const postSlice = createSlice({
         state.commentStatus = 'success'
         const { comment } = action.payload
         state.comments.unshift(comment)
+        if (comment.contentType === 'post') {
+          const updatedPosts = state.posts.map((post) => {
+            if (post._id === comment.contentId) post.commentCount++
+            return post
+          })
+          state.posts = updatedPosts
+        }
         sessionStorage.setItem('user-comments', JSON.stringify(state.comments))
       })
       .addCase(createComment.rejected, (state, action) => {
@@ -166,10 +176,17 @@ const postSlice = createSlice({
       .addCase(deleteComment.pending, (state) => {
         state.commentStatus = 'loading'
       })
-      .addCase(deleteComment.fulfilled, (state, action: PayloadAction<{ commentId: string, }>) => {
+      .addCase(deleteComment.fulfilled, (state, action: PayloadAction<{ commentId: string, contentType: CommentType['contentType'] }>) => {
         state.commentStatus = 'success'
-        const { commentId } = action.payload
+        const { commentId, contentType } = action.payload
         state.comments = state.comments.filter(item => item._id !== commentId)
+        if (contentType === 'post' || true) {
+          const updatedPosts = state.posts.map((post) => {
+            if (post._id === commentId) post.commentCount--
+            return post
+          })
+          state.posts = updatedPosts
+        }
       })
       .addCase(deleteComment.rejected, (state, action) => {
         state.commentStatus = 'failed'
@@ -177,11 +194,23 @@ const postSlice = createSlice({
       })
 
       // * likes
-      // ! not finished
       .addCase(like.fulfilled, (state, action: PayloadAction<{ like: LikeType }>) => {
         state.likeState = 'success'
         const { like } = action.payload
-        console.log(like)
+
+        if (like.contentType === 'post') {
+          state.posts.map((post) => {
+            if (post._id === like.contentId) post.likesCount++
+            return post
+          })
+          state.likes.push(like)
+        } else if (like.contentType === 'comment') {
+          state.comments.map((comment) => {
+            if (comment._id === like.contentId) comment.likesCount++
+            return comment
+          })
+          state.commentLikes.push(like)
+        }
       })
       .addCase(like.rejected, (state, action) => {
         state.likeState = 'failed'
@@ -191,7 +220,22 @@ const postSlice = createSlice({
       .addCase(unlike.fulfilled, (state, action: PayloadAction<{ like: LikeType }>) => {
         state.likeState = 'success'
         const { like } = action.payload
-        console.log(like)
+        
+        if (like.contentType === 'post') {
+          state.posts.map((post) => {
+            if (post._id === like.contentId) post.likesCount--
+            return post
+          })
+          const updatedLikes = state.likes.filter(item => item._id === like._id)
+          state.likes = updatedLikes
+        } else if (like.contentType === 'comment') {
+          state.comments.map((comment) => {
+            if (comment._id === like.contentId) comment.likesCount--
+            return comment
+          })
+          const updatedLikes = state.commentLikes.filter(item => item._id === like._id)
+          state.commentLikes = updatedLikes
+        }
       })
       .addCase(unlike.rejected, (state, action) => {
         state.likeState = 'failed'
@@ -214,6 +258,11 @@ export const selectPostComment = (state: RootState) => state.post.comments
 export const selectPostCommentStatus = (state: RootState) => state.post.commentStatus
 export const selectPostCommentNumberOfPages = (state: RootState) => state.post.commentNumberOfPages
 export const selectPostCommentCurrentPage = (state: RootState) => state.post.commentCurrentPage
+
+
+export const selectPostLikes = (state: RootState) => state.post.likes
+export const selectPostCommentLikes = (state: RootState) => state.post.commentLikes
+export const selectPostLikeStatus = (state: RootState) => state.post.likeState
 
 export const {
   selectPost

@@ -38,12 +38,14 @@ export type PostPaginationRes = {
   posts: PostType[],
   numberOfPages: number
   currentPage: number
+  likes: LikeType[]
 }
 
 export type CommentPaginationRes = {
-  posts: PostType[],
+  comments: CommentType[],
   numberOfPages: number
   currentPage: number
+  likes: LikeType[]
 }
 
 
