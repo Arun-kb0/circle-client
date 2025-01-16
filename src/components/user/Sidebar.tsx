@@ -27,18 +27,18 @@ const Sidebar = (props: Props) => {
           </li>
           <li>
             <SpringButton>
-              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link to='/following' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <HiOutlineUsers size={22} />
                 <span className="ms-3">Following</span>
-              </a>
+              </Link>
             </SpringButton>
           </li>
           <li>
             <SpringButton>
-              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link to='/follow-people' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <LuUserRoundPlus size={22} />
                 <span className="ms-3">Follow</span>
-              </a>
+              </Link>
             </SpringButton>
           </li>
           <li>
@@ -75,7 +75,7 @@ const Sidebar = (props: Props) => {
           </li>
           <li>
             <SpringButton>
-              <Link to='/chat'  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link to='/chat' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <TbMessageCircle size={22} />
                 <span className="ms-3">Messaging</span>
               </Link>

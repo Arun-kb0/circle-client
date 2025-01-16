@@ -26,3 +26,9 @@ export type UserType= {
 }
 
 
+export type PaginationUsers = {
+  users: UserType[];
+  numberOfPages: number;
+  currentPage: number;
+}
+

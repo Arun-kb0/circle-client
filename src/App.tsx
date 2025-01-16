@@ -22,6 +22,8 @@ import Profile from './pages/user/Profile'
 import GlobalFeed from './pages/user/GlobalFeed'
 import CreatePost from './pages/user/CreatePost'
 import ChatPage from './pages/user/ChatPage'
+import Following from './pages/user/Following'
+import FollowPeople from './pages/user/FollowPeople'
 
 
 function App() {
@@ -56,6 +58,8 @@ function App() {
           <Route path='/global-feed' element={<GlobalFeed />} />
           <Route path='/create-post' element={<CreatePost />} />
           <Route path='/chat' element={<ChatPage />} />
+          <Route path='/following' element={<Following />} />
+          <Route path='/follow-people' element={<FollowPeople />} />
 
         </Route>
 
