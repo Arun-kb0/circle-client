@@ -2,7 +2,7 @@
 
 export type StateType = 'loading' | 'success' | 'failed' | 'idle'
 
-export type UserType= {
+export type UserType = {
   _id: string
   name: string
   email: string
@@ -30,5 +30,15 @@ export type PaginationUsers = {
   users: UserType[];
   numberOfPages: number;
   currentPage: number;
+}
+
+export type MessageType = {
+  roomId: string
+  authorId: string
+  authorName: string
+  authorImage?: string
+  message: string
+  time: Date
+  status: 'sent' | 'received' | 'seen'
 }
 

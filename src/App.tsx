@@ -24,6 +24,7 @@ import CreatePost from './pages/user/CreatePost'
 import ChatPage from './pages/user/ChatPage'
 import Following from './pages/user/Following'
 import FollowPeople from './pages/user/FollowPeople'
+import SocketIoClient from './config/SocketIoClient'
 
 
 function App() {
@@ -33,6 +34,20 @@ function App() {
 
   useEffect(() => {
     dispatch(refresh())
+  }, [])
+
+  useEffect(() => {
+    const socket = SocketIoClient.getInstance();
+
+    socket.emit('test-event', { message: 'Hello from client' });
+    socket.on('test-response', (data) => {
+      console.log('Server response:', data);
+    });
+    console.log('socket io test event sent ')
+    return () => {
+      socket.off('test-response'); // Remove specific listener
+      socket.disconnect(); // Close the connection
+    };
   }, [])
 
   return (

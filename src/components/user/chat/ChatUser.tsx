@@ -1,17 +1,38 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FaUserCircle } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectAuthUser } from '../../../features/auth/authSlice'
+import SocketIoClient from '../../../config/SocketIoClient'
+import { AppDispatch } from '../../../app/store'
+import { setRoomId } from '../../../features/chat/chatSlice'
 
 type Props = {
+  userId: string,
   name: string
   image: string | undefined
   messageCount: number
 }
 
-const ChatUser = ({ name, image, messageCount }: Props) => {
+const ChatUser = ({ name, image, userId, messageCount }: Props) => {
+  const dispatch = useDispatch<AppDispatch>()
+  const socket = SocketIoClient.getInstance()
+  const user = useSelector(selectAuthUser)
+
+  const handleJoinRoom = () => {
+    if (user) {
+      const roomId = user._id < userId
+        ? `${user._id}-${userId}`
+        : `${userId}-${user._id}`
+      socket.emit("join-room", roomId)
+      dispatch(setRoomId(roomId))
+      console.log("roomId  =", roomId)
+    }
+  }
+
   return (
     <section className="flex items-center">
       <div className="flex-shrink-0">
-        <button type="button" className="relative inline-flex items-center">
+        <button onClick={handleJoinRoom} type="button" className="relative inline-flex items-center">
           {image
             ? <img className="w-8 h-8 rounded-full" src={image} alt="Neil image" />
             : <FaUserCircle size={35} />
