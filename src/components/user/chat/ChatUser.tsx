@@ -22,7 +22,6 @@ const ChatUser = ({ name, image, userId, messageCount }: Props) => {
   const handleJoinRoom = () => {
     if (user) {
       dispatch(joinRoom({
-        socket,
         senderId: user._id,
         receiverId: userId,
         chatUser: { name, image, userId, }

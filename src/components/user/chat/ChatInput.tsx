@@ -21,7 +21,7 @@ const ChatInput = ({ handleScrollToMessage }: Props) => {
 
   const handleSendMessage = () => {
     if (user && roomId && currentMessage !== "") {
-      dispatch(sendMessage({ socket, roomId, user, currentMessage }))
+      dispatch(sendMessage({ roomId, user, currentMessage }))
       setCurrentMessage("")
       handleScrollToMessage()
     }

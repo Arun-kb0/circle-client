@@ -25,6 +25,8 @@ import ChatPage from './pages/user/ChatPage'
 import Following from './pages/user/Following'
 import FollowPeople from './pages/user/FollowPeople'
 import SocketIoClient from './config/SocketIoClient'
+import { setIsInChat } from './features/chat/chatSlice'
+import { receiveMessage } from './features/chat/chatApi'
 
 
 function App() {
@@ -37,16 +39,14 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const socket = SocketIoClient.getInstance();
-    socket.emit('test-event', { message: 'Hello from client' });
-    socket.on('test-response', (data) => {
-      console.log('Server response:', data);
-    })
-
-    return () => {
-      socket.off('test-response') 
-    }
+    dispatch(receiveMessage())
   }, [])
+
+  useEffect(() => {
+    location.pathname === '/chat'
+      ? dispatch(setIsInChat(true))
+      : dispatch(setIsInChat(false))
+  }, [location.pathname])
 
   return (
     <>

@@ -5,6 +5,8 @@ import moment from 'moment'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../../app/store'
 import { deleteMessage } from '../../../features/chat/chatSlice'
+import DropDown from '../../basic/DropDown'
+import { DropDownElementsType } from '../../../constants/types'
 
 
 type Props = {
@@ -20,17 +22,35 @@ const SendMessage = ({ id, name, time, status, message, userImage }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const [open, setOpen] = useState(false)
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(message)
-    setOpen(false)
-  }
-  const handleDelete = () => {
-    dispatch(deleteMessage({ messageId: id }))
-    setOpen(false)
-  }
-  const handleForward = () => { }
-  const handleReplay = () => { }
-  const handleReport = () => { }
+  const dropDownElements: DropDownElementsType[] = [
+    {
+      handler: () => {
+        navigator.clipboard.writeText(message)
+        setOpen(false)
+      },
+      name: 'Copy'
+    },
+    {
+      handler: () => {
+        dispatch(deleteMessage({ messageId: id }))
+        setOpen(false)
+      },
+      name: 'Delete'
+    },
+    {
+      handler: () => { },
+      name: 'Replay'
+    },
+    {
+      handler: () => { },
+      name: 'Forward'
+    },
+    {
+      handler: () => { },
+      name: 'Report'
+    },
+  ]
+
 
   return (
     <article className="flex items-start gap-2.5 justify-end relative">
@@ -50,15 +70,11 @@ const SendMessage = ({ id, name, time, status, message, userImage }: Props) => {
       <button onClick={() => setOpen(prev => !prev)} className="inline-flex self-center items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800 dark:focus:ring-gray-600" >
         <IoMdMore size={25} />
       </button>
-      {open && <div className="z-10 absolute top-20 bg-white divide-y divide-gray-100 rounded-lg shadow w-40 dark:bg-gray-700 dark:divide-gray-600">
-        <ul className="py-2 w-full text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconButton">
-          <li> <button onClick={handleReplay} className="w-full block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Reply</button> </li>
-          <li> <button onClick={handleForward} className="w-full block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Forward</button> </li>
-          <li> <button onClick={handleCopy} className="w-full block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Copy</button> </li>
-          <li> <button onClick={handleReport} className="w-full block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Report</button></li>
-          <li>  <button onClick={handleDelete} className="w-full block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</button></li>
-        </ul>
-      </div>}
+      <DropDown
+        open={open}
+        elements={dropDownElements}
+        position='top-20 right-3'
+      />
 
     </article>
   )

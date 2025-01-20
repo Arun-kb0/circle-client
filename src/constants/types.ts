@@ -46,6 +46,20 @@ export type MessageType = {
 export type ChatUserType = {
   userId: string
   name: string,
-  image?: string 
+  image?: string
 }
 
+
+export type NotificationType = {
+  id: string
+  status: 'read' | 'unread'
+  authorName: string
+  message: string
+  time: Date
+}
+
+
+export type DropDownElementsType = {
+  handler: () => void
+  name: string
+}

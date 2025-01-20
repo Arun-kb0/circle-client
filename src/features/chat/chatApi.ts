@@ -1,26 +1,28 @@
-import { Socket } from "socket.io-client";
-import { AppDispatch } from "../../app/store";
-import { addMessage, setRoomId } from "./chatSlice";
+import { AppDispatch, RootState } from "../../app/store";
+import { addMessage, setRoomId, showMsgNotification } from "./chatSlice";
 import { ChatUserType, MessageType, UserType } from "../../constants/types";
 import { v4 as uuid } from "uuid";
+import socketEvents from "../../constants/socketEvents";
+import SocketIoClient from "../../config/SocketIoClient";
 
-type JoinRoomArgsType = { socket: Socket, senderId: string, receiverId: string, chatUser: ChatUserType }
-export const joinRoom = ({ socket, senderId, receiverId, chatUser }: JoinRoomArgsType) => (dispatch: AppDispatch) => {
+const socket = SocketIoClient.getInstance()
+
+type JoinRoomArgsType = { senderId: string, receiverId: string, chatUser: ChatUserType }
+export const joinRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsType) => (dispatch: AppDispatch) => {
   try {
     if (!socket.connected) socket.connect()
     const roomId = senderId < receiverId
       ? `${senderId}-${receiverId}`
       : `${receiverId}-${senderId}`
-    socket.emit("join-room", roomId)
+    socket.emit(socketEvents.joinRoom, roomId)
     dispatch(setRoomId({ roomId, user: chatUser }))
-    console.log("joinRoom", roomId)
   } catch (error) {
     console.error(error)
   }
 }
 
-type SendMessageArgs = { socket: Socket, currentMessage: string, user: UserType, roomId: string }
-export const sendMessage = ({ socket, currentMessage, user, roomId }: SendMessageArgs) => (dispatch: AppDispatch) => {
+type SendMessageArgs = { currentMessage: string, user: UserType, roomId: string }
+export const sendMessage = ({ currentMessage, user, roomId }: SendMessageArgs) => (dispatch: AppDispatch) => {
   try {
     if (!socket.connected) socket.connect()
     const messageData: MessageType = {
@@ -33,18 +35,22 @@ export const sendMessage = ({ socket, currentMessage, user, roomId }: SendMessag
       time: new Date(),
       status: 'sent'
     }
-    socket.emit('send-message', messageData)
+    socket.emit(socketEvents.sendMessage, messageData)
     dispatch(addMessage(messageData))
-    console.log("sendMessage", roomId)
   } catch (error) {
     console.error(error)
   }
 }
 
-export const receiveMessage = (socket: Socket) => (dispatch: AppDispatch) => {
+export const receiveMessage = () => (dispatch: AppDispatch, getState: () => RootState) => {
   try {
     if (!socket.connected) socket.connect()
-    socket.on("receive-message", (data) => {
+    socket.off(socketEvents.receiveMessage)
+    const user = getState().auth.user
+    if (!user) return
+
+    socket.on(socketEvents.receiveMessage, (data) => {
+      dispatch(showMsgNotification({ message: data, userId: user._id }))
       dispatch(addMessage(data))
     })
   } catch (error) {

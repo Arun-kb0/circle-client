@@ -5,15 +5,18 @@ import SendMessage from './SendMessage';
 import SocketIoClient from '../../../config/SocketIoClient';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  addMessage, clearChat, selectChatMessages,
-  selectChatRoomId, selectChatUser, showMsgNotification
+  clearChat, selectChatMessages,
+  selectChatRoomId, selectChatUser,
+  setAllAsReadMsgNotification,
 } from '../../../features/chat/chatSlice';
 import { AppDispatch } from '../../../app/store';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { FaUserCircle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { IoMdMore } from 'react-icons/io';
-import { MessageType } from '../../../constants/types';
+import { receiveMessage } from '../../../features/chat/chatApi';
+import DropDown from '../../basic/DropDown';
+import { DropDownElementsType } from '../../../constants/types';
 
 
 type Props = {}
@@ -37,17 +40,20 @@ const ChatSection = (props: Props) => {
   }
 
   useEffect(() => {
-    if (!user) return
-    socket.on("receive-message", (data: MessageType) => {
-      dispatch(showMsgNotification({ message: data, userId: user._id }))
-      dispatch(addMessage(data))
-    })
+    dispatch(setAllAsReadMsgNotification())
+    dispatch(receiveMessage())
     handleScrollToMessage()
   }, [socket])
 
-  const handleClearChat = () => {
-    dispatch(clearChat())
-  }
+  const dropDownElements: DropDownElementsType[] = [
+    {
+      handler: () => {
+        dispatch(clearChat())
+        setOpen(false)
+      },
+      name: 'clear Chat'
+    }
+  ]
 
   return (
     <section>
@@ -63,12 +69,11 @@ const ChatSection = (props: Props) => {
           <button onClick={() => setOpen(prev => !prev)} className="inline-flex self-center items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800 dark:focus:ring-gray-600" >
             <IoMdMore size={25} />
           </button>
-          {open && <div className="z-10 absolute top-20 bg-white divide-y divide-gray-100 rounded-lg shadow w-40 dark:bg-gray-700 dark:divide-gray-600">
-            <ul className="py-2 w-full text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconButton">
-              <li> <button onClick={handleClearChat} className="w-full block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Clear chat</button> </li>
-            </ul>
-          </div>
-          }
+          <DropDown
+            open={open}
+            elements={dropDownElements}
+            position='top-20 '
+          />
         </div>
       </div>
 

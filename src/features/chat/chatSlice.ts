@@ -1,16 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { ChatUserType, StateType } from "../../constants/types"
+import { ChatUserType, NotificationType, StateType } from "../../constants/types"
 import { RootState } from "../../app/store"
 import { MessageType } from '../../constants/types'
-import { GiRooster } from "react-icons/gi"
-import { toast } from "react-toastify"
-import ChatUser from "../../components/user/chat/ChatUser"
+import { v4 as uuid } from "uuid"
+import { SiTeratail } from "react-icons/si"
 
 type ChatStateType = {
   roomId: string | null
   chatUser: ChatUserType | null
   messages: Record<string, MessageType[]> | null
   status: StateType
+  isInChat: boolean,
+  messageNotification: NotificationType[]
+  unreadNotificationCount: number
   error: string | null
 }
 
@@ -32,7 +34,10 @@ const initialState: ChatStateType = {
   messages: getMessagesFromStorage(),
   // messages: {},
   status: "idle",
-  error: null
+  isInChat: false,
+  messageNotification: [],
+  unreadNotificationCount: 0,
+  error: null,
 }
 
 const chatSlice = createSlice({
@@ -79,14 +84,37 @@ const chatSlice = createSlice({
       }
     },
 
+    setIsInChat: (state, action: PayloadAction<boolean>) => {
+      state.isInChat = action.payload
+      console.warn('isInChat = ', state.isInChat)
+    },
+
     showMsgNotification: (state, action: PayloadAction<{ userId: string, message: MessageType }>) => {
-      if (!state.roomId || !state.messages) return
       const { userId, message } = action.payload
+      if (!state.roomId || !state.messages || state.isInChat) return
       if (userId === message.authorId) return
       const isExits = state.messages[message.roomId].find(msg => msg.id === message.id)
-      console.log("showMsgNotification" , isExits)
-      if (!isExits) toast.info(`new message from ${message.authorName}`)
+      // if (!isExits) toast.info(`new message from ${message.authorName}`)
+      const newNotification: NotificationType = {
+        id: uuid(),
+        authorName: message.authorName,
+        message: message.message,
+        time: message.time,
+        status: 'unread'
+      }
+      if (!isExits) state.messageNotification.push(newNotification)
+      let count = 0
+      state.messageNotification.map(item => {
+        if (item.status === 'unread') count++
+      })
+      state.unreadNotificationCount = count
+    },
+
+    setAllAsReadMsgNotification: (state) => {
+      state.unreadNotificationCount = 0
+      state.messageNotification.forEach(item => item.status === 'read')
     }
+
 
   }
 })
@@ -95,6 +123,8 @@ export const selectChatRoomId = (state: RootState) => state.chat.roomId
 export const selectChatStatus = (state: RootState) => state.chat.status
 export const selectChatMessages = (state: RootState) => state.chat.messages
 export const selectChatUser = (state: RootState) => state.chat.chatUser
+export const selectChatMsgNotification = (state: RootState) => state.chat.messageNotification
+export const selectChatUnreadMsgNotification = (state: RootState) => state.chat.unreadNotificationCount
 
 
 export const {
@@ -102,7 +132,9 @@ export const {
   addMessage,
   deleteMessage,
   clearChat,
-  showMsgNotification
+  setIsInChat,
+  showMsgNotification,
+  setAllAsReadMsgNotification
 } = chatSlice.actions
 
 export default chatSlice.reducer
