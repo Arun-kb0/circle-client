@@ -5,6 +5,7 @@ import ChatSection from '../../components/user/chat/ChatSection'
 type Props = {}
 
 const ChatPage = (props: Props) => {
+  
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
       <div className="p-4 sm:ml-64" >

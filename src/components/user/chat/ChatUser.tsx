@@ -5,6 +5,7 @@ import { selectAuthUser } from '../../../features/auth/authSlice'
 import SocketIoClient from '../../../config/SocketIoClient'
 import { AppDispatch } from '../../../app/store'
 import { setRoomId } from '../../../features/chat/chatSlice'
+import { joinRoom } from '../../../features/chat/chatApi'
 
 type Props = {
   userId: string,
@@ -20,12 +21,12 @@ const ChatUser = ({ name, image, userId, messageCount }: Props) => {
 
   const handleJoinRoom = () => {
     if (user) {
-      const roomId = user._id < userId
-        ? `${user._id}-${userId}`
-        : `${userId}-${user._id}`
-      socket.emit("join-room", roomId)
-      dispatch(setRoomId(roomId))
-      console.log("roomId  =", roomId)
+      dispatch(joinRoom({
+        socket,
+        senderId: user._id,
+        receiverId: userId,
+        chatUser: { name, image, userId, }
+      }))
     }
   }
 

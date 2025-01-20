@@ -7,10 +7,9 @@ class SocketIoClient {
 
   static getInstance() {
     if (!SocketIoClient.instance) {
-      console.log('get socket instance')
       SocketIoClient.instance = connect(SOCKET_URL, {
-        // reconnectionAttempts: 3,
-        // timeout: 10000, // 10 seconds
+        reconnectionAttempts: 3,
+        timeout: 10000, // 10 seconds
       })
 
       SocketIoClient.instance.on('connect', () => {
@@ -22,6 +21,19 @@ class SocketIoClient {
 
     }
     return SocketIoClient.instance
+  }
+
+  static connect() {
+    const socket = SocketIoClient.getInstance()
+    if (!socket.connected) {
+      socket.connect()
+    }
+  }
+
+  static disconnect() {
+    if (SocketIoClient.instance) {
+      SocketIoClient.instance.disconnect()
+    }
   }
 
 }

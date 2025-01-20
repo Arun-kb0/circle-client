@@ -38,16 +38,14 @@ function App() {
 
   useEffect(() => {
     const socket = SocketIoClient.getInstance();
-
     socket.emit('test-event', { message: 'Hello from client' });
     socket.on('test-response', (data) => {
       console.log('Server response:', data);
-    });
-    console.log('socket io test event sent ')
+    })
+
     return () => {
-      socket.off('test-response'); // Remove specific listener
-      socket.disconnect(); // Close the connection
-    };
+      socket.off('test-response') 
+    }
   }, [])
 
   return (

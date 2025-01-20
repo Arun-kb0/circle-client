@@ -33,6 +33,7 @@ export type PaginationUsers = {
 }
 
 export type MessageType = {
+  id: string
   roomId: string
   authorId: string
   authorName: string
@@ -40,5 +41,11 @@ export type MessageType = {
   message: string
   time: Date
   status: 'sent' | 'received' | 'seen'
+}
+
+export type ChatUserType = {
+  userId: string
+  name: string,
+  image?: string 
 }
 
