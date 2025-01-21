@@ -29,7 +29,7 @@ const Feed = () => {
   const page = useSelector(selectPostPage)
   const status = useSelector(selectPostStatus)
 
-  const [hasMore, setHasMore] = useState<boolean>(() => page <= numberOfPages);
+  const [hasMore, setHasMore] = useState<boolean>(() => page < numberOfPages);
 
   useEffect(() => {
     if (posts.length !== 0) return
@@ -46,12 +46,10 @@ const Feed = () => {
 
   // ! way point bug need to fix
   const loadMorePosts = () => {
-    console.log('waypoint triggered !!')
-    if (status === 'loading') return
-    if (hasMore) {
-      dispatch(getPosts(page + 1))
-      setHasMore(page <= numberOfPages)
-    }
+    if (status === 'loading' || !hasMore) return
+    dispatch(getPosts(page + 1))
+    const newPage = page + 1
+    setHasMore(newPage < numberOfPages)
   }
 
 

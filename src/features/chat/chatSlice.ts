@@ -3,7 +3,6 @@ import { ChatUserType, NotificationType, StateType } from "../../constants/types
 import { RootState } from "../../app/store"
 import { MessageType } from '../../constants/types'
 import { v4 as uuid } from "uuid"
-import { SiTeratail } from "react-icons/si"
 
 type ChatStateType = {
   roomId: string | null
@@ -32,7 +31,6 @@ const initialState: ChatStateType = {
   roomId: null,
   chatUser: null,
   messages: getMessagesFromStorage(),
-  // messages: {},
   status: "idle",
   isInChat: false,
   messageNotification: [],
@@ -99,7 +97,7 @@ const chatSlice = createSlice({
         id: uuid(),
         authorName: message.authorName,
         message: message.message,
-        time: message.time,
+        time: message.createdAt,
         status: 'unread'
       }
       if (!isExits) state.messageNotification.push(newNotification)

@@ -90,7 +90,7 @@ const ChatSection = (props: Props) => {
               id={message.id}
               name={message.authorName}
               userImage={message.authorImage}
-              time={message.time}
+              time={message.updatedAt}
               status={message.status}
               message={message.message}
             />
@@ -99,7 +99,7 @@ const ChatSection = (props: Props) => {
               id={message.id}
               name={message.authorName}
               userImage={message.authorImage}
-              time={message.time}
+              time={message.updatedAt}
               status={message.status}
               message={message.message}
             />

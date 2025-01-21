@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import UserCard from '../../components/user/follow/UserCard';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -8,6 +8,7 @@ import {
 import { AppDispatch } from '../../app/store';
 import { getSuggestedPeople } from '../../features/user/userApi';
 import Spinner from '../../components/Spinner';
+import { Waypoint } from 'react-waypoint';
 
 
 type Props = {}
@@ -18,12 +19,20 @@ const FollowPeople = (props: Props) => {
   const status = useSelector(selectUserSuggestedStatus)
   const page = useSelector(selectUserSuggestedCurrentPage)
   const numberOfPages = useSelector(selectUserSuggestedNumberOfPages)
+  const [hasMore, setHasMore] = useState<boolean>(() => page < numberOfPages);
 
   useEffect(() => {
     if (users.length === 0) {
       dispatch(getSuggestedPeople(1))
     }
   }, [])
+
+  const loadMorePosts = async () => {
+    if (status === 'loading' || !hasMore) return
+    await dispatch(getSuggestedPeople(page + 1))
+    const newPage = page + 1
+    setHasMore(newPage < numberOfPages)
+  }
 
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
@@ -42,6 +51,15 @@ const FollowPeople = (props: Props) => {
             ))}
         </div>
       </div>
+      {
+        hasMore && status === 'success' &&
+        <Waypoint
+          onEnter={loadMorePosts}
+          bottomOffset="-100px"
+        >
+          <div> <Spinner /></div>
+        </Waypoint>
+      }
     </main>
   )
 }

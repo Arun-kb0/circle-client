@@ -22,18 +22,23 @@ export const joinRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsType) =
 }
 
 type SendMessageArgs = { currentMessage: string, user: UserType, roomId: string }
-export const sendMessage = ({ currentMessage, user, roomId }: SendMessageArgs) => (dispatch: AppDispatch) => {
+export const sendMessage = ({ currentMessage, user, roomId }: SendMessageArgs) => (dispatch: AppDispatch, getState: () => RootState) => {
   try {
+    const chatUser = getState().chat.chatUser
+    if(!chatUser) return
     if (!socket.connected) socket.connect()
     const messageData: MessageType = {
       id: uuid(),
       roomId,
+      receiverId: chatUser.userId,
       authorId: user?._id,
       authorName: user?.name,
       authorImage: user?.image?.url,
       message: currentMessage,
-      time: new Date(),
-      status: 'sent'
+      createdAt: new Date(),
+      status: 'sent',
+      mediaType: "text",
+      updatedAt: new Date()
     }
     socket.emit(socketEvents.sendMessage, messageData)
     dispatch(addMessage(messageData))
