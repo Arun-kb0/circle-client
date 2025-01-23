@@ -1,10 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { FaUserCircle } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectAuthUser } from '../../../features/auth/authSlice'
-import SocketIoClient from '../../../config/SocketIoClient'
 import { AppDispatch } from '../../../app/store'
-import { setRoomId } from '../../../features/chat/chatSlice'
 import { joinRoom } from '../../../features/chat/chatApi'
 
 type Props = {

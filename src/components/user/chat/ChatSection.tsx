@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import ChatMessage from './ChatMessage'
 import ChatInput from './ChatInput'
 import SendMessage from './SendMessage';
@@ -36,11 +36,22 @@ const ChatSection = (props: Props) => {
   const roomId = useSelector(selectChatRoomId)
   const chatUser = useSelector(selectChatUser)
 
-  const messages = (messageObj && roomId && messageObj[roomId]) ? messageObj[roomId] : []
+  const messages = useMemo(() => {
+    if (roomId && messageObj && messageObj[roomId]) {
+      return messageObj[roomId];
+    }
+    return [];
+  }, [roomId, messageObj])
+
   const page = useSelector(selectChatMessageCurrentPage)
   const numberOfPages = useSelector(selectChatMessageNumberOfPages)
   const status = useSelector(selectChatMessageStatus)
-  const [hasMore, setHasMore] = useState<boolean>(() => page < numberOfPages);
+  const [hasMore, setHasMore] = useState<boolean>(() => page <= numberOfPages);
+
+  useEffect(() => {
+    console.log('message - room ids')
+    messages.map(msg => console.log(msg.roomId))
+  }, [messages])
 
 
   const handleScrollToMessage = () => {
@@ -49,11 +60,11 @@ const ChatSection = (props: Props) => {
     }
   }
 
-  const loadMorePosts = () => {
+  const loadMoreMessages = () => {
     if (status === 'loading' || !hasMore) return
     dispatch(getRoomMessages(page + 1))
     const newPage = page + 1
-    setHasMore(newPage < numberOfPages)
+    setHasMore(newPage <= numberOfPages)
   }
 
   useEffect(() => {
@@ -129,7 +140,7 @@ const ChatSection = (props: Props) => {
 
         {hasMore && status === 'success' &&
           <Waypoint
-            onEnter={loadMorePosts}
+            onEnter={loadMoreMessages}
             bottomOffset="-100px"
           >
             <div> <Spinner /></div>

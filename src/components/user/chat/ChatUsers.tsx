@@ -26,11 +26,10 @@ const ChatUsers = (props: Props) => {
   }, [])
 
   const loadMoreUsers = () => {
-    if (status === 'loading') return
-    if (hasMore) {
-      dispatch(getFollowers(page + 1))
-      setHasMore(page <= numberOfPages)
-    }
+    if (status === 'loading' || !hasMore) return
+    dispatch(getFollowers(page + 1))
+    const newPage = page + 1
+    setHasMore(newPage <= numberOfPages)
   }
 
 

@@ -10,7 +10,7 @@ type ChatStateType = {
   chatUser: ChatUserType | null
   messages: Record<string, MessageType[]> | null
   messagesCurrentPage: number
-  messagesNumberOFPages: number
+  messagesNumberOfPages: number
   messageStatus: StateType
   status: StateType
   isInChat: boolean,
@@ -31,7 +31,7 @@ const initialState: ChatStateType = {
 
   messages: null,
   messagesCurrentPage: 0,
-  messagesNumberOFPages: 0,
+  messagesNumberOfPages: 0,
   messageStatus: "idle"
 }
 
@@ -42,6 +42,8 @@ const chatSlice = createSlice({
 
     setRoomId: (state, action: PayloadAction<{ roomId: string, user: ChatUserType }>) => {
       const { roomId, user } = action.payload
+      state.messagesCurrentPage = 0
+      state.messagesNumberOfPages = 0
       state.roomId = roomId
       state.chatUser = user
     },
@@ -111,12 +113,12 @@ const chatSlice = createSlice({
         if (!state.messages) state.messages = {}
         if (!state.messages[messages[0].roomId]) state.messages[messages[0].roomId] = messages
         else {
-          const messageIds = state.messages[messages[0].roomId].map(msg => msg.id)
-          const filteredMsgs = messages.filter(msg => messageIds.includes(msg.id))
+          const messageIds = new Set(state.messages[messages[0].roomId].map(msg => msg.id))
+          const filteredMsgs = messages.filter(msg => messageIds.has(msg.id))
           state.messages[messages[0].roomId].push(...filteredMsgs)
           state.messages[messages[0].roomId].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
         }
-        state.messagesNumberOFPages = numberOfPages
+        state.messagesNumberOfPages = numberOfPages
         state.messagesCurrentPage = currentPage
       })
       .addCase(getRoomMessages.rejected, (state, action) => {
@@ -165,7 +167,7 @@ export const selectChatMsgNotification = (state: RootState) => state.chat.messag
 export const selectChatUnreadMsgNotification = (state: RootState) => state.chat.unreadNotificationCount
 
 export const selectChatMessages = (state: RootState) => state.chat.messages
-export const selectChatMessageNumberOfPages = (state: RootState) => state.chat.messagesNumberOFPages
+export const selectChatMessageNumberOfPages = (state: RootState) => state.chat.messagesNumberOfPages
 export const selectChatMessageCurrentPage = (state: RootState) => state.chat.messagesCurrentPage
 export const selectChatMessageStatus = (state: RootState) => state.chat.messageStatus
 
