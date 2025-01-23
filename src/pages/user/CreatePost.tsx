@@ -12,6 +12,7 @@ import { selectAuthUser } from '../../features/auth/authSlice';
 import { AppDispatch } from '../../app/store';
 import { createPost } from '../../features/post/postApi';
 import { PostType } from '../../constants/FeedTypes';
+import { selectUploadFilesStatus } from '../../features/post/postSlice';
 
 
 type Props = {}

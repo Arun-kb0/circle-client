@@ -4,9 +4,9 @@ import { IoMdMore } from "react-icons/io";
 import { FaUserCircle } from 'react-icons/fa'
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
-import { deleteMessage } from '../../../features/chat/chatSlice';
 import DropDown from '../../basic/DropDown';
 import { DropDownElementsType } from '../../../constants/types';
+import { deleteMessage } from '../../../features/chat/chatApi';
 
 
 type Props = {
@@ -32,7 +32,7 @@ const ChatMessage = ({ id, name, time, status, message, userImage }: Props) => {
     },
     {
       handler: () => {
-        dispatch(deleteMessage({ messageId: id }))
+        dispatch(deleteMessage(id))
         setOpen(false)
       },
       name: 'Delete'

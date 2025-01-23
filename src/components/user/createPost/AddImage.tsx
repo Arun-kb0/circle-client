@@ -2,48 +2,62 @@ import React from 'react'
 import BackdropVerifyOtp from '../../backdrop/BackdropVerifyOtp'
 import { motion } from 'framer-motion'
 import { dropIn } from '../../../constants/animationDropins'
-import { FieldValues, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { PostType } from '../../../constants/FeedTypes'
 import { IoCloudUploadOutline } from "react-icons/io5";
-import { toast } from 'react-toastify'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch } from '../../../app/store'
+import { uploadFiles } from '../../../features/post/postApi'
+import { selectUploadFiles, selectUploadFilesStatus } from '../../../features/post/postSlice'
+
+// ! remove all this depentancies
+import { Cloudinary } from '@cloudinary/url-gen';
+import { auto } from '@cloudinary/url-gen/actions/resize';
+import { autoGravity } from '@cloudinary/url-gen/qualifiers/gravity';
+import { AdvancedImage } from '@cloudinary/react';
+import { v4 as uuid } from 'uuid'
+import Spinner from '../../Spinner'
+
+
 
 type Props = {
   handleClose: () => void
   handlePost: (data: Partial<PostType>) => void
 }
 
+type FromDataType = {
+  image: FileList
+  message: string
+}
+
 const AddImage = ({ handleClose, handlePost }: Props) => {
+  const dispatch = useDispatch<AppDispatch>()
+  const uploadFilesStatus = useSelector(selectUploadFilesStatus)
+  const uploadedImageUrls = useSelector(selectUploadFiles)
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<FromDataType>();
 
-
-  const onSubmit = (formData: FieldValues) => {
-    const MAX_SIZE = 10 * 1024 * 1024;
-    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/webm', 'video/ogg'];
-    const invalidFiles = formData.image.filter((file: File) =>
-      !validTypes.includes(file.type) || file.size > MAX_SIZE
-    );
-    if (invalidFiles.length > 0) {
-      invalidFiles.array.forEach((file: File) => {
-        if (!validTypes.includes(file.type)) toast(`invalid file type for ${file.name}`)
-        if (file.size > MAX_SIZE) toast(`file is too large ${file.name}`)
-      })
-    }
-    const content = formData.message.replace(/#[a-zA-Z0-9_]+/g, "").replace(/\n/g, " ").trim();
-    const hashtags = formData.message.match(/#[a-zA-Z0-9_]+/g);
-    console.log(formData.image)
-
-    const data: Partial<PostType> = {
+  const onSubmit = async (data: FromDataType) => {
+    const result = await dispatch(uploadFiles(data.image)).unwrap()
+    const content = data.message.replace(/#[a-zA-Z0-9_]+/g, "").replace(/\n/g, " ").trim();
+    const hashtags = data.message.match(/#[a-zA-Z0-9_]+/g);
+    
+    const post: Partial<PostType> = {
       mediaType: 'image',
+      media: result.urls,
       desc: content,
-      tags: hashtags,
+      tags: hashtags ? hashtags : [],
     }
-    handlePost(data)
+    console.log(post)
+    // ! remove file accptance from this method in backend
+    
+    handlePost(post)
   };
+
 
 
   return (
@@ -62,7 +76,10 @@ const AddImage = ({ handleClose, handlePost }: Props) => {
 
             <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 w-96">
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <IoCloudUploadOutline size={52} />
+                {uploadFilesStatus === 'loading'
+                  ? <Spinner />
+                  : <IoCloudUploadOutline size={52} />
+                }
                 <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
               </div>

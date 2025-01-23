@@ -1,10 +1,12 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, } from "@reduxjs/toolkit";
 import { axiosPrivate } from "../../config/axiosInstance";
 import { AppDispatch, RootState } from "../../app/store";
 import configureAxios from "../../config/configureAxios";
 import errorHandler from "../../errorHandler/errorHandler";
 import { CommentType, LikeType, PostType } from "../../constants/FeedTypes";
 import { toast } from "react-toastify";
+import { v4 as uuid } from "uuid";
+import { PresenceContext } from "framer-motion";
 
 
 export const getPosts = createAsyncThunk('/posts/all', async (page: number = 1, { dispatch, getState }) => {
@@ -182,3 +184,54 @@ export const deleteComment = createAsyncThunk('/comment/delete', async (commentI
   }
 })
 
+export const uploadFiles = createAsyncThunk('/cloudinary/upload', async (files: FileList) => {
+  try {
+    // ! raeplace with this
+    const PRESET = import.meta.env.VITE_CLD_UPLOAD_PRESET || ''
+    const CLOUD_NAME = import.meta.env.VITE_CLD_COULD_NAME || ''
+
+    const MAX_SIZE = 10 * 1024 * 1024;
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/webm', 'video/ogg'];
+    const fileArray = Array.from(files)
+
+    const invalidFiles = fileArray.filter((file) =>
+      !validTypes.includes(file.type) || file.size > MAX_SIZE
+    )
+    if (invalidFiles.length > 0) {
+      invalidFiles.forEach((file: File) => {
+        if (!validTypes.includes(file.type)) throw new Error(`invalid file type for ${file.name}`)
+        if (file.size > MAX_SIZE) throw new Error(`file is too large ${file.name}`)
+      })
+    }
+
+    // * image upload code
+    const urls = await Promise.all(
+      fileArray.map(async (file) => {
+        const newFileName = `${file.name}-${uuid()}`;
+        const newFile = new File([file], newFileName, { type: file.type });
+
+        const formData = new FormData()
+        formData.append('file', newFile)
+        formData.append('upload_preset', PRESET)
+        formData.append('cloud_name', CLOUD_NAME)
+
+        const resJson = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+          method: 'POST',
+          body: formData,
+        })
+        if (!resJson.ok) throw new Error(`Failed to upload: ${file.name}`);
+
+        const res = await resJson.json()
+        console.log(res.url)
+        console.log('secure url')
+        console.log(res.secure_url)
+        return res.secure_url as string
+      })
+    )
+
+    return { urls } as any
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})

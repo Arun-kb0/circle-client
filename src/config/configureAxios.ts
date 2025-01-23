@@ -18,12 +18,12 @@ const configureAxios = async (dispatch: AppDispatch, accessToken: string) => {
     response => response,
     async (error) => {
       const prevRequest = error?.config;
-      if (error?.response?.status === 403 && !prevRequest?.sent) {
+      if ((error?.response?.status === 403 || error?.response?.status === 401) && !prevRequest?.sent) {
         prevRequest.sent = true;
 
         // Dispatch the refresh action and wait for it to complete
         const resultAction = await dispatch(refresh());
-        
+
         if (refresh.fulfilled.match(resultAction)) {
           const newAccessToken = resultAction?.payload?.accessToken
           prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;

@@ -1,41 +1,38 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { ChatUserType, NotificationType, StateType } from "../../constants/types"
+import { ChatUserType, NotificationType, PaginationMessages, StateType } from "../../constants/types"
 import { RootState } from "../../app/store"
 import { MessageType } from '../../constants/types'
 import { v4 as uuid } from "uuid"
+import { clearChat, deleteMessage, getRoomMessages } from "./chatApi"
 
 type ChatStateType = {
   roomId: string | null
   chatUser: ChatUserType | null
   messages: Record<string, MessageType[]> | null
+  messagesCurrentPage: number
+  messagesNumberOFPages: number
+  messageStatus: StateType
   status: StateType
   isInChat: boolean,
   messageNotification: NotificationType[]
   unreadNotificationCount: number
-  error: string | null
+  error: string | undefined
 }
 
-const getMessagesFromStorage = (): Record<string, MessageType[]> => {
-  try {
-    const msgJson = localStorage.getItem("messages")
-    if (!msgJson) return {}
-    console.log(JSON.parse(msgJson))
-    return JSON.parse(msgJson)
-  } catch (error) {
-    console.log(error)
-    return {}
-  }
-}
 
 const initialState: ChatStateType = {
   roomId: null,
   chatUser: null,
-  messages: getMessagesFromStorage(),
   status: "idle",
   isInChat: false,
   messageNotification: [],
   unreadNotificationCount: 0,
-  error: null,
+  error: undefined,
+
+  messages: null,
+  messagesCurrentPage: 0,
+  messagesNumberOFPages: 0,
+  messageStatus: "idle"
 }
 
 const chatSlice = createSlice({
@@ -63,23 +60,6 @@ const chatSlice = createSlice({
 
       localStorage.removeItem("messages")
       localStorage.setItem("messages", JSON.stringify(state.messages))
-    },
-
-    deleteMessage: (state, action: PayloadAction<{ messageId: string }>) => {
-      if (state.roomId && state.messages) {
-        const { messageId } = action.payload
-        const updatedMessages = state.messages[state.roomId].filter(msg => msg.id !== messageId)
-        state.messages[state.roomId] = updatedMessages
-        localStorage.removeItem("messages")
-        localStorage.setItem("messages", JSON.stringify(state.messages))
-      }
-    },
-
-    clearChat: (state) => {
-      if (state.roomId && state.messages) {
-        state.messages[state.roomId] = []
-        localStorage.setItem("messages", JSON.stringify(state.messages))
-      }
     },
 
     setIsInChat: (state, action: PayloadAction<boolean>) => {
@@ -114,22 +94,85 @@ const chatSlice = createSlice({
     }
 
 
+  },
+
+  // * extra reducers
+  extraReducers: (builder) => {
+    builder
+
+      .addCase(getRoomMessages.pending, (state) => {
+        state.messageStatus = 'loading'
+      })
+      .addCase(getRoomMessages.fulfilled, (state, action: PayloadAction<PaginationMessages>) => {
+        state.messageStatus = 'success'
+        console.log(action.payload)
+        const { messages, numberOfPages, currentPage } = action.payload
+        if (messages.length === 0) return
+        if (!state.messages) state.messages = {}
+        if (!state.messages[messages[0].roomId]) state.messages[messages[0].roomId] = messages
+        else {
+          const messageIds = state.messages[messages[0].roomId].map(msg => msg.id)
+          const filteredMsgs = messages.filter(msg => messageIds.includes(msg.id))
+          state.messages[messages[0].roomId].push(...filteredMsgs)
+          state.messages[messages[0].roomId].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+        }
+        state.messagesNumberOFPages = numberOfPages
+        state.messagesCurrentPage = currentPage
+      })
+      .addCase(getRoomMessages.rejected, (state, action) => {
+        state.messageStatus = 'failed'
+        state.error = action.error.message
+      })
+
+
+      .addCase(clearChat.fulfilled, (state, action: PayloadAction<{ isDeleted: boolean }>) => {
+        state.status = 'success'
+        if (state.roomId && state.messages) {
+          state.messages[state.roomId] = []
+          localStorage.setItem("messages", JSON.stringify(state.messages))
+        }
+      })
+      .addCase(clearChat.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
+
+      .addCase(deleteMessage.fulfilled, (state, action: PayloadAction<{ message: MessageType }>) => {
+        state.status = 'success'
+        if (state.roomId && state.messages) {
+          const { message } = action.payload
+          const updatedMessages = state.messages[state.roomId].filter(msg => msg.id !== message.id)
+          state.messages[state.roomId] = updatedMessages
+          localStorage.removeItem("messages")
+          localStorage.setItem("messages", JSON.stringify(state.messages))
+        }
+      })
+      .addCase(deleteMessage.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
+
+
+
   }
+
 })
 
 export const selectChatRoomId = (state: RootState) => state.chat.roomId
 export const selectChatStatus = (state: RootState) => state.chat.status
-export const selectChatMessages = (state: RootState) => state.chat.messages
 export const selectChatUser = (state: RootState) => state.chat.chatUser
 export const selectChatMsgNotification = (state: RootState) => state.chat.messageNotification
 export const selectChatUnreadMsgNotification = (state: RootState) => state.chat.unreadNotificationCount
+
+export const selectChatMessages = (state: RootState) => state.chat.messages
+export const selectChatMessageNumberOfPages = (state: RootState) => state.chat.messagesNumberOFPages
+export const selectChatMessageCurrentPage = (state: RootState) => state.chat.messagesCurrentPage
+export const selectChatMessageStatus = (state: RootState) => state.chat.messageStatus
 
 
 export const {
   setRoomId,
   addMessage,
-  deleteMessage,
-  clearChat,
   setIsInChat,
   showMsgNotification,
   setAllAsReadMsgNotification

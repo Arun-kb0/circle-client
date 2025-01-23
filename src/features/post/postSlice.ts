@@ -4,7 +4,8 @@ import {
   createComment, createPost, deleteComment,
   deletePost, getComments, getPosts, like,
   unlike,
-  updateComment, updatePost
+  updateComment, updatePost,
+  uploadFiles
 } from './postApi'
 import { RootState } from '../../app/store'
 import { StateType } from '../../constants/types'
@@ -25,6 +26,9 @@ type PostStateType = {
   commentNumberOfPages: number
   commentCurrentPage: number
 
+  uploadedFiles: string[]
+  uploadedFilesStatus: StateType
+
   error: string | undefined
 }
 
@@ -44,7 +48,10 @@ const initialState: PostStateType = {
   commentNumberOfPages: 0,
   commentCurrentPage: 1,
 
-  error: undefined
+  uploadedFiles: [],
+  uploadedFilesStatus: 'idle',
+
+  error: undefined,
 }
 
 const postSlice = createSlice({
@@ -220,7 +227,7 @@ const postSlice = createSlice({
       .addCase(unlike.fulfilled, (state, action: PayloadAction<{ like: LikeType }>) => {
         state.likeState = 'success'
         const { like } = action.payload
-        
+
         if (like.contentType === 'post') {
           state.posts.map((post) => {
             if (post._id === like.contentId) post.likesCount--
@@ -242,6 +249,19 @@ const postSlice = createSlice({
         state.error = action.error.message
       })
 
+      // * image upload
+      .addCase(uploadFiles.pending, (state) => {
+        state.uploadedFilesStatus = 'loading'
+      })
+      .addCase(uploadFiles.fulfilled, (state, action: PayloadAction<{ urls: string[] }>) => {
+        state.uploadedFilesStatus = 'success'
+        state.uploadedFiles = action.payload.urls
+      })
+      .addCase(uploadFiles.rejected, (state, action) => {
+        state.uploadedFilesStatus = 'failed'
+        state.error = action.error.message
+      })
+
   }
 })
 
@@ -259,10 +279,13 @@ export const selectPostCommentStatus = (state: RootState) => state.post.commentS
 export const selectPostCommentNumberOfPages = (state: RootState) => state.post.commentNumberOfPages
 export const selectPostCommentCurrentPage = (state: RootState) => state.post.commentCurrentPage
 
-
 export const selectPostLikes = (state: RootState) => state.post.likes
 export const selectPostCommentLikes = (state: RootState) => state.post.commentLikes
 export const selectPostLikeStatus = (state: RootState) => state.post.likeState
+
+export const selectUploadFiles = (state: RootState) => state.post.uploadedFiles
+export const selectUploadFilesStatus = (state: RootState) => state.post.uploadedFilesStatus
+
 
 export const {
   selectPost

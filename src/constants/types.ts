@@ -66,3 +66,18 @@ export type DropDownElementsType = {
   handler: () => void
   name: string
 }
+
+export type ChatRoomType = {
+  _id: string,
+  roomId: string
+  userId: string
+  targetId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type PaginationMessages = {
+  messages: MessageType[],
+  numberOfPages: number,
+  currentPage: number
+}

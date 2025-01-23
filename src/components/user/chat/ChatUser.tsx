@@ -16,7 +16,6 @@ type Props = {
 
 const ChatUser = ({ name, image, userId, messageCount }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
-  const socket = SocketIoClient.getInstance()
   const user = useSelector(selectAuthUser)
 
   const handleJoinRoom = () => {

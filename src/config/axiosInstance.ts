@@ -12,5 +12,10 @@ const axiosPrivate = axios.create({
   withCredentials:true
 })
 
-export { axiosPrivate }
+const axiosNormal = axios.create({})
+
+export {
+  axiosPrivate,
+  axiosNormal
+ }
 export default axiosInstance

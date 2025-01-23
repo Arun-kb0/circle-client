@@ -4,9 +4,68 @@ import { ChatUserType, MessageType, UserType } from "../../constants/types";
 import { v4 as uuid } from "uuid";
 import socketEvents from "../../constants/socketEvents";
 import SocketIoClient from "../../config/SocketIoClient";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import errorHandler from "../../errorHandler/errorHandler";
+import { axiosPrivate } from "../../config/axiosInstance";
+import configureAxios from "../../config/configureAxios";
 
 const socket = SocketIoClient.getInstance()
 
+// * api calls
+export const getRoomMessages = createAsyncThunk('/chat/getMessages', async (page: number = 1, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const { accessToken } = state.auth
+    const { roomId } = state.chat
+    if (!roomId) return
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const params = { roomId, page }
+    const res = await axiosPrivate.get(`/chat/room-messages`, { params })
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+export const deleteMessage = createAsyncThunk('/chat/delete-message', async (messageId: string, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const { accessToken } = state.auth
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.delete(`/chat/message/${messageId}`)
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+export const clearChat = createAsyncThunk('/chat/clear-chat', async (_, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const { accessToken } = state.auth
+    const { roomId } = state.chat
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.delete(`/chat/chat-clear/${roomId}`)
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+
+// * socket io calls
 type JoinRoomArgsType = { senderId: string, receiverId: string, chatUser: ChatUserType }
 export const joinRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsType) => (dispatch: AppDispatch) => {
   try {
@@ -14,7 +73,13 @@ export const joinRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsType) =
     const roomId = senderId < receiverId
       ? `${senderId}-${receiverId}`
       : `${receiverId}-${senderId}`
-    socket.emit(socketEvents.joinRoom, roomId)
+
+    const chatRoom = {
+      roomId: roomId,
+      userId: senderId,
+      targetId: receiverId,
+    }
+    socket.emit(socketEvents.joinRoom, chatRoom)
     dispatch(setRoomId({ roomId, user: chatUser }))
   } catch (error) {
     console.error(error)
@@ -25,27 +90,39 @@ type SendMessageArgs = { currentMessage: string, user: UserType, roomId: string 
 export const sendMessage = ({ currentMessage, user, roomId }: SendMessageArgs) => (dispatch: AppDispatch, getState: () => RootState) => {
   try {
     const chatUser = getState().chat.chatUser
-    if(!chatUser) return
+    if (!chatUser) return
     if (!socket.connected) socket.connect()
-    const messageData: MessageType = {
+    const messageData = {
       id: uuid(),
       roomId,
-      receiverId: chatUser.userId,
       authorId: user?._id,
       authorName: user?.name,
       authorImage: user?.image?.url,
+      receiverId: chatUser.userId,
+      mediaType: "text" as MessageType['mediaType'],
       message: currentMessage,
-      createdAt: new Date(),
-      status: 'sent',
-      mediaType: "text",
-      updatedAt: new Date()
+      status: 'sent' as MessageType['status'],
+      updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
     }
+
     socket.emit(socketEvents.sendMessage, messageData)
-    dispatch(addMessage(messageData))
+    console.log('chatApi')
+    console.log(messageData)
+
+    const { createdAt, updatedAt, ...msgRest } = messageData
+    const chatMsg: MessageType = {
+      ...msgRest,
+      createdAt: new Date(createdAt),
+      updatedAt: new Date(updatedAt)
+    }
+    dispatch(addMessage(chatMsg))
   } catch (error) {
     console.error(error)
   }
 }
+
+// * listeners 
 
 export const receiveMessage = () => (dispatch: AppDispatch, getState: () => RootState) => {
   try {
@@ -62,3 +139,4 @@ export const receiveMessage = () => (dispatch: AppDispatch, getState: () => Root
     console.error(error)
   }
 }
+

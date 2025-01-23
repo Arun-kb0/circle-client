@@ -120,6 +120,8 @@ export const logout = createAsyncThunk('/auth/logout', async () => {
       withCredentials: true
     })
     sessionStorage.clear()
+    localStorage.clear()
+    
     return res.data
   } catch (error) {
     return errorHandler(error)
