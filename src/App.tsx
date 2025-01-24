@@ -18,15 +18,14 @@ import AdminLogin from './pages/AdminLogin'
 import AdminSignup from './pages/AdminSignup'
 import OtpModel from './pages/OtpModel'
 import ResetPassword from './pages/ResetPassword'
-import Profile from './pages/user/Profile'
 import GlobalFeed from './pages/user/GlobalFeed'
 import CreatePost from './pages/user/CreatePost'
 import ChatPage from './pages/user/ChatPage'
 import Following from './pages/user/Following'
 import FollowPeople from './pages/user/FollowPeople'
-import SocketIoClient from './config/SocketIoClient'
 import { setIsInChat } from './features/chat/chatSlice'
 import { receiveMessage } from './features/chat/chatApi'
+import ProfilePage from './pages/user/ProfilePage'
 
 
 function App() {
@@ -67,7 +66,7 @@ function App() {
         {/* * protected user routes */}
         <Route element={<RequireAuth role={roles.user} />} >
           <Route path='/' element={<Home />} />
-          <Route path='/profile' element={<Profile />} />
+          <Route path='/profile' element={<ProfilePage />} />
           <Route path='/global-feed' element={<GlobalFeed />} />
           <Route path='/create-post' element={<CreatePost />} />
           <Route path='/chat' element={<ChatPage />} />

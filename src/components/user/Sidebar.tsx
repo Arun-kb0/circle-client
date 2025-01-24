@@ -19,10 +19,10 @@ const Sidebar = (props: Props) => {
         <ul className="space-y-2 font-medium">
           <li>
             <SpringButton>
-              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link to='/profile' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <FaRegUser size={22} />
                 <span className="ms-3">Profile</span>
-              </a>
+              </Link>
             </SpringButton>
           </li>
           <li>

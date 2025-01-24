@@ -4,6 +4,8 @@ import axiosInstance, { axiosPrivate } from "../../config/axiosInstance";
 import { AppDispatch, RootState } from "../../app/store";
 import configureAxios from "../../config/configureAxios";
 import { toast } from "react-toastify";
+import { UserType } from "../../constants/types";
+import { setAuthUser } from "../auth/authSlice";
 
 export const uploadProfileImage = createAsyncThunk('/user/image', async (file: File, { dispatch, getState }) => {
   try {
@@ -153,7 +155,23 @@ export const getSuggestedPeople = createAsyncThunk('/user/get-suggested-people',
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.get(`/user/suggested-people`, { params: { page } })
     removeInterceptors()
-    return {...res.data , currentUser}
+    return { ...res.data, currentUser }
+  } catch (error) {
+    return errorHandler(error)
+  }
+})
+
+export const updatedUser = createAsyncThunk('/user/update', async (user: Partial<UserType>, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.patch(`/user/`, { user })
+    dispatch(setAuthUser({ user: res.data.user }))
+    removeInterceptors()
+    return res.data
   } catch (error) {
     return errorHandler(error)
   }

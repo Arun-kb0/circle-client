@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { CommentPaginationRes, CommentType, LikeType, PostPaginationRes, PostType } from '../../constants/FeedTypes'
 import {
   createComment, createPost, deleteComment,
-  deletePost, getComments, getPosts, like,
+  deletePost, getComments, getPosts, getUserCreatedPosts, like,
   unlike,
   updateComment, updatePost,
   uploadFiles
@@ -30,6 +30,11 @@ type PostStateType = {
   uploadedFilesStatus: StateType
 
   error: string | undefined
+
+  userCreatedPosts: PostType[],
+  userCreatedPostStatus: StateType,
+  userCreatedPostsCurrentPage: number
+  userCreatedPostsNumberOfPages: number
 }
 
 const initialState: PostStateType = {
@@ -52,6 +57,11 @@ const initialState: PostStateType = {
   uploadedFilesStatus: 'idle',
 
   error: undefined,
+
+  userCreatedPosts: [],
+  userCreatedPostStatus: 'idle',
+  userCreatedPostsCurrentPage: 0,
+  userCreatedPostsNumberOfPages: 0
 }
 
 const postSlice = createSlice({
@@ -66,6 +76,25 @@ const postSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // * post
+      .addCase(getUserCreatedPosts.pending, (state) => {
+        state.userCreatedPostStatus = 'loading'
+      })
+      .addCase(getUserCreatedPosts.fulfilled, (state, action: PayloadAction<PostPaginationRes>) => {
+        state.userCreatedPostStatus = 'success'
+        const { posts, numberOfPages, currentPage, likes } = action.payload
+        const postIds = new Set(posts.map(post => post._id))
+        const updatedPosts = state.userCreatedPosts.filter(post => !postIds.has(post._id))
+        state.userCreatedPosts = [...posts, ...updatedPosts]
+        state.userCreatedPostsNumberOfPages = numberOfPages
+        state.userCreatedPostsCurrentPage = currentPage
+        state.likes = [...state.likes, ...likes]
+        // sessionStorage.setItem('user-posts', JSON.stringify(state.posts))
+      })
+      .addCase(getUserCreatedPosts.rejected, (state, action) => {
+        state.userCreatedPostStatus = 'failed'
+        state.error = action.error.message
+      })
+
       .addCase(getPosts.pending, (state) => {
         state.postStatus = 'loading'
       })
@@ -285,6 +314,12 @@ export const selectPostLikeStatus = (state: RootState) => state.post.likeState
 
 export const selectUploadFiles = (state: RootState) => state.post.uploadedFiles
 export const selectUploadFilesStatus = (state: RootState) => state.post.uploadedFilesStatus
+
+
+export const selectPostUserCreatedPosts = (state: RootState) => state.post.userCreatedPosts
+export const selectPostUserCreatedStatus = (state: RootState) => state.post.userCreatedPostStatus
+export const selectPostUserCreatedNumberOfPages = (state: RootState) => state.post.userCreatedPostsNumberOfPages
+export const selectPostUserCreatedCurrentPage = (state: RootState) => state.post.userCreatedPostsCurrentPage
 
 
 export const {

@@ -1,5 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { adminLogin, adminSignup, googleOauthLogin, login, logout, refresh, resendOtp, resetPassword, resetPwdVerifyOtp, resetResendOtp, signup, verifyEmail } from "./authApi";
+import {
+  adminLogin, adminSignup, googleOauthLogin, login, logout, refresh, resendOtp,
+  resetPassword, resetPwdVerifyOtp, resetResendOtp, signup, verifyEmail
+} from "./authApi";
 import { StateType, UserType } from "../../constants/types";
 import { RootState } from "../../app/store";
 import { uploadProfileImage } from "../user/userApi";
@@ -35,11 +38,15 @@ const initialState: AuthStateType = {
 const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    setAuthUser: (state, action: PayloadAction<{ user: UserType }>) => {
+      state.user = action.payload.user
+    }
+  },
 
   extraReducers: (builder) => {
     builder
-      
+
       .addCase(googleOauthLogin.pending, (state) => {
         state.status = 'loading'
       })
@@ -53,7 +60,7 @@ const authSlice = createSlice({
         state.status = 'failed'
         state.error = action.error.message
       })
-      
+
       .addCase(login.pending, (state) => {
         state.status = 'loading'
       })
@@ -217,7 +224,7 @@ export const selectAuthResetStatus = (state: RootState) => state.auth.resetPwdSt
 
 
 export const {
-
+  setAuthUser
 } = authSlice.actions
 
 export default authSlice.reducer

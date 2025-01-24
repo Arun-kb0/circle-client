@@ -6,8 +6,22 @@ import errorHandler from "../../errorHandler/errorHandler";
 import { CommentType, LikeType, PostType } from "../../constants/FeedTypes";
 import { toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
-import { PresenceContext } from "framer-motion";
 
+export const getUserCreatedPosts = createAsyncThunk('/posts/user-created', async (page: number = 1, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.get(`/feed/user-created-posts?page=${page}`)
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
 
 export const getPosts = createAsyncThunk('/posts/all', async (page: number = 1, { dispatch, getState }) => {
   try {

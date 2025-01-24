@@ -64,7 +64,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
               : <HiOutlineUserCircle size={22} className='mr-2 w-6 h-6 rounded-full' />
             }
           </SpringButton>
-          {post.authorName}
+          {post.authorId === user?._id ? 'You' :post.authorName}
         </p>
         <p className="text-sm text-gray-600 dark:text-gray-400">{moment(post.updatedAt).format('MM Do, YYYY [at] h:mm A')}</p>
       </div>
