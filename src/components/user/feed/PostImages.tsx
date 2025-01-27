@@ -54,7 +54,7 @@ const PostImages = ({ media }: Props) => {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                custom={direction} 
+                custom={direction}
                 transition={{ duration: 0.5, ease: 'easeInOut' }}
               >
                 <img src={image} className="block w-full h-full p-1 object-contain" alt={`Slide ${index + 1}`} />
@@ -64,31 +64,32 @@ const PostImages = ({ media }: Props) => {
         </AnimatePresence>
       </div>
 
-      {/* Previous Button */}
-      <button
-        onClick={handlePrev}
-        type="button"
-        className="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-        data-carousel-prev
-      >
-        <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-          <FaCircleChevronLeft size={22} />
-          <span className="sr-only">Previous</span>
-        </span>
-      </button>
+      {media.length !== 1 &&
+        <div>
+          <button
+            onClick={handlePrev}
+            type="button"
+            className="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+            data-carousel-prev
+          >
+            <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+              <FaCircleChevronLeft size={22} />
+              <span className="sr-only">Previous</span>
+            </span>
+          </button>
 
-      {/* Next Button */}
-      <button
-        onClick={handleNext}
-        type="button"
-        className="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-        data-carousel-next
-      >
-        <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-          <FaCircleChevronRight size={22} />
-          <span className="sr-only">Next</span>
-        </span>
-      </button>
+          <button
+            onClick={handleNext}
+            type="button"
+            className="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+            data-carousel-next
+          >
+            <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+              <FaCircleChevronRight size={22} />
+              <span className="sr-only">Next</span>
+            </span>
+          </button>
+        </div>}
 
     </section>
   )

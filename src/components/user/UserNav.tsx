@@ -6,7 +6,7 @@ import { FiSearch } from "react-icons/fi";
 import { TbBrandInstagramFilled } from "react-icons/tb";
 import SpringButton from '../basic/SpringButton';
 import { Link, useNavigate } from 'react-router-dom';
-import BadgeButton from '../basic/badgeButton';
+import BadgeButton from '../basic/BadgeButton';
 import { AiOutlineMessage } from "react-icons/ai";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectChatMsgNotification, selectChatUnreadMsgNotification } from '../../features/chat/chatSlice';
@@ -14,6 +14,8 @@ import DropDown from '../basic/DropDown';
 import { DropDownElementsType } from '../../constants/types';
 import { AppDispatch } from '../../app/store';
 import { logout } from '../../features/auth/authApi';
+import { selectAuthUser } from '../../features/auth/authSlice';
+import { FaUserCircle } from 'react-icons/fa';
 
 
 type Props = {
@@ -23,6 +25,7 @@ type Props = {
 const UserNav = ({ handleLogout }: Props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
+  const user = useSelector(selectAuthUser)
   const unreadNotificationCount = useSelector(selectChatUnreadMsgNotification)
 
   const [chatDropDown, setChatDropDown] = useState(false)
@@ -112,7 +115,10 @@ const UserNav = ({ handleLogout }: Props) => {
               <div>
                 <button onClick={() => setUserDropDown(prev => !prev)} type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
                   <SpringButton>
-                    <img className="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo" />
+                    {user?.image?.url
+                      ? <img className="w-8 h-8 rounded-full object-cover" src={user.image.url} alt="Neil image" />
+                      : <FaUserCircle size={35} />
+                    }
                   </SpringButton>
                 </button>
               </div>

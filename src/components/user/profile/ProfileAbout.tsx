@@ -66,7 +66,7 @@ const ProfileAbout = (props: Props) => {
   return (
     <div className="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
       <div className="flex items-center justify-between mb-4">
-        <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">User details</h5>
+        <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">Personal details</h5>
       </div>
       <form className="flow-root" onSubmit={handleSubmit(onSubmit)}>
         <article className="flex items-center mb-4">

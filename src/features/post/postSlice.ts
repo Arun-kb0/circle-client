@@ -35,6 +35,9 @@ type PostStateType = {
   userCreatedPostStatus: StateType,
   userCreatedPostsCurrentPage: number
   userCreatedPostsNumberOfPages: number
+
+  likedUsersModelState: boolean
+  commentedUsersModelState: boolean
 }
 
 const initialState: PostStateType = {
@@ -61,16 +64,28 @@ const initialState: PostStateType = {
   userCreatedPosts: [],
   userCreatedPostStatus: 'idle',
   userCreatedPostsCurrentPage: 0,
-  userCreatedPostsNumberOfPages: 0
+  userCreatedPostsNumberOfPages: 0,
+
+  likedUsersModelState: false,
+  commentedUsersModelState: false
 }
 
 const postSlice = createSlice({
   name: 'post',
   initialState,
   reducers: {
+
     selectPost: (state, action: PayloadAction<PostType>) => {
       state.selectedPost = action.payload
+    },
+
+    setLikedUsersModelState: (state, action: PayloadAction<boolean>) => {
+      state.likedUsersModelState = action.payload
+    },
+    setCommentedUsersModelState: (state, action: PayloadAction<boolean>) => {
+      state.commentedUsersModelState = action.payload
     }
+
   },
 
   extraReducers: (builder) => {
@@ -94,6 +109,7 @@ const postSlice = createSlice({
         state.userCreatedPostStatus = 'failed'
         state.error = action.error.message
       })
+
 
       .addCase(getPosts.pending, (state) => {
         state.postStatus = 'loading'
@@ -321,9 +337,13 @@ export const selectPostUserCreatedStatus = (state: RootState) => state.post.user
 export const selectPostUserCreatedNumberOfPages = (state: RootState) => state.post.userCreatedPostsNumberOfPages
 export const selectPostUserCreatedCurrentPage = (state: RootState) => state.post.userCreatedPostsCurrentPage
 
+export const selectLikedUsersModelState = (state: RootState) => state.post.likedUsersModelState
+export const selectCommentedUsersModelState = (state: RootState) => state.post.commentedUsersModelState
 
 export const {
-  selectPost
+  selectPost,
+  setCommentedUsersModelState,
+  setLikedUsersModelState
 } = postSlice.actions
 
 export default postSlice.reducer

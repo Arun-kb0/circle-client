@@ -10,10 +10,15 @@ import { HiOutlineUserCircle } from 'react-icons/hi2';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
-import { like, unlike } from '../../../features/post/postApi'
-import { selectPostLikes } from '../../../features/post/postSlice';
+import { deletePost, like, unlike } from '../../../features/post/postApi'
+import { selectPostLikes, setCommentedUsersModelState, setLikedUsersModelState } from '../../../features/post/postSlice';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { GoHeartFill } from "react-icons/go";
+import DropDown from '../../basic/DropDown';
+import { DropDownElementsType } from '../../../constants/types';
+import { IoIosMore } from 'react-icons/io';
+import UserGroup from '../../basic/UserListCard';
+import LikedUsersModel from './LikedUsersModel';
 
 
 type Props = {
@@ -25,6 +30,18 @@ const PostCard = ({ post, openCommentModel }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const likes = useSelector(selectPostLikes)
   const user = useSelector(selectAuthUser)
+
+  const [openPostDropdown, setOpenPostDropdown] = useState(false)
+  const postDropdownElements: DropDownElementsType[] = [
+    {
+      handler: () => { dispatch(deletePost(post._id)) },
+      name: "delete"
+    },
+    {
+      handler: () => { console.log('hadnle edit') },
+      name: 'edit'
+    }
+  ]
 
   const [isLiked, setIsLiked] = useState(() => {
     if (!user) return false
@@ -50,23 +67,38 @@ const PostCard = ({ post, openCommentModel }: Props) => {
 
   }
 
+
   return (
     <motion.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       className="max-w-sm lg:min-w-[500px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
     >
-      <div className="flex items-center m-2">
-        <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
-          <SpringButton>
-            {post.authorImage
-              ? <img className="mr-2 w-6 h-6 rounded-full" src={post.authorImage} alt="Michael Gough" />
-              : <HiOutlineUserCircle size={22} className='mr-2 w-6 h-6 rounded-full' />
-            }
-          </SpringButton>
-          {post.authorId === user?._id ? 'You' :post.authorName}
-        </p>
-        <p className="text-sm text-gray-600 dark:text-gray-400">{moment(post.updatedAt).format('MM Do, YYYY [at] h:mm A')}</p>
+      <div className="flex items-center justify-between m-2 relative" >
+        <div className='flex justify-start items-center'>
+          <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
+            <SpringButton>
+              {post.authorImage
+                ? <img className="mr-2 w-6 h-6 rounded-full object-cover" src={post.authorImage} alt="Michael Gough" />
+                : <HiOutlineUserCircle size={22} className='mr-2 w-6 h-6 rounded-full' />
+              }
+            </SpringButton>
+            {post.authorId === user?._id ? 'You' : post.authorName}
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{moment(post.updatedAt).fromNow()}</p>
+        </div>
+
+        {post.authorId === user?._id &&
+          <button className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600" onClick={() => setOpenPostDropdown(prev => !prev)} >
+            <IoIosMore size={17} />
+            <span className="sr-only">Comment settings</span>
+          </button>
+        }
+        <DropDown
+          open={openPostDropdown}
+          elements={postDropdownElements}
+          position='right-0 top-10'
+        />
       </div>
 
       {post.mediaType === 'image' && post.media &&
@@ -84,36 +116,40 @@ const PostCard = ({ post, openCommentModel }: Props) => {
         <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{post.desc}</p>
         <div className='flex justify-start space-x-5 items-center'>
 
-          {isLiked ? (
-            <button onClick={handleUnlike} className="flex items-center mr-3 gap-2">
-              <SpringButton>
-                <GoHeartFill size={20} fill="red" />
-              </SpringButton>
-              {post.likesCount}
-            </button>
-          ) : (
+          <div className='flex'>
+            {isLiked ? (
+              <button onClick={handleUnlike} className="flex items-center mr-3 gap-2">
+                <SpringButton>
+                  <GoHeartFill size={20} fill="red" />
+                </SpringButton>
+              </button>
+            ) : (
               <button onClick={handleLike} className="flex items-center mr-3 gap-2">
+                <SpringButton>
+                  <GoHeart size={20} />
+                </SpringButton>
+              </button>
+            )}
+            <button onClick={() => { dispatch(setLikedUsersModelState(true)) }}>{post.likesCount}</button>
+          </div>
+
+          <div className='flex'>
+            <button onClick={() => openCommentModel(post)} className='flex items-center mr-3 gap-2'>
               <SpringButton>
-                <GoHeart size={20} />
+                <BiCommentDots size={20} />
               </SpringButton>
-              {post.likesCount}
             </button>
-          )}
-
-
-          <button onClick={() => openCommentModel(post)} className='flex items-center mr-3 gap-2'>
-            <SpringButton>
-              <BiCommentDots size={20} />
-            </SpringButton>
-            {post.commentCount}
-          </button>
+            <button onClick={() => { dispatch(setCommentedUsersModelState(true)) }}>  {post.commentCount} </button>
+          </div>
           <button onClick={handleShare} className='flex items-center mr-3 gap-2'>
             <SpringButton>
               <IoShareSocialOutline size={20} />
             </SpringButton>
-            {post.shareCount}
           </button>
+
         </div>
+
+
 
       </div>
     </motion.div>

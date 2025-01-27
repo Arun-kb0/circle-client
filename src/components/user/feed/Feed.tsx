@@ -7,11 +7,14 @@ import { Waypoint } from 'react-waypoint';
 import Spinner from '../../Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  selectLikedUsersModelState,
   selectPost, selectPostNumberOfPages,
-  selectPostPage, selectPostPosts, selectPostStatus
+  selectPostPage, selectPostPosts, selectPostStatus,
+  setLikedUsersModelState
 } from '../../../features/post/postSlice';
 import { AppDispatch } from '../../../app/store';
 import { getPosts } from '../../../features/post/postApi';
+import LikedUsersModel from './LikedUsersModel';
 
 
 const Feed = () => {
@@ -23,6 +26,9 @@ const Feed = () => {
     setModelOpen(true)
     dispatch(selectPost(post))
   }
+
+  const likedUsersModelOpen = useSelector(selectLikedUsersModelState)
+
 
   const posts = useSelector(selectPostPosts)
   const numberOfPages = useSelector(selectPostNumberOfPages)
@@ -37,7 +43,6 @@ const Feed = () => {
   }, [])
 
 
-  // ! way point bug need to fix
   const loadMorePosts = () => {
     if (status === 'loading' || !hasMore) return
     dispatch(getPosts(page + 1))
@@ -55,6 +60,13 @@ const Feed = () => {
         onExitComplete={() => null}
       >
         {modelOpen && <Comments handleClose={close} />}
+        {likedUsersModelOpen &&
+          <LikedUsersModel
+            postId=''
+            handleClose={() => dispatch(setLikedUsersModelState(false))}
+          />
+        }
+        
       </AnimatePresence>
 
       {
