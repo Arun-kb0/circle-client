@@ -17,8 +17,6 @@ import { GoHeartFill } from "react-icons/go";
 import DropDown from '../../basic/DropDown';
 import { DropDownElementsType } from '../../../constants/types';
 import { IoIosMore } from 'react-icons/io';
-import UserGroup from '../../basic/UserListCard';
-import LikedUsersModel from './LikedUsersModel';
 
 
 type Props = {
@@ -72,7 +70,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
     <motion.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
-      className="max-w-sm lg:min-w-[500px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+      className="max-w-2xl lg:min-w-[500px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
     >
       <div className="flex items-center justify-between m-2 relative" >
         <div className='flex justify-start items-center'>

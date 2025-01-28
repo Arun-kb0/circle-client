@@ -42,8 +42,8 @@ type PostStateType = {
 
 const initialState: PostStateType = {
   selectedPost: null,
-  posts: JSON.parse(sessionStorage.getItem('posts') || '[]'),
-  postNumberOfPages: 0,
+  posts: [],
+  postNumberOfPages: 5,
   postPage: 1,
   postStatus: 'idle',
 
@@ -103,7 +103,7 @@ const postSlice = createSlice({
         state.userCreatedPostsNumberOfPages = numberOfPages
         state.userCreatedPostsCurrentPage = currentPage
         state.likes = [...state.likes, ...likes]
-        // sessionStorage.setItem('user-posts', JSON.stringify(state.posts))
+
       })
       .addCase(getUserCreatedPosts.rejected, (state, action) => {
         state.userCreatedPostStatus = 'failed'
@@ -116,14 +116,13 @@ const postSlice = createSlice({
       })
       .addCase(getPosts.fulfilled, (state, action: PayloadAction<PostPaginationRes>) => {
         state.postStatus = 'success'
-        const { posts, numberOfPages, currentPage, likes } = action.payload
-        const postIds = new Set(posts.map(post => post._id))
-        const updatedPosts = state.posts.filter(post => !postIds.has(post._id))
-        state.posts = [...posts, ...updatedPosts]
-        state.postNumberOfPages = numberOfPages
-        state.postPage = currentPage
-        state.likes = [...state.likes, ...likes]
-        sessionStorage.setItem('user-posts', JSON.stringify(state.posts))
+        const { posts, numberOfPages, currentPage, likes } = action.payload       
+        const existingPostIds = new Set(state.posts.map(post => post._id));
+        const newPosts = posts.filter(post => !existingPostIds.has(post._id));
+        state.posts = [...state.posts, ...newPosts];
+        state.postNumberOfPages = numberOfPages;
+        state.postPage = currentPage;
+        state.likes = [...state.likes, ...likes];
       })
       .addCase(getPosts.rejected, (state, action) => {
         state.postStatus = 'failed'
@@ -137,7 +136,7 @@ const postSlice = createSlice({
         state.postStatus = 'success'
         const { post } = action.payload
         state.posts.unshift(post)
-        sessionStorage.setItem('user-posts', JSON.stringify(state.posts))
+
       })
       .addCase(createPost.rejected, (state, action) => {
         state.postStatus = 'failed'
@@ -151,7 +150,7 @@ const postSlice = createSlice({
         state.postStatus = 'success'
         const updatedPost = action.payload
         state.posts.map(post => post._id === updatedPost._id ? updatedPost : post)
-        sessionStorage.setItem('user-posts', JSON.stringify(state.posts))
+
       })
       .addCase(updatePost.rejected, (state, action) => {
         state.postStatus = 'failed'
@@ -162,7 +161,7 @@ const postSlice = createSlice({
         state.postStatus = 'success'
         const { postId } = action.payload
         state.posts = state.posts.filter(post => post._id !== postId)
-        sessionStorage.setItem('user-posts', JSON.stringify(state.posts))
+
       })
       .addCase(deletePost.rejected, (state, action) => {
         state.postStatus = 'failed'

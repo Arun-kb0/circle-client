@@ -17,7 +17,7 @@
   }
 
   .backdrop {
-    @apply flex items-center justify-center ;
+    @apply flex items-center justify-center;
 
     position: absolute;
     top: 0;
@@ -33,10 +33,10 @@
   .modal {
     @apply flex flex-col items-center;
 
-    width: clamp(50%,700px,90%);
-    height: min(50%,300px);
+    width: clamp(50%, 700px, 90%);
+    height: min(50%, 300px);
 
-    margin:auto ;
+    margin: auto;
     padding: 0 2rem;
     border-radius: 12px;
     display: flex;
@@ -47,7 +47,7 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-  
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     /* Internet Explorer 10+ */

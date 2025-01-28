@@ -16,7 +16,6 @@ const Comments = ({ handleClose }: Props) => {
 
   return (
     <BackdropVerifyOtp onClick={handleClose}>
-
       <motion.div
         onClick={(e) => e.stopPropagation()}
         variants={dropIn}

@@ -54,32 +54,32 @@ const CommentBox = ({ comment, onFocusInput }: Props) => {
     }
   }
 
-  
-    const handleLike = () => {
-      dispatch(like({ contentId: comment._id, contentType: 'comment' }))
-      setIsLiked(true)
-    }
-  
-    const handleUnlike = () => {
-      dispatch(unlike(comment._id))
-      setIsLiked(false)
-    }
+
+  const handleLike = () => {
+    dispatch(like({ contentId: comment._id, contentType: 'comment' }))
+    setIsLiked(true)
+  }
+
+  const handleUnlike = () => {
+    dispatch(unlike(comment._id))
+    setIsLiked(false)
+  }
 
   return (
-    <article className="relative p-6 pb-0 text-base bg-white rounded-lg dark:bg-gray-900">
+    <article className="relative p-5 text-base bg-white rounded-lg dark:bg-gray-800">
       <footer className="flex justify-between items-center mb-2">
 
         <div className="flex items-center">
           <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
             <SpringButton>
               {comment.authorImage
-                ? <img className="mr-2 w-6 h-6 rounded-full" src={comment.authorImage} alt="Michael Gough" />
+                ? <img className="mr-2 w-6 h-6 rounded-full object-cover" src={comment.authorImage} alt={comment.authorName} />
                 : <HiOutlineUserCircle size={22} className='mr-2 w-6 h-6 rounded-full' />
               }
             </SpringButton>
             {comment.authorName}
           </p>
-          <p className="text-sm text-gray-600 dark:text-gray-400">{moment(comment.updatedAt).format('MMMM Do, YYYY [at] h:mm A')}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{moment(comment.updatedAt).fromNow()}</p>
         </div>
 
         <button className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600" onClick={toggleDropdown} >
@@ -109,7 +109,7 @@ const CommentBox = ({ comment, onFocusInput }: Props) => {
       }
 
       <div className="flex items-center mt-4 space-x-4">
-       
+
         {isLiked ? (
           <button onClick={handleUnlike} className="flex items-center mr-3 gap-2">
             <SpringButton>
@@ -125,7 +125,7 @@ const CommentBox = ({ comment, onFocusInput }: Props) => {
             {comment.likesCount}
           </button>
         )}
-        
+
         <button className="flex items-center gap-3 text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
           <SpringButton>
             <BiCommentDots size={20} />
@@ -138,7 +138,6 @@ const CommentBox = ({ comment, onFocusInput }: Props) => {
           </SpringButton>
         </button>
       </div>
-      <div className='bg-gray-400 w-full h-0.5 rounded-lg my-3' ></div>
     </article >
   )
 }

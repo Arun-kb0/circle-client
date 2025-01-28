@@ -3,8 +3,6 @@ import PostCard from './PostCard'
 import { PostType } from '../../../constants/FeedTypes'
 import Comments from './Comments';
 import { AnimatePresence } from 'framer-motion'
-import { Waypoint } from 'react-waypoint';
-import Spinner from '../../Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectLikedUsersModelState,
@@ -15,6 +13,8 @@ import {
 import { AppDispatch } from '../../../app/store';
 import { getPosts } from '../../../features/post/postApi';
 import LikedUsersModel from './LikedUsersModel';
+import InfiniteScroll from 'react-infinite-scroll-component'
+import PostSkeltonLoader from '../../basic/PostSkeltonLoader';
 
 
 const Feed = () => {
@@ -34,25 +34,32 @@ const Feed = () => {
   const numberOfPages = useSelector(selectPostNumberOfPages)
   const page = useSelector(selectPostPage)
   const status = useSelector(selectPostStatus)
+  const [hasMore, setHasMore] = useState<boolean>(() => page <= numberOfPages)
 
-  const [hasMore, setHasMore] = useState<boolean>(() => page <= numberOfPages);
 
   useEffect(() => {
     if (posts.length !== 0) return
     dispatch(getPosts(1))
-  }, [])
+  }, [dispatch, posts.length])
+
+  useEffect(() => {
+    setHasMore(page <= numberOfPages)
+
+    console.log('post-hasMore', hasMore)
+    console.log('post-page', page)
+    console.log('number-of-pages', page)
+  }, [page, numberOfPages])
 
 
   const loadMorePosts = () => {
-    if (status === 'loading' || !hasMore) return
+    console.log('waypoint triggered !!')
+    if (status === 'loading' || page > numberOfPages) return
     dispatch(getPosts(page + 1))
-    const newPage = page + 1
-    setHasMore(newPage <= numberOfPages)
   }
 
 
   return (
-    <main className={`space-y-3 scroll-smooth  ${modelOpen ? 'overflow-hidden h-screen ' : ''} `}>
+    <main className='space-y-5' >
 
       <AnimatePresence
         initial={false}
@@ -66,31 +73,32 @@ const Feed = () => {
             handleClose={() => dispatch(setLikedUsersModelState(false))}
           />
         }
-        
       </AnimatePresence>
 
-      {
-        status === 'success' && posts.map((post) => (
+
+      <InfiniteScroll
+        className='space-y-4 h-64 overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500'
+        scrollableTarget='home'
+        dataLength={posts.length}
+        next={loadMorePosts}
+        hasMore={hasMore}
+        loader={
+          <div className='space-y-4'>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <PostSkeltonLoader key={index} />
+            ))}
+          </div>
+        }
+        height={window.innerHeight-240}
+      >
+        {status === 'success' && posts.map((post) => (
           <PostCard
             key={post._id}
             post={post}
             openCommentModel={open}
           />
-        ))
-      }
-
-      {
-        hasMore && status === 'success' &&
-        <Waypoint
-          onEnter={loadMorePosts}
-          bottomOffset="-100px"
-        >
-          <div> <Spinner /></div>
-        </Waypoint>
-      }
-
-      {status === 'loading' && <Spinner />}
-      {!hasMore && <div className="text-center">No more post</div>}
+        ))}
+      </InfiniteScroll>
 
     </main >
   )
