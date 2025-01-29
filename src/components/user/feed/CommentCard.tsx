@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { CommentType } from '../../../constants/FeedTypes'
+import { CommentType, NestedCommentsType } from '../../../constants/FeedTypes'
 import CommentForm from './CommentForm'
 import CommentBox from './CommentBox'
 import { SubmitHandler } from 'react-hook-form'
@@ -7,15 +7,145 @@ import { useDispatch, useSelector } from 'react-redux'
 import { createComment, getComments } from '../../../features/post/postApi'
 import {
   selectCommentedUsersModelState, selectPostComment,
-  selectPostCommentCurrentPage, selectPostCommentNumberOfPages, selectPostSelectedPost
+  selectPostCommentCurrentPage, selectPostCommentNumberOfPages, selectPostCommentStatus, selectPostSelectedPost
 } from '../../../features/post/postSlice'
 import { AppDispatch } from '../../../app/store'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import CommentSkeltonLoader from '../../basic/CommentSkeltonLoader'
+import RecursiveComments from './RecursiveComments'
 
 type FormData = {
   comment: string;
 };
+
+
+const commentObj: NestedCommentsType = {
+  id: '1',
+  comment: {
+    _id: 'string',
+    media: 'string',
+    mediaType: 'text',
+    status: 'active',
+    authorId: 'string',
+    authorImage: 'string',
+    authorName: 'string',
+    parentId: 'string',
+    likesCount: 1,
+    replayCount: 1,
+    contentId: 'string',
+    contentType: 'post',
+    updatedAt: new Date(),
+    createdAt: new Date(),
+  },
+  items: [
+    {
+      id: '2',
+      comment: {
+        _id: 'string',
+        media: 'string',
+        mediaType: 'text',
+        status: 'active',
+        authorId: 'string',
+        authorImage: 'string',
+        authorName: 'string',
+        parentId: 'string',
+        likesCount: 1,
+        replayCount: 1,
+        contentId: 'string',
+        contentType: 'post',
+        updatedAt: new Date(),
+        createdAt: new Date(),
+      },
+      items: []
+    },
+    {
+      id: '3',
+      comment: {
+        _id: 'string',
+        media: 'string',
+        mediaType: 'text',
+        status: 'active',
+        authorId: 'string',
+        authorImage: 'string',
+        authorName: 'string',
+        parentId: 'string',
+        likesCount: 1,
+        replayCount: 1,
+        contentId: 'string',
+        contentType: 'post',
+        updatedAt: new Date(),
+        createdAt: new Date(),
+      },
+      items: [
+        {
+          id: '4',
+          comment: {
+            _id: 'string',
+            media: 'string',
+            mediaType: 'text',
+            status: 'active',
+            authorId: 'string',
+            authorImage: 'string',
+            authorName: 'string',
+            parentId: 'string',
+            likesCount: 1,
+            replayCount: 1,
+            contentId: 'string',
+            contentType: 'post',
+            updatedAt: new Date(),
+            createdAt: new Date(),
+          },
+          items: []
+        }
+      ]
+    },
+    {
+      id: '5',
+      comment: {
+        _id: 'string',
+        media: 'string',
+        mediaType: 'text',
+        status: 'active',
+        authorId: 'string',
+        authorImage: 'string',
+        authorName: 'string',
+        parentId: 'string',
+        likesCount: 1,
+        replayCount: 1,
+        contentId: 'string',
+        contentType: 'post',
+        updatedAt: new Date(),
+        createdAt: new Date(),
+      },
+      items: [
+        {
+          id: '6',
+          comment: {
+            _id: 'string',
+            media: 'string',
+            mediaType: 'text',
+            status: 'active',
+            authorId: 'string',
+            authorImage: 'string',
+            authorName: 'string',
+            parentId: 'string',
+            likesCount: 1,
+            replayCount: 1,
+            contentId: 'string',
+            contentType: 'post',
+            updatedAt: new Date(),
+            createdAt: new Date(),
+          },
+          items: []
+        }
+      ]
+    },
+  ]
+}
+
+
+
+
 
 const CommentCard = () => {
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
@@ -23,6 +153,7 @@ const CommentCard = () => {
   const comments = useSelector(selectPostComment)
   const page = useSelector(selectPostCommentCurrentPage)
   const numberOfPages = useSelector(selectPostCommentNumberOfPages)
+  const status = useSelector(selectPostCommentStatus)
   const [hasMore, setHasMore] = useState<boolean>(() => page <= numberOfPages)
 
 
@@ -48,7 +179,7 @@ const CommentCard = () => {
   }
 
   useEffect(() => {
-    if (comments.length !== 0 || !selectedPost) return
+    if (status === 'loading' || !selectedPost) return
     dispatch(getComments({ contentId: selectedPost._id, page }))
   }, [dispatch, comments.length])
 
@@ -86,7 +217,7 @@ const CommentCard = () => {
           loader={
             <div className='space-y-4'>
               {Array.from({ length: 3 }).map((_, index) => (
-                <CommentSkeltonLoader key={index}/>
+                <CommentSkeltonLoader key={index} />
               ))}
             </div>
           }
@@ -100,6 +231,9 @@ const CommentCard = () => {
             />
           ))}
         </InfiniteScroll>
+
+        {/* * nested comments not working */}
+        {/* <RecursiveComments/> */}
 
       </div>
     </section>

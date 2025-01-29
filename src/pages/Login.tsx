@@ -15,7 +15,7 @@ const Login = () => {
       <div className='backdrop-blur-sm bg-white/30 p-4 rounded-md shadow-lg '>
         <LoginFrom
           role={roles.user}
-          name={'Login'}
+          name={'Circle Login'}
           homePath='/'
           signupPath='/signup'
           loginMsg='Login as admin'

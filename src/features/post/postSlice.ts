@@ -84,7 +84,7 @@ const postSlice = createSlice({
     },
     setCommentedUsersModelState: (state, action: PayloadAction<boolean>) => {
       state.commentedUsersModelState = action.payload
-    }
+    },
 
   },
 
@@ -116,7 +116,7 @@ const postSlice = createSlice({
       })
       .addCase(getPosts.fulfilled, (state, action: PayloadAction<PostPaginationRes>) => {
         state.postStatus = 'success'
-        const { posts, numberOfPages, currentPage, likes } = action.payload       
+        const { posts, numberOfPages, currentPage, likes } = action.payload
         const existingPostIds = new Set(state.posts.map(post => post._id));
         const newPosts = posts.filter(post => !existingPostIds.has(post._id));
         state.posts = [...state.posts, ...newPosts];
@@ -146,7 +146,7 @@ const postSlice = createSlice({
       .addCase(updatePost.pending, (state) => {
         state.postStatus = 'loading'
       })
-      .addCase(updatePost.fulfilled, (state, action: PayloadAction<PostType>) => {
+    .addCase(updatePost.fulfilled, (state, action: PayloadAction<PostType>) => {
         state.postStatus = 'success'
         const updatedPost = action.payload
         state.posts.map(post => post._id === updatedPost._id ? updatedPost : post)
@@ -342,7 +342,7 @@ export const selectCommentedUsersModelState = (state: RootState) => state.post.c
 export const {
   selectPost,
   setCommentedUsersModelState,
-  setLikedUsersModelState
+  setLikedUsersModelState,
 } = postSlice.actions
 
 export default postSlice.reducer

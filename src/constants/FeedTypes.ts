@@ -34,6 +34,12 @@ export type CommentType = {
   createdAt: Date
 }
 
+export type NestedCommentsType = {
+  id: string,
+  comment?: CommentType
+  items: NestedCommentsType[]
+}
+
 export type PostPaginationRes = {
   posts: PostType[],
   numberOfPages: number
@@ -56,4 +62,6 @@ export type LikeType = {
   contentType: 'post' | 'story' | 'comment'
   updatedAt: Date
   createdAt: Date
+  authorName?: string
+  authorImage?: string
 }

@@ -11,7 +11,7 @@ import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
 import { deletePost, like, unlike } from '../../../features/post/postApi'
-import { selectPostLikes, setCommentedUsersModelState, setLikedUsersModelState } from '../../../features/post/postSlice';
+import { selectPost, selectPostLikes, setCommentedUsersModelState, setLikedUsersModelState } from '../../../features/post/postSlice';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { GoHeartFill } from "react-icons/go";
 import DropDown from '../../basic/DropDown';
@@ -65,12 +65,16 @@ const PostCard = ({ post, openCommentModel }: Props) => {
 
   }
 
+  const handleShowLikedUsers = () => {
+    dispatch(selectPost(post))
+    dispatch(setLikedUsersModelState(true)) 
+  }
 
   return (
     <motion.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
-      className="max-w-2xl lg:min-w-[500px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+      className="lg:w-[50vw] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
     >
       <div className="flex items-center justify-between m-2 relative" >
         <div className='flex justify-start items-center'>
@@ -128,7 +132,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
                 </SpringButton>
               </button>
             )}
-            <button onClick={() => { dispatch(setLikedUsersModelState(true)) }}>{post.likesCount}</button>
+            <button onClick={handleShowLikedUsers}>{post.likesCount}</button>
           </div>
 
           <div className='flex'>

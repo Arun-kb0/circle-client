@@ -16,6 +16,7 @@ import { selectPostCommentLikes } from '../../../features/post/postSlice';
 
 type Props = {
   comment: CommentType
+  // comment: NestedCommentsType
   onFocusInput: (commentId: string, contentId: string) => void
 }
 
@@ -50,6 +51,8 @@ const CommentBox = ({ comment, onFocusInput }: Props) => {
           commentId: comment._id,
           comment: { ...comment, media: editValue }
         }))
+        setIsEdit(false)
+        setIsOpen(false)
       }
     }
   }
@@ -66,79 +69,84 @@ const CommentBox = ({ comment, onFocusInput }: Props) => {
   }
 
   return (
-    <article className="relative p-5 text-base bg-white rounded-lg dark:bg-gray-800">
-      <footer className="flex justify-between items-center mb-2">
+    <>
+      {
 
-        <div className="flex items-center">
-          <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
-            <SpringButton>
-              {comment.authorImage
-                ? <img className="mr-2 w-6 h-6 rounded-full object-cover" src={comment.authorImage} alt={comment.authorName} />
-                : <HiOutlineUserCircle size={22} className='mr-2 w-6 h-6 rounded-full' />
-              }
-            </SpringButton>
-            {comment.authorName}
-          </p>
-          <p className="text-sm text-gray-600 dark:text-gray-400">{moment(comment.updatedAt).fromNow()}</p>
-        </div>
-
-        <button className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600" onClick={toggleDropdown} >
-          <IoIosMore size={22} />
-          <span className="sr-only">Comment settings</span>
-        </button>
-
-        {user && isOpen &&
-          <CommentDropDown
-            handleFocusInput={handleFocusInput}
-            user={user}
-            comment={comment}
-          />
-        }
-      </footer>
-      {comment.mediaType === 'text' &&
-        isEdit
-        ? <input
-          onChange={(e) => setEditValue(e.target.value)}
-          onKeyDown={handleEdit}
-          type="text"
-          id="first_name"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          value={editValue} required
-        />
-        : <p className="text-gray-600 dark:text-gray-100">{comment.media} </p>
       }
+      <article className="relative p-5 text-base bg-white rounded-lg dark:bg-gray-800">
+        <footer className="flex justify-between items-center mb-2">
 
-      <div className="flex items-center mt-4 space-x-4">
+          <div className="flex items-center">
+            <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
+              <SpringButton>
+                {comment.authorImage
+                  ? <img className="mr-2 w-6 h-6 rounded-full object-cover" src={comment.authorImage} alt={comment.authorName} />
+                  : <HiOutlineUserCircle size={22} className='mr-2 w-6 h-6 rounded-full' />
+                }
+              </SpringButton>
+              {comment.authorName}
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{moment(comment.updatedAt).fromNow()}</p>
+          </div>
 
-        {isLiked ? (
-          <button onClick={handleUnlike} className="flex items-center mr-3 gap-2">
-            <SpringButton>
-              <GoHeartFill size={20} fill="red" />
-            </SpringButton>
-            {comment.likesCount}
+          <button className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600" onClick={toggleDropdown} >
+            <IoIosMore size={22} />
+            <span className="sr-only">Comment settings</span>
           </button>
-        ) : (
-          <button onClick={handleLike} className="flex items-center mr-3 gap-2">
-            <SpringButton>
-              <GoHeart size={20} />
-            </SpringButton>
-            {comment.likesCount}
-          </button>
-        )}
 
-        <button className="flex items-center gap-3 text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
-          <SpringButton>
-            <BiCommentDots size={20} />
-          </SpringButton>
-          {comment.replayCount}
-        </button>
-        <button onClick={() => handleFocusInput('create')} className="flex items-center gap-3 text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
-          <SpringButton>
-            Replay
-          </SpringButton>
-        </button>
-      </div>
-    </article >
+          {user && isOpen &&
+            <CommentDropDown
+              handleFocusInput={handleFocusInput}
+              user={user}
+              comment={comment}
+            />
+          }
+        </footer>
+        {comment.mediaType === 'text' &&
+          isEdit
+          ? <input
+            onChange={(e) => setEditValue(e.target.value)}
+            onKeyDown={handleEdit}
+            type="text"
+            id="first_name"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            value={editValue} required
+          />
+          : <p className="text-gray-600 dark:text-gray-100">{comment.media} </p>
+        }
+
+        <div className="flex items-center mt-4 space-x-4">
+
+          {isLiked ? (
+            <button onClick={handleUnlike} className="flex items-center mr-3 gap-2">
+              <SpringButton>
+                <GoHeartFill size={20} fill="red" />
+              </SpringButton>
+              {comment.likesCount}
+            </button>
+          ) : (
+            <button onClick={handleLike} className="flex items-center mr-3 gap-2">
+              <SpringButton>
+                <GoHeart size={20} />
+              </SpringButton>
+              {comment.likesCount}
+            </button>
+          )}
+
+          <button className="flex items-center gap-3 text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
+            <SpringButton>
+              <BiCommentDots size={20} />
+            </SpringButton>
+            {comment.replayCount}
+          </button>
+          <button onClick={() => handleFocusInput('create')} className="flex items-center gap-3 text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">
+            <SpringButton>
+              Replay
+            </SpringButton>
+          </button>
+        </div>
+      </article >
+    </>
   )
 }
 

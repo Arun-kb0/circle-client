@@ -38,7 +38,7 @@ const Signup = () => {
 
         <SignupForm
           role={roles.user}
-          name={'Signup'}
+          name={'Circle Signup'}
           homePath='/'
           loginPath='/login'
           openModel={open}

@@ -16,7 +16,7 @@ import { AppDispatch } from '../../app/store';
 import { logout } from '../../features/auth/authApi';
 import { selectAuthUser } from '../../features/auth/authSlice';
 import { FaUserCircle } from 'react-icons/fa';
-
+import logo from '../../assets/vite.png'
 
 type Props = {
   handleLogout: () => void
@@ -58,7 +58,7 @@ const UserNav = ({ handleLogout }: Props) => {
 
             <div className="flex items-center ms-3">
               <div>
-                <TbBrandInstagramFilled className='text-gray-200' size={25} />
+                <img className='w-10 h-10 object-cover' src={logo} alt="" />
               </div>
             </div>
           </div>

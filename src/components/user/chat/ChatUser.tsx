@@ -31,7 +31,7 @@ const ChatUser = ({ name, image, userId, messageCount }: Props) => {
       <div className="flex-shrink-0">
         <button onClick={handleJoinRoom} type="button" className="relative inline-flex items-center">
           {image
-            ? <img className="w-8 h-8 rounded-full" src={image} alt="Neil image" />
+            ? <img className="w-8 h-8 rounded-full object-cover" src={image} alt="Neil image" />
             : <FaUserCircle size={35} />
           }
           <span className="sr-only">Notifications</span>

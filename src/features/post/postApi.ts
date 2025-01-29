@@ -7,6 +7,8 @@ import { CommentType, LikeType, PostType } from "../../constants/FeedTypes";
 import { toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
 
+
+
 export const getUserCreatedPosts = createAsyncThunk('/posts/user-created', async (page: number = 1, { dispatch, getState }) => {
   try {
     const state = getState() as RootState
@@ -144,16 +146,16 @@ export const getComments = createAsyncThunk('/comment/get', async ({ contentId, 
   }
 })
 
-type CreateCommentArg = { comment: Partial<CommentType>, contentId: string, contentType: string }
+type CreateCommentArg = { comment: Partial<CommentType>, contentId: string, contentType: string, parentId?: string }
 export const createComment = createAsyncThunk('/comment/create',
-  async ({ comment, contentId, contentType }: CreateCommentArg, { dispatch, getState }) => {
+  async ({ comment, contentId, contentType, parentId }: CreateCommentArg, { dispatch, getState }) => {
     try {
       const state = getState() as RootState
       const accessToken = state.auth.accessToken
       const dispatchFunction = dispatch as AppDispatch
       if (!accessToken) throw new Error(' no accessToken found ')
       const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
-      const res = await axiosPrivate.post(`/comment/`, { comment, contentType, contentId })
+      const res = await axiosPrivate.post(`/comment/`, { comment, contentType, contentId, parentId })
       removeInterceptors()
       toast('create comment success')
       return res.data

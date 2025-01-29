@@ -44,10 +44,6 @@ const Feed = () => {
 
   useEffect(() => {
     setHasMore(page <= numberOfPages)
-
-    console.log('post-hasMore', hasMore)
-    console.log('post-page', page)
-    console.log('number-of-pages', page)
   }, [page, numberOfPages])
 
 
@@ -69,7 +65,6 @@ const Feed = () => {
         {modelOpen && <Comments handleClose={close} />}
         {likedUsersModelOpen &&
           <LikedUsersModel
-            postId=''
             handleClose={() => dispatch(setLikedUsersModelState(false))}
           />
         }
@@ -89,7 +84,7 @@ const Feed = () => {
             ))}
           </div>
         }
-        height={window.innerHeight-240}
+        height={window.innerHeight - 240}
       >
         {status === 'success' && posts.map((post) => (
           <PostCard
