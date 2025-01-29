@@ -200,7 +200,7 @@ export const deleteComment = createAsyncThunk('/comment/delete', async (commentI
   }
 })
 
-export const uploadFiles = createAsyncThunk('/cloudinary/upload', async (files: FileList) => {
+export const uploadFiles = createAsyncThunk('/cloudinary/upload', async (files: File[]) => {
   try {
     // ! raeplace with this
     const PRESET = import.meta.env.VITE_CLD_UPLOAD_PRESET || ''

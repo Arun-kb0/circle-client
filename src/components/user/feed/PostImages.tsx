@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { FaCircleChevronRight } from 'react-icons/fa6'
 import { FaCircleChevronLeft } from 'react-icons/fa6'
 import { motion, AnimatePresence } from 'framer-motion'
-
+import { PiTrashFill } from "react-icons/pi";
 
 type Props = {
   media: string[]
+  isEdit?: boolean
+  deleteFunction?: (index: number) => void
 }
 
-const PostImages = ({ media }: Props) => {
+const PostImages = ({ media, isEdit = false, deleteFunction }: Props) => {
   const [direction, setDirection] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0)
 
@@ -89,8 +91,14 @@ const PostImages = ({ media }: Props) => {
               <span className="sr-only">Next</span>
             </span>
           </button>
-        </div>}
+        </div>
+      }
 
+      {isEdit && deleteFunction &&
+        <button type='button'  className="absolute top-0 left-2/4 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500" onClick={()=> deleteFunction(activeIndex)}>
+          <PiTrashFill />
+        </button>
+      }
     </section>
   )
 }
