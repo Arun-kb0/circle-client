@@ -24,14 +24,18 @@ const Profile = (props: Props) => {
       <section className='flex justify-start w-full'>
         <div className="relative">
           {user?.image?.url
-            ? <img className="h-96 w-96 rounded-full object-cover" src={user?.image?.url} alt={user?.name} />
+            ? <img className=" h-72 w-72 rounded-full object-cover" src={user?.image?.url} alt={user?.name} />
             : <FaUserCircle className='h-48 w-48' />
           }
           <span className="top-14 left-7 absolute  w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
         </div>
+        <div className='px-10 flex gap-3 justify-center items-center text-2xl font-semibold '>
+          <p>Following {user?.followerCount}</p>
+          <p>Followers {user?.followeeCount}</p>
+        </div>
       </section>
       <section className='flex justify-start w-full'>
-        <h5 className='text-lg font-semibold'>{ user?.name}</h5>
+        <h5 className='text-lg font-semibold'>{user?.name}</h5>
       </section>
 
       {/* profile buttons */}

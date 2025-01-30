@@ -76,7 +76,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
     <motion.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
-      className="lg:w-[50vw] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+      className="lg:w-[50vw] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden"
     >
       <div className="flex items-center justify-between m-2 relative" >
         <div className='flex justify-start items-center'>
@@ -106,7 +106,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
       </div>
 
       {post.mediaType === 'image' && post.media &&
-        <PostImages media={post.media} />
+        <PostImages  media={post.media}/>
       }
       <div className="p-5">
         {post.mediaType === 'text' && post.media &&

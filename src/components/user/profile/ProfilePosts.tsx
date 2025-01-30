@@ -10,6 +10,9 @@ import Comments from '../feed/Comments'
 import PostCard from '../feed/PostCard'
 import { Waypoint } from 'react-waypoint'
 import Spinner from '../../Spinner'
+import PostSkeltonLoader from '../../basic/PostSkeltonLoader'
+import InfiniteScroll from 'react-infinite-scroll-component'
+
 
 type Props = {}
 
@@ -54,28 +57,30 @@ const ProfilePosts = (props: Props) => {
         {modelOpen && <Comments handleClose={close} />}
       </AnimatePresence>
 
-      {
-        status === 'success' && posts.map((post) => (
+      
+      <InfiniteScroll
+        className='space-y-4 h-64  overflow-y-scroll  scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500'
+        scrollableTarget='home'
+        dataLength={posts.length}
+        next={loadMorePosts}
+        hasMore={hasMore}
+        loader={
+          <div className='space-y-4'>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <PostSkeltonLoader key={index} />
+            ))}
+          </div>
+        }
+        height={window.innerHeight - 240}
+      >
+        {status === 'success' && posts.map((post) => (
           <PostCard
             key={post._id}
             post={post}
             openCommentModel={open}
           />
-        ))
-      }
-
-      {
-        hasMore && status === 'success' &&
-        <Waypoint
-          onEnter={loadMorePosts}
-          bottomOffset="-100px"
-        >
-          <div> <Spinner /></div>
-        </Waypoint>
-      }
-
-      {status === 'loading' && <Spinner />}
-      {!hasMore && <div className="text-center">No more post</div>}
+        ))}
+      </InfiniteScroll>
     </section>
   )
 }

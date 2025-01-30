@@ -9,6 +9,8 @@ import { AppDispatch } from '../../app/store';
 import { getSuggestedPeople } from '../../features/user/userApi';
 import Spinner from '../../components/Spinner';
 import { Waypoint } from 'react-waypoint';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import UserSkeletonLoader from '../../components/basic/UserSkeletonLoader';
 
 
 type Props = {}
@@ -35,31 +37,37 @@ const FollowPeople = (props: Props) => {
   }
 
   return (
-    <main className='main-section justify-center relative h-screen overflow-y-auto' >
+    <main className='main-section justify-center relative overflow-y-auto' >
       <div className="p-4 sm:ml-64" >
-        <div className="p-4 mt-14 flex flex-wrap justify-center gap-8 lg:w-[160vh] md:w-[100vh]">
-          {status === 'loading' && <Spinner />}
-          {status === 'success' &&
-            users.map(user => (
+        <div className="p-4 mt-14 flex flex-wrap justify-start gap-8 lg:w-[160vh] md:w-[100vh]">
+
+          <InfiniteScroll
+            className='p-4 mt-14 flex flex-wrap justify-start gap-8'
+            scrollableTarget='home'
+            dataLength={users.length}
+            next={loadMorePosts}
+            hasMore={hasMore}
+            loader={
+              <div className='space-y-4 flex flex-wrap'>
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <UserSkeletonLoader key={index} />
+                ))}
+              </div>
+            }
+          >
+            {users.map(user => (
               <UserCard
                 key={user._id}
                 userId={user._id}
                 name={user.name}
-                image={user?.image?.url}
-                isFollowing={false}
+                image={user.image?.url}
+                isFollowing={true}
               />
             ))}
+          </InfiniteScroll>
+
         </div>
       </div>
-      {
-        hasMore && status === 'success' &&
-        <Waypoint
-          onEnter={loadMorePosts}
-          bottomOffset="-100px"
-        >
-          <div> <Spinner /></div>
-        </Waypoint>
-      }
     </main>
   )
 }

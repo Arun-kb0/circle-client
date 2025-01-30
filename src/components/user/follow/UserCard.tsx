@@ -4,6 +4,7 @@ import { MdMoreHoriz } from "react-icons/md";
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
 import { followUser, unFollow } from '../../../features/user/userApi';
+import { Link } from 'react-router-dom';
 
 type Props = {
   userId: string
@@ -21,7 +22,7 @@ const UserCard = ({ userId, name, image, isFollowing }: Props) => {
   const handleMessage = () => { }
 
   return (
-    <article className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <article className="max-w-sm w-52 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
 
       <div className="flex justify-end px-4 pt-4">
         <button id="dropdownButton" data-dropdown-toggle="dropdown" className="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5" type="button">
@@ -44,10 +45,12 @@ const UserCard = ({ userId, name, image, isFollowing }: Props) => {
       </div>
 
       <div className="flex flex-col items-center pb-10">
-        {image
-          ? <img className="w-24 h-24 mb-3 rounded-full object-cover shadow-lg" src={image} alt="Bonnie image" />
-          : <FaUserCircle className='w-24 h-24 shadow-lg' />
-        }
+        <Link to='/user-profile' >
+          {image
+            ? <img className="w-24 h-24 mb-3 rounded-full object-cover shadow-lg" src={image} alt="Bonnie image" />
+            : <FaUserCircle className='w-24 h-24 mb-3 shadow-lg' />
+          }
+        </Link>
         <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">{name}</h5>
         {isFollowing
           ? <div className="flex mt-4 md:mt-6">

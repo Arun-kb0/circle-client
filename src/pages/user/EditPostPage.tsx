@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import PostImages from '../../components/user/feed/PostImages';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { PostType } from '../../constants/FeedTypes';
 import { useForm } from 'react-hook-form';
-import { selectUploadFiles, selectUploadFilesStatus } from '../../features/post/postSlice';
+import {
+  selectPostCroppedImage, selectPostImageToCrop, selectUploadFiles,
+  selectUploadFilesStatus, setCroppedImage, setImageToCrop
+} from '../../features/post/postSlice';
 import { AppDispatch } from '../../app/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { updatePost, uploadFiles } from '../../features/post/postApi';
@@ -11,6 +14,8 @@ import { IoCloudUploadOutline } from 'react-icons/io5';
 import Spinner from '../../components/Spinner';
 import { imaggaScale } from '@cloudinary/url-gen/actions/resize';
 import { image } from '@cloudinary/url-gen/qualifiers/source';
+import { useAnimationControls } from 'framer-motion';
+import { BsDisplayport } from 'react-icons/bs';
 
 type Props = {}
 
@@ -22,10 +27,15 @@ type FromDataType = {
 
 
 const EditPostPage = (props: Props) => {
+  const navigator = useNavigate()
   const location = useLocation()
   const post = location.state as PostType
 
-  const [images, setImages] = useState<string[]>(post.media ? post.media : [])
+  const [images, setImages] = useState<string[]>(() => {
+    return post.mediaType !== 'text'
+      ? post.media ? post.media : []
+      : []
+  })
   const [imageFiles, setImageFiles] = useState<File[]>(
     post.media ? Array(post.media.length).fill(null) : []
   );
@@ -33,7 +43,8 @@ const EditPostPage = (props: Props) => {
 
   const dispatch = useDispatch<AppDispatch>()
   const uploadFilesStatus = useSelector(selectUploadFilesStatus)
-  const uploadedImageUrls = useSelector(selectUploadFiles)
+  const croppedImage = useSelector(selectPostCroppedImage)
+  const imageToCrop = useSelector(selectPostImageToCrop)
 
   const {
     register,
@@ -46,21 +57,21 @@ const EditPostPage = (props: Props) => {
     }
   });
 
-
-
   const onSubmit = async (data: FromDataType) => {
     console.log("data = ")
     const cloudinaryUrlRegex = /^https:\/\/res\.cloudinary\.com\/.*$/;
     const existingImageUrls = images.filter(item => cloudinaryUrlRegex.test(item))
     const updatedImageFiles = imageFiles.filter(file => file !== null)
 
-    if (updatedImageFiles.length === 0) {
+    if (existingImageUrls.length === 0 && updatedImageFiles.length === 0) {
       const updatedPost: Partial<PostType> = {
         ...post,
         mediaType: 'text',
         media: [`${data.message}`],
       }
       dispatch(updatePost(updatedPost))
+      dispatch(setCroppedImage({ url: undefined, blob: undefined }))
+      dispatch(setImageToCrop(undefined))
       return
     }
 
@@ -77,6 +88,8 @@ const EditPostPage = (props: Props) => {
     }
     console.log(updatedPost)
     dispatch(updatePost(updatedPost))
+    dispatch(setCroppedImage({ url: undefined, blob: undefined }))
+    dispatch(setImageToCrop(undefined))
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,14 +115,41 @@ const EditPostPage = (props: Props) => {
   }
 
   const handleDeleteImage = (index: number) => {
+    const imageToDelete = images[index]
+    if (imageToDelete === croppedImage) dispatch(setCroppedImage({ url: undefined, blob: undefined }))
     setImages((prevImages) => prevImages.filter((_, i) => i !== index))
     setImageFiles((prevImages) => prevImages.filter((_, i) => i !== index))
     setResetActiveIndex(true)
   }
 
-  const handleResetActiveIndex = () => {
-
+  const handleImageCrop = (index: number) => {
+    dispatch(setImageToCrop(images[index]))
+    navigator('/crop')
   }
+
+  useEffect(() => {
+    if (!croppedImage) return
+    const { url, blob } = croppedImage
+    if (!url || !blob) return
+    if (images.includes(url)) return
+    console.log('use effect')
+
+    const updatedImages = images.filter(item => item !== imageToCrop)
+    const updatedFiles = imageFiles.filter(item => {
+      if (!item) return true
+      return item.name !== imageToCrop
+    })
+    setImages([...updatedImages, url])
+    const file = new File([blob], `new-cropped-image.jpg`, { type: 'image/jpeg' });
+    setImageFiles([...updatedFiles, file])
+  }, [croppedImage])
+
+  useEffect(() => {
+    console.log('image files array = ')
+    console.log(imageFiles)
+    console.log('image urls array = ')
+    console.log(images)
+  }, [imageFiles])
 
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
@@ -125,6 +165,7 @@ const EditPostPage = (props: Props) => {
                   isEdit={true}
                   deleteFunction={handleDeleteImage}
                   resetActiveIndex={resetActiveIndex}
+                  handleImageCrop={handleImageCrop}
                 />
               }
               <div>

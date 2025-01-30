@@ -9,6 +9,7 @@ import {
 } from './postApi'
 import { RootState } from '../../app/store'
 import { StateType } from '../../constants/types'
+import { PixelCrop } from 'react-image-crop'
 
 type PostStateType = {
   selectedPost: PostType | null
@@ -38,6 +39,12 @@ type PostStateType = {
 
   likedUsersModelState: boolean
   commentedUsersModelState: boolean
+
+  imageToCrop?: string
+  croppedImage: {
+    blob?: Blob,
+    url?: string
+  }
 }
 
 const initialState: PostStateType = {
@@ -67,7 +74,12 @@ const initialState: PostStateType = {
   userCreatedPostsNumberOfPages: 0,
 
   likedUsersModelState: false,
-  commentedUsersModelState: false
+  commentedUsersModelState: false,
+
+  croppedImage: {
+    blob: undefined,
+    url: undefined
+  }
 }
 
 const postSlice = createSlice({
@@ -85,6 +97,16 @@ const postSlice = createSlice({
     setCommentedUsersModelState: (state, action: PayloadAction<boolean>) => {
       state.commentedUsersModelState = action.payload
     },
+
+    setImageToCrop: (state, action: PayloadAction<string | undefined>) => {
+      state.imageToCrop = action.payload
+    },
+    setCroppedImage: (state, action: PayloadAction<{ url?: string, blob?: Blob }>) => {
+      const { url, blob } = action.payload
+      const croppedImage = state.croppedImage!;
+      croppedImage.url = url;
+      croppedImage.blob = blob;
+    }
 
   },
 
@@ -339,10 +361,15 @@ export const selectPostUserCreatedCurrentPage = (state: RootState) => state.post
 export const selectLikedUsersModelState = (state: RootState) => state.post.likedUsersModelState
 export const selectCommentedUsersModelState = (state: RootState) => state.post.commentedUsersModelState
 
+export const selectPostImageToCrop = (state: RootState) => state.post.imageToCrop
+export const selectPostCroppedImage = (state: RootState) => state.post.croppedImage
+
 export const {
   selectPost,
   setCommentedUsersModelState,
   setLikedUsersModelState,
+  setImageToCrop,
+  setCroppedImage
 } = postSlice.actions
 
 export default postSlice.reducer

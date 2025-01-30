@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { FaCircleChevronRight } from 'react-icons/fa6'
+import { FaCircleChevronRight, FaCropSimple } from 'react-icons/fa6'
 import { FaCircleChevronLeft } from 'react-icons/fa6'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PiTrashFill } from "react-icons/pi";
+import { Link } from 'react-router-dom';
 
 type Props = {
   media: string[]
   isEdit?: boolean
   deleteFunction?: (index: number) => void
-  resetActiveIndex: boolean
+  resetActiveIndex?: boolean
+  handleImageCrop?: (index: number) => void
 }
 
-const PostImages = ({ media, isEdit = false, deleteFunction, resetActiveIndex=false }: Props) => {
+const PostImages = ({ media, isEdit = false, deleteFunction, handleImageCrop, resetActiveIndex = false }: Props) => {
   const [direction, setDirection] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0)
 
@@ -26,8 +28,8 @@ const PostImages = ({ media, isEdit = false, deleteFunction, resetActiveIndex=fa
   }
 
   useEffect(() => {
-   if(resetActiveIndex) setActiveIndex(0)
- },[resetActiveIndex])
+    if (resetActiveIndex) setActiveIndex(0)
+  }, [resetActiveIndex])
 
   const variants = {
     enter: (direction: number) => ({
@@ -99,11 +101,22 @@ const PostImages = ({ media, isEdit = false, deleteFunction, resetActiveIndex=fa
         </div>
       }
 
-      {isEdit && deleteFunction &&
-        <button type='button' className="absolute top-0 left-2/4 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500" onClick={() => deleteFunction(activeIndex)}>
-          <PiTrashFill />
-        </button>
+      {true &&
+        <div className='absolute top-0  left-64 '>
+          <div className='flex justify-center space-x-10'>
+            {deleteFunction &&
+              <button type='button' className=" border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500" onClick={() => deleteFunction(activeIndex)}>
+                <PiTrashFill />
+              </button>
+            }
+            {handleImageCrop &&
+              <button onClick={() => handleImageCrop(activeIndex)} className="absolute top-0 left-2/4 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500" >
+                <FaCropSimple />
+              </button>}
+          </div>
+        </div>
       }
+
     </section>
   )
 }

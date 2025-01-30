@@ -5,9 +5,9 @@ type Props = {}
 
 const ProfileFollowing = (props: Props) => {
   return (
-    <div>
-      <Following/>
-    </div>
+    <section className=''>
+      <Following />
+    </section>
   )
 }
 
