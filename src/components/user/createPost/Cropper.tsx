@@ -57,7 +57,7 @@ const Cropper = (props: Props) => {
   };
 
 
-  const onImageLoad = (e) => {
+  const onImageLoad = (e:any) => {
     setHeight(e?.currentTarget?.height);
     setWidth(e?.currentTarget?.width);
     setCompletedCrop({

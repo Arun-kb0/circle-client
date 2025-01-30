@@ -16,6 +16,7 @@ import { imaggaScale } from '@cloudinary/url-gen/actions/resize';
 import { image } from '@cloudinary/url-gen/qualifiers/source';
 import { useAnimationControls } from 'framer-motion';
 import { BsDisplayport } from 'react-icons/bs';
+import PostForm from '../../components/user/createPost/PostForm';
 
 type Props = {}
 
@@ -156,7 +157,7 @@ const EditPostPage = (props: Props) => {
       <div className="p-4 sm:ml-64" >
         <div className="p-4 mt-14">
 
-          <form onSubmit={handleSubmit(onSubmit)} className="flex items-center justify-center">
+          {/* <form onSubmit={handleSubmit(onSubmit)} className="flex items-center justify-center" >
             <div className='space-y-4'>
 
               {images.length > 0 &&
@@ -199,7 +200,19 @@ const EditPostPage = (props: Props) => {
               </button>
 
             </div>
-          </form>
+          </form> */}
+
+          <PostForm
+            isEdit={true}
+            images={images}
+            imageFiles={imageFiles}
+            onSubmit={onSubmit}
+            handleDeleteImage={handleDeleteImage}
+            handleFileChange={handleFileChange}
+            handleImageCrop={handleImageCrop}
+            resetActiveIndex={resetActiveIndex}
+            uploadFilesStatus={uploadFilesStatus}
+          />
 
         </div>
       </div>

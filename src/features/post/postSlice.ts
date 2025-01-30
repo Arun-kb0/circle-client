@@ -9,7 +9,6 @@ import {
 } from './postApi'
 import { RootState } from '../../app/store'
 import { StateType } from '../../constants/types'
-import { PixelCrop } from 'react-image-crop'
 
 type PostStateType = {
   selectedPost: PostType | null
@@ -45,6 +44,11 @@ type PostStateType = {
     blob?: Blob,
     url?: string
   }
+  createPostCache: {
+    imageFiles: File[],
+    images: string[],
+    imageToRemove?: string 
+  }
 }
 
 const initialState: PostStateType = {
@@ -79,6 +83,10 @@ const initialState: PostStateType = {
   croppedImage: {
     blob: undefined,
     url: undefined
+  },
+  createPostCache: {
+    imageFiles: [],
+    images: []
   }
 }
 
@@ -106,6 +114,11 @@ const postSlice = createSlice({
       const croppedImage = state.croppedImage!;
       croppedImage.url = url;
       croppedImage.blob = blob;
+    },
+
+    setCreatePostCache: (state, action: PayloadAction<{ images: string[], imageFiles: File[] }>) => {
+      const { imageFiles, images } = action.payload
+      state.createPostCache = { imageFiles, images }
     }
 
   },
@@ -363,13 +376,15 @@ export const selectCommentedUsersModelState = (state: RootState) => state.post.c
 
 export const selectPostImageToCrop = (state: RootState) => state.post.imageToCrop
 export const selectPostCroppedImage = (state: RootState) => state.post.croppedImage
+export const selectPostCreateCache = (state: RootState) => state.post.createPostCache
 
 export const {
   selectPost,
   setCommentedUsersModelState,
   setLikedUsersModelState,
   setImageToCrop,
-  setCroppedImage
+  setCroppedImage,
+  setCreatePostCache
 } = postSlice.actions
 
 export default postSlice.reducer
