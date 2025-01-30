@@ -26,6 +26,7 @@ import FollowPeople from './pages/user/FollowPeople'
 import { setIsInChat } from './features/chat/chatSlice'
 import { receiveMessage } from './features/chat/chatApi'
 import ProfilePage from './pages/user/ProfilePage'
+import EditPostPage from './pages/user/EditPostPage'
 
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
           <Route path='/profile' element={<ProfilePage />} />
           <Route path='/global-feed' element={<GlobalFeed />} />
           <Route path='/create-post' element={<CreatePost />} />
+          <Route path='/edit-post' element={<EditPostPage />} />
           <Route path='/chat' element={<ChatPage />} />
           <Route path='/following' element={<Following />} />
           <Route path='/follow-people' element={<FollowPeople />} />

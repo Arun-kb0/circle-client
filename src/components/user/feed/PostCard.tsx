@@ -17,6 +17,7 @@ import { GoHeartFill } from "react-icons/go";
 import DropDown from '../../basic/DropDown';
 import { DropDownElementsType } from '../../../constants/types';
 import { IoIosMore } from 'react-icons/io';
+import { useNavigate } from 'react-router-dom';
 
 
 type Props = {
@@ -25,6 +26,7 @@ type Props = {
 }
 
 const PostCard = ({ post, openCommentModel }: Props) => {
+  const navigator = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const likes = useSelector(selectPostLikes)
   const user = useSelector(selectAuthUser)
@@ -36,7 +38,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
       name: "delete"
     },
     {
-      handler: () => { console.log('hadnle edit') },
+      handler: () => { navigator('/edit-post', { state: post }) },
       name: 'edit'
     }
   ]
@@ -67,7 +69,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
 
   const handleShowLikedUsers = () => {
     dispatch(selectPost(post))
-    dispatch(setLikedUsersModelState(true)) 
+    dispatch(setLikedUsersModelState(true))
   }
 
   return (

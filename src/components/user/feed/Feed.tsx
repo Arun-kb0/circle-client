@@ -11,7 +11,7 @@ import {
   setLikedUsersModelState
 } from '../../../features/post/postSlice';
 import { AppDispatch } from '../../../app/store';
-import { getPosts } from '../../../features/post/postApi';
+import { getPosts, updatePost } from '../../../features/post/postApi';
 import LikedUsersModel from './LikedUsersModel';
 import InfiniteScroll from 'react-infinite-scroll-component'
 import PostSkeltonLoader from '../../basic/PostSkeltonLoader';
@@ -28,7 +28,6 @@ const Feed = () => {
   }
 
   const likedUsersModelOpen = useSelector(selectLikedUsersModelState)
-
 
   const posts = useSelector(selectPostPosts)
   const numberOfPages = useSelector(selectPostNumberOfPages)
@@ -53,7 +52,6 @@ const Feed = () => {
     dispatch(getPosts(page + 1))
   }
 
-
   return (
     <main className='space-y-5' >
 
@@ -68,6 +66,7 @@ const Feed = () => {
             handleClose={() => dispatch(setLikedUsersModelState(false))}
           />
         }
+        
       </AnimatePresence>
 
 

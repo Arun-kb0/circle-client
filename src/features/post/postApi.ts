@@ -65,7 +65,7 @@ export const updatePost = createAsyncThunk('/post/update', async (post: Partial<
     const dispatchFunction = dispatch as AppDispatch
     if (!accessToken) throw new Error(' no accessToken found ')
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
-    const res = await axiosPrivate.patch(`/post/`, { post })
+    const res = await axiosPrivate.patch(`/post/${post._id}`, { post })
     removeInterceptors()
     toast('update post success')
     return res.data

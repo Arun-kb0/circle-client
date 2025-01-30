@@ -8,9 +8,10 @@ type Props = {
   media: string[]
   isEdit?: boolean
   deleteFunction?: (index: number) => void
+  resetActiveIndex: boolean
 }
 
-const PostImages = ({ media, isEdit = false, deleteFunction }: Props) => {
+const PostImages = ({ media, isEdit = false, deleteFunction, resetActiveIndex=false }: Props) => {
   const [direction, setDirection] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0)
 
@@ -23,6 +24,10 @@ const PostImages = ({ media, isEdit = false, deleteFunction }: Props) => {
     setDirection(1)
     setActiveIndex((prev) => (prev + 1) % media.length)
   }
+
+  useEffect(() => {
+   if(resetActiveIndex) setActiveIndex(0)
+ },[resetActiveIndex])
 
   const variants = {
     enter: (direction: number) => ({
@@ -45,7 +50,7 @@ const PostImages = ({ media, isEdit = false, deleteFunction }: Props) => {
       className="relative w-full"
       data-carousel="slide"
     >
-      <div className="relative h-56 overflow-hidden rounded-lg md:h-96">
+      <div className="relative h-56 overflow-hidden rounded-lg md:h-96 lg:w-[50vw]">
         <AnimatePresence custom={direction}>
           {media.map((image, index) =>
             index === activeIndex ? (
@@ -95,7 +100,7 @@ const PostImages = ({ media, isEdit = false, deleteFunction }: Props) => {
       }
 
       {isEdit && deleteFunction &&
-        <button type='button'  className="absolute top-0 left-2/4 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500" onClick={()=> deleteFunction(activeIndex)}>
+        <button type='button' className="absolute top-0 left-2/4 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500" onClick={() => deleteFunction(activeIndex)}>
           <PiTrashFill />
         </button>
       }

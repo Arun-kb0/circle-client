@@ -38,6 +38,7 @@ const AddImage = ({ handleClose, handlePost }: Props) => {
   const uploadedImageUrls = useSelector(selectUploadFiles)
   const [images, setImages] = useState<string[]>([])
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [resetActiveIndex, setResetActiveIndex] = useState(false)
 
   const {
     register,
@@ -55,6 +56,7 @@ const AddImage = ({ handleClose, handlePost }: Props) => {
   const onSubmit = async (data: FromDataType) => {
     console.log("image data = ")
     console.log(data)
+
     const result = await dispatch(uploadFiles(imageFiles)).unwrap()
 
     // const result = await dispatch(uploadFiles(data.image)).unwrap()
@@ -97,19 +99,16 @@ const AddImage = ({ handleClose, handlePost }: Props) => {
 
   const handleDeleteImage = (index: number) => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index))
+    setImageFiles((prevImages) => prevImages.filter((_, i) => i !== index))
+    setResetActiveIndex(true)
   }
 
-
-  useEffect(() => {
-    // console.log('images array')
-    // console.log(images)
-  }, [images])
 
 
   return (
     <BackdropVerifyOtp onClick={handleClose}>
       <motion.div
-        className='justify-center w-96'
+        className='justify-center'
         onClick={(e) => e.stopPropagation()}
         variants={dropIn}
         initial="hidden"
@@ -120,15 +119,16 @@ const AddImage = ({ handleClose, handlePost }: Props) => {
         <form onSubmit={handleSubmit(onSubmit)} className="flex items-center justify-center">
           <div className='space-y-4'>
 
-            {images.length > 0 &&
+            {images.length !== 0 &&
               <PostImages
                 media={images}
                 isEdit={true}
                 deleteFunction={handleDeleteImage}
+                resetActiveIndex={resetActiveIndex}
               />
             }
             <div className={images.length > 0 ? 'hidden' : 'block'}>
-              <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 w-96">
+              <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 w-[50vw] h-[50vh]">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   {uploadFilesStatus === 'loading'
                     ? <Spinner />

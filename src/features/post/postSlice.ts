@@ -146,11 +146,11 @@ const postSlice = createSlice({
       .addCase(updatePost.pending, (state) => {
         state.postStatus = 'loading'
       })
-    .addCase(updatePost.fulfilled, (state, action: PayloadAction<PostType>) => {
+      .addCase(updatePost.fulfilled, (state, action: PayloadAction<{ post: PostType }>) => {
         state.postStatus = 'success'
-        const updatedPost = action.payload
-        state.posts.map(post => post._id === updatedPost._id ? updatedPost : post)
-
+        const { post } = action.payload
+        const updatedPosts = state.posts.filter(item => item._id !== post._id)
+        state.posts = [post, ...updatedPosts]
       })
       .addCase(updatePost.rejected, (state, action) => {
         state.postStatus = 'failed'
