@@ -4,8 +4,9 @@ import { MdMoreHoriz } from "react-icons/md";
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
 import { followUser, getUser, unFollow } from '../../../features/user/userApi';
-import {  useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { clearFollowers, clearFollowing, selectUserFollowing } from '../../../features/user/userSlice';
+import { clearUserCreatedPosts } from '../../../features/post/postSlice';
 
 type Props = {
   userId: string
@@ -29,9 +30,14 @@ const UserCard = ({ userId, name, image }: Props) => {
   const handleRemove = () => { }
   const handleMessage = () => { }
 
-  const handleProfileNav = async () => {
+  const handleClearProfile = async () => {
+    dispatch(clearUserCreatedPosts())
     dispatch(clearFollowers())
     dispatch(clearFollowing())
+  }
+
+  const handleProfileNav = async () => {
+    await handleClearProfile()
     await dispatch(getUser(userId))
     navigator('/user-profile')
   }

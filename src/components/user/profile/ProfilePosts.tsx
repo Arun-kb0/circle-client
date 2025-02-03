@@ -40,12 +40,12 @@ const ProfilePosts = ({ userId }: Props) => {
   useEffect(() => {
     if (posts.length !== 0) return
     dispatch(getUserCreatedPosts({ page: 1, userId }))
-  }, [])
+  }, [userId])
 
 
   const loadMorePosts = () => {
     if (status === 'loading' || !hasMore) return
-    dispatch(getUserCreatedPosts({page : page + 1, userId}))
+    dispatch(getUserCreatedPosts({ page: page + 1, userId }))
     const newPage = page + 1
     setHasMore(newPage <= numberOfPages)
   }

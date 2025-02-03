@@ -3,13 +3,12 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { BsBell } from "react-icons/bs";
 import { TbHome } from "react-icons/tb";
 import { FiSearch } from "react-icons/fi";
-import { TbBrandInstagramFilled } from "react-icons/tb";
 import SpringButton from '../basic/SpringButton';
 import { Link, useNavigate } from 'react-router-dom';
 import BadgeButton from '../basic/BadgeButton';
 import { AiOutlineMessage } from "react-icons/ai";
 import { useDispatch, useSelector } from 'react-redux';
-import { selectChatMsgNotification, selectChatUnreadMsgNotification } from '../../features/chat/chatSlice';
+import { selectChatUnreadMsgNotification } from '../../features/chat/chatSlice';
 import DropDown from '../basic/DropDown';
 import { DropDownElementsType } from '../../constants/types';
 import { AppDispatch } from '../../app/store';
@@ -17,6 +16,8 @@ import { logout } from '../../features/auth/authApi';
 import { selectAuthUser } from '../../features/auth/authSlice';
 import { FaUserCircle } from 'react-icons/fa';
 import logo from '../../assets/vite.png'
+import { clearUserCreatedPosts } from '../../features/post/postSlice';
+import { clearFollowers, clearFollowing } from '../../features/user/userSlice';
 
 type Props = {
   handleLogout: () => void
@@ -28,13 +29,21 @@ const UserNav = ({ handleLogout }: Props) => {
   const user = useSelector(selectAuthUser)
   const unreadNotificationCount = useSelector(selectChatUnreadMsgNotification)
 
-  const [chatDropDown, setChatDropDown] = useState(false)
   const [userDropDown, setUserDropDown] = useState(false)
   const [notificationDropDown, setNotificationDropDown] = useState(false)
 
+  const handleClearProfile = async () => {
+    dispatch(clearUserCreatedPosts());
+    dispatch(clearFollowers());
+    dispatch(clearFollowing());
+  }
+
   const userDropDownElements: DropDownElementsType[] = [
     {
-      handler: () => { navigate('/profile') },
+      handler: async () => {
+        await handleClearProfile()
+        navigate('/profile')
+      },
       name: "profile"
     },
     {

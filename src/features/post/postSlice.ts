@@ -126,6 +126,12 @@ const postSlice = createSlice({
       state.createPostCache = { imageFiles, images }
     },
 
+    clearUserCreatedPosts: (state) => {
+      state.userCreatedPosts = []
+      state.userCreatedPostsCurrentPage = 0
+      state.userCreatedPostsNumberOfPages = 0
+    }
+
    
   },
 
@@ -392,7 +398,8 @@ export const {
   setImageToCrop,
   setCroppedImage,
   setCreatePostCache,
-  setImageToCropIndex
+  setImageToCropIndex,
+  clearUserCreatedPosts
 } = postSlice.actions
 
 export default postSlice.reducer

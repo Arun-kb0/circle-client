@@ -9,9 +9,11 @@ import { PiArticleBold } from "react-icons/pi";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import SpringButton from '../basic/SpringButton';
 import { Link, useNavigate } from 'react-router-dom';
-import { clearFollowing } from '../../features/user/userSlice';
+import { clearFollowers, clearFollowing } from '../../features/user/userSlice';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../app/store';
+import { clearUserCreatedPosts } from '../../features/post/postSlice';
+import { getUser } from '../../features/user/userApi';
 
 type Props = {}
 
@@ -19,8 +21,14 @@ const Sidebar = (props: Props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
 
-  const handleNavigateToFollowing = () => {
+  const handleClearProfile = async () => {
+    dispatch(clearUserCreatedPosts())
+    dispatch(clearFollowers())
     dispatch(clearFollowing())
+  }
+
+  const handleNavigateToFollowing = async () => {
+    await handleClearProfile()
     navigate('/following')
   }
 

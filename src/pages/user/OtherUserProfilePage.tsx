@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Profile from '../../components/user/profile/Profile'
-import { useSelector } from 'react-redux'
 import { selectUserOtherUser } from '../../features/user/userSlice'
+import { useSelector } from 'react-redux'
 
 type Props = {}
 const OtherUserProfilePage = (props: Props) => {

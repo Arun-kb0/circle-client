@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { UserType } from '../../../constants/types';
@@ -8,8 +8,11 @@ import { updatedUser } from '../../../features/user/userApi';
 import { uploadFiles } from '../../../features/post/postApi';
 import { selectUploadFilesStatus } from '../../../features/post/postSlice';
 import Spinner from '../../Spinner';
+import { selectUserOtherUser } from '../../../features/user/userSlice';
 
-type Props = {}
+type Props = {
+  user: UserType
+}
 
 type FormValues = {
   name: string;
@@ -21,10 +24,11 @@ type FormValues = {
 };
 
 
-const ProfileAbout = (props: Props) => {
+const ProfileAbout = ({ user }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
-  const user = useSelector(selectAuthUser) as UserType
+  const currentUser = useSelector(selectAuthUser)
   const imageUploadStatus = useSelector(selectUploadFilesStatus)
+  const [isEditable, setIsEditable] = useState(() => currentUser?._id === user._id)
 
   const {
     register,
@@ -33,11 +37,11 @@ const ProfileAbout = (props: Props) => {
     formState: { errors }
   } = useForm<FormValues>({
     defaultValues: {
-      name: user?.name || "",
-      age: user?.age || undefined,
-      location: user?.location || "",
-      state: user?.location || "",
-      gender: user?.gender || "",
+      name: user.name || "",
+      age: user.age || undefined,
+      location: user.location || "",
+      state: user.location || "",
+      gender: user.gender || "",
       image: null,
     },
   });
@@ -81,6 +85,7 @@ const ProfileAbout = (props: Props) => {
               className="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
               type="text"
               id="name"
+              disabled={!isEditable}
               {...register("name", {
                 pattern: {
                   value: /^[A-Za-z\s]*$/,
@@ -105,6 +110,7 @@ const ProfileAbout = (props: Props) => {
               className="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
               type="text"
               id="location"
+              disabled={!isEditable}
               {...register("location", {
                 pattern: {
                   value: /^[A-Za-z\s]*$/,
@@ -129,6 +135,7 @@ const ProfileAbout = (props: Props) => {
               className="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
               type="text"
               id="state"
+              disabled={!isEditable}
               {...register("state", {
                 pattern: {
                   value: /^[A-Za-z\s]*$/,
@@ -153,6 +160,7 @@ const ProfileAbout = (props: Props) => {
               className="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
               type="text"
               id="gender"
+              disabled={!isEditable}
               {...register("gender", {
                 pattern: {
                   value: /^[A-Za-z\s]*$/,
@@ -166,7 +174,7 @@ const ProfileAbout = (props: Props) => {
           </div>
         </article>
 
-        <article className="relative flex items-center mb-4">
+        {isEditable && <article className="relative flex items-center mb-4">
           <div className="flex-1 min-w-0 ms-4">
             <label className="block text-sm font-medium text-gray-900 dark:text-white" htmlFor="image">
               Upload Profile Image
@@ -181,13 +189,13 @@ const ProfileAbout = (props: Props) => {
               accept="image/*"
             />
           </div>
-        </article>
+        </article>}
 
         <article className="flex justify-center items-center mb-4">
-          <button type='submit' className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+          {isEditable && <button type='submit' className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
             {imageUploadStatus === 'loading' && <Spinner />}
             <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"> update </span>
-          </button>
+          </button>}
         </article>
       </form>
 

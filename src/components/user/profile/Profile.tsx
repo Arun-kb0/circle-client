@@ -25,18 +25,22 @@ const Profile = ({ user }: Props) => {
       <section className='flex justify-start w-full'>
         <div className="relative">
           {user?.image?.url
-            ? <img className=" h-72 w-72 rounded-full object-cover" src={user?.image?.url} alt={user?.name} />
-            : <FaUserCircle className='h-48 w-48' />
+            ? <img className="h-72 w-72 rounded-full object-cover" src={user?.image?.url} alt={user?.name} />
+            : <FaUserCircle className='h-72 w-72 rounded-full object-cover' />
           }
           <span className="top-14 left-7 absolute  w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
         </div>
-        <div className='px-10 flex gap-3 justify-center items-center text-2xl font-semibold '>
-          <p>Following {user?.followerCount}</p>
-          <p>Followers {user?.followeeCount}</p>
+
+        <div className='px-10 flex justify-center items-center capitalize text-2xl font-semibold'>
+          <div className='space-y-4'>
+            <h5 className=''>{user?.name}</h5>
+            <div className='flex gap-3 justify-center items-center'>
+              <p>Following {user?.followerCount}</p>
+              <p>Followers {user?.followeeCount}</p>
+            </div>
+          </div>
         </div>
-      </section>
-      <section className='flex justify-start w-full'>
-        <h5 className='text-lg font-semibold'>{user?.name}</h5>
+
       </section>
 
       {/* profile buttons */}
@@ -59,7 +63,7 @@ const Profile = ({ user }: Props) => {
       {/* user data */}
       <section className='w-full flex justify-center'>
         {activeSection === 'posts' && <ProfilePosts userId={user._id} />}
-        {activeSection === 'about' && <ProfileAbout />}
+        {activeSection === 'about' && <ProfileAbout user={user} />}
         {activeSection === 'following' && <FollowingPage userId={user._id} />}
         {activeSection === 'followers' && <Followers userId={user._id} />}
       </section>
