@@ -39,6 +39,7 @@ type PostStateType = {
   likedUsersModelState: boolean
   commentedUsersModelState: boolean
 
+  imageToCropIndex?: number
   imageToCrop?: string
   croppedImage: {
     blob?: Blob,
@@ -47,7 +48,7 @@ type PostStateType = {
   createPostCache: {
     imageFiles: File[],
     images: string[],
-    imageToRemove?: string 
+    imageToRemove?: string
   }
 }
 
@@ -109,6 +110,10 @@ const postSlice = createSlice({
     setImageToCrop: (state, action: PayloadAction<string | undefined>) => {
       state.imageToCrop = action.payload
     },
+    setImageToCropIndex: (state, action: PayloadAction<number>) => {
+      state.imageToCropIndex = action.payload
+    },
+
     setCroppedImage: (state, action: PayloadAction<{ url?: string, blob?: Blob }>) => {
       const { url, blob } = action.payload
       const croppedImage = state.croppedImage!;
@@ -119,8 +124,9 @@ const postSlice = createSlice({
     setCreatePostCache: (state, action: PayloadAction<{ images: string[], imageFiles: File[] }>) => {
       const { imageFiles, images } = action.payload
       state.createPostCache = { imageFiles, images }
-    }
+    },
 
+   
   },
 
   extraReducers: (builder) => {
@@ -375,6 +381,7 @@ export const selectLikedUsersModelState = (state: RootState) => state.post.liked
 export const selectCommentedUsersModelState = (state: RootState) => state.post.commentedUsersModelState
 
 export const selectPostImageToCrop = (state: RootState) => state.post.imageToCrop
+export const selectPostImageToCropIndex = (state: RootState) => state.post.imageToCropIndex
 export const selectPostCroppedImage = (state: RootState) => state.post.croppedImage
 export const selectPostCreateCache = (state: RootState) => state.post.createPostCache
 
@@ -384,7 +391,8 @@ export const {
   setLikedUsersModelState,
   setImageToCrop,
   setCroppedImage,
-  setCreatePostCache
+  setCreatePostCache,
+  setImageToCropIndex
 } = postSlice.actions
 
 export default postSlice.reducer

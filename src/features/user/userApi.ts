@@ -1,9 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import errorHandler from "../../errorHandler/errorHandler";
-import axiosInstance, { axiosPrivate } from "../../config/axiosInstance";
+import { axiosPrivate } from "../../config/axiosInstance";
 import { AppDispatch, RootState } from "../../app/store";
 import configureAxios from "../../config/configureAxios";
-import { toast } from "react-toastify";
 import { UserType } from "../../constants/types";
 import { setAuthUser } from "../auth/authSlice";
 
@@ -41,7 +40,7 @@ export const getAllUsers = createAsyncThunk('/user/all', async ({ page, startDat
   }
 })
 
-export const getUser = createAsyncThunk('/user/all', async (userId: string, { dispatch, getState }) => {
+export const getUser = createAsyncThunk('/user/single-user', async (userId: string, { dispatch, getState }) => {
   try {
     const state = getState() as RootState
     const accessToken = state.auth.accessToken
@@ -51,12 +50,12 @@ export const getUser = createAsyncThunk('/user/all', async (userId: string, { di
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.get(`/user/${userId}`)
     removeInterceptors()
-    const user = res.data()
-    return user
+    return res.data
   } catch (error) {
     return errorHandler(error)
   }
 })
+
 
 export const blockUser = createAsyncThunk('/user/block', async (userId: string, { dispatch, getState }) => {
   try {
@@ -64,12 +63,9 @@ export const blockUser = createAsyncThunk('/user/block', async (userId: string, 
     const accessToken = state.auth.accessToken
     const dispatchFunction = dispatch as AppDispatch
     if (!accessToken) throw new Error(' no accessToken found ')
-
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.post(`/user/block?userId=${userId}`)
     removeInterceptors()
-
-    // const res = await axiosInstance.post(`/user/block?userId=${userId}`)
     const { userId: blockedId } = res.data
     return blockedId
   } catch (error) {
@@ -127,15 +123,34 @@ export const unFollow = createAsyncThunk('/user/unfollow', async (targetId: stri
   }
 })
 
-export const getFollowers = createAsyncThunk('/user/get-followers', async (page: number = 1, { dispatch, getState }) => {
+type GetFollowersArgs = { userId: string, page: number }
+export const getFollowers = createAsyncThunk('/user/get-followers', async ({ userId, page = 1 }: GetFollowersArgs, { dispatch, getState }) => {
   try {
     const state = getState() as RootState
     const accessToken = state.auth.accessToken
     const dispatchFunction = dispatch as AppDispatch
     if (!accessToken) throw new Error('no accessToken found ')
+    if (!userId) throw new Error('no userId found ')
+    console.log("userId ",userId)
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
-    const res = await axiosPrivate.get(`/user/followers`, { params: { page } })
-    console.log(res)
+    const res = await axiosPrivate.get(`/user/followers`, { params: { page, userId } })
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    return errorHandler(error)
+  }
+})
+
+export const getFollowing = createAsyncThunk('/user/get-following', async ({ userId, page = 1 }: GetFollowersArgs, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error('no accessToken found ')
+    if (!userId) throw new Error('no userId found ')
+    console.log("userId ",userId)
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.get(`/user/following`, { params: { page, userId } })
     removeInterceptors()
     return res.data
   } catch (error) {

@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectPost, selectPostNumberOfPages, selectPostPage, selectPostPosts, selectPostStatus, selectPostUserCreatedCurrentPage, selectPostUserCreatedNumberOfPages, selectPostUserCreatedPosts, selectPostUserCreatedStatus } from '../../../features/post/postSlice'
+import {
+  selectPost, selectPostUserCreatedCurrentPage,
+  selectPostUserCreatedNumberOfPages, selectPostUserCreatedPosts,
+  selectPostUserCreatedStatus
+} from '../../../features/post/postSlice'
 import Feed from '../feed/Feed'
 import { PostType } from '../../../constants/FeedTypes'
 import { AppDispatch } from '../../../app/store'
-import { getPosts, getUserCreatedPosts } from '../../../features/post/postApi'
+import { getUserCreatedPosts } from '../../../features/post/postApi'
 import { AnimatePresence } from 'framer-motion'
 import Comments from '../feed/Comments'
 import PostCard from '../feed/PostCard'
-import { Waypoint } from 'react-waypoint'
-import Spinner from '../../Spinner'
 import PostSkeltonLoader from '../../basic/PostSkeltonLoader'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
 
-type Props = {}
+type Props = {
+  userId: string
+}
 
-const ProfilePosts = (props: Props) => {
+const ProfilePosts = ({ userId }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const [modelOpen, setModelOpen] = useState<Boolean>(false)
@@ -35,13 +39,13 @@ const ProfilePosts = (props: Props) => {
 
   useEffect(() => {
     if (posts.length !== 0) return
-    dispatch(getUserCreatedPosts(1))
+    dispatch(getUserCreatedPosts({ page: 1, userId }))
   }, [])
 
 
   const loadMorePosts = () => {
     if (status === 'loading' || !hasMore) return
-    dispatch(getUserCreatedPosts(page + 1))
+    dispatch(getUserCreatedPosts({page : page + 1, userId}))
     const newPage = page + 1
     setHasMore(newPage <= numberOfPages)
   }
@@ -57,7 +61,7 @@ const ProfilePosts = (props: Props) => {
         {modelOpen && <Comments handleClose={close} />}
       </AnimatePresence>
 
-      
+
       <InfiniteScroll
         className='space-y-4 h-64  overflow-y-scroll  scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500'
         scrollableTarget='home'

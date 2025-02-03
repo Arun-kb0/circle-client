@@ -1,4 +1,4 @@
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { AppDispatch } from './app/store'
 import Navbar from './components/Navbar'
@@ -21,19 +21,23 @@ import ResetPassword from './pages/ResetPassword'
 import GlobalFeed from './pages/user/GlobalFeed'
 import CreatePost from './pages/user/CreatePost'
 import ChatPage from './pages/user/ChatPage'
-import Following from './pages/user/Following'
+import Following from './pages/user/FollowingPage'
 import FollowPeople from './pages/user/FollowPeople'
 import { setIsInChat } from './features/chat/chatSlice'
 import { receiveMessage } from './features/chat/chatApi'
 import ProfilePage from './pages/user/ProfilePage'
 import EditPostPage from './pages/user/EditPostPage'
 import CropperPage from './pages/user/CropperPage'
+import FollowersPage from './pages/user/FollowingPage'
+import { selectAuthUser } from './features/auth/authSlice'
+import OtherUserProfilePage from './pages/user/OtherUserProfilePage'
 
 
 function App() {
   const location = useLocation()
   const dispatch = useDispatch<AppDispatch>()
   const hideNavbarPaths = ['/login', '/signup', '/resetPwd', '/admin/signup', '/admin/login']
+  const user = useSelector(selectAuthUser)
 
   useEffect(() => {
     dispatch(refresh())
@@ -69,12 +73,12 @@ function App() {
         <Route element={<RequireAuth role={roles.user} />} >
           <Route path='/' element={<Home />} />
           <Route path='/profile' element={<ProfilePage />} />
-          <Route path='/user-profile' element={<ProfilePage />} />
+          <Route path='/user-profile' element={<OtherUserProfilePage />} />
           <Route path='/global-feed' element={<GlobalFeed />} />
           <Route path='/create-post' element={<CreatePost />} />
           <Route path='/edit-post' element={<EditPostPage />} />
           <Route path='/chat' element={<ChatPage />} />
-          <Route path='/following' element={<Following />} />
+          <Route path='/following' element={<FollowersPage userId={user?._id || ''} />} />
           <Route path='/follow-people' element={<FollowPeople />} />
           <Route path='/crop' element={<CropperPage />} />
 

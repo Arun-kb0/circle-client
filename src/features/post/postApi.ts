@@ -8,15 +8,16 @@ import { toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
 
 
-
-export const getUserCreatedPosts = createAsyncThunk('/posts/user-created', async (page: number = 1, { dispatch, getState }) => {
+type GetUserCreatedPostsArgs = { userId: string, page: number }
+export const getUserCreatedPosts = createAsyncThunk('/posts/user-created', async ({ userId, page }: GetUserCreatedPostsArgs, { dispatch, getState }) => {
   try {
     const state = getState() as RootState
     const accessToken = state.auth.accessToken
     const dispatchFunction = dispatch as AppDispatch
     if (!accessToken) throw new Error(' no accessToken found ')
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
-    const res = await axiosPrivate.get(`/feed/user-created-posts?page=${page}`)
+    const params = { userId, page }
+    const res = await axiosPrivate.get(`/feed/user-created-posts`, { params })
     removeInterceptors()
     return res.data
   } catch (error) {
@@ -50,7 +51,6 @@ export const createPost = createAsyncThunk('/post/create', async (post: Partial<
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.post(`/post/`, { post })
     removeInterceptors()
-    toast('create post success')
     return res.data
   } catch (error) {
     console.log(error)

@@ -1,19 +1,20 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { selectAuthUser } from '../../../features/auth/authSlice'
 import { FaUserCircle } from 'react-icons/fa'
 import ProfilePosts from './ProfilePosts'
 import ProfileAbout from './ProfileAbout'
-import ProfileFollowers from './ProfileFollowers'
-import ProfileFollowing from './ProfileFollowing'
+import { UserType } from '../../../constants/types'
+import FollowingPage from '../../../pages/user/FollowingPage'
+import Followers from './Followers'
 
-type Props = {}
+type Props = {
+  user: UserType
+}
 
-const Profile = (props: Props) => {
-  const user = useSelector(selectAuthUser)
+const Profile = ({ user }: Props) => {
   const [activeSection, setActiveSection] = useState<"posts" | "about" | "following" | "followers" | null>('posts')
 
   const handleSectionClick = (section: "posts" | "about" | "following" | "followers") => {
+    if (activeSection === section) return
     setActiveSection((prev) => (prev === section ? null : section))
   }
 
@@ -57,12 +58,11 @@ const Profile = (props: Props) => {
 
       {/* user data */}
       <section className='w-full flex justify-center'>
-        {activeSection === 'posts' && <ProfilePosts />}
+        {activeSection === 'posts' && <ProfilePosts userId={user._id} />}
         {activeSection === 'about' && <ProfileAbout />}
-        {activeSection === 'followers' && <ProfileFollowers />}
-        {activeSection === 'following' && <ProfileFollowing />}
+        {activeSection === 'following' && <FollowingPage userId={user._id} />}
+        {activeSection === 'followers' && <Followers userId={user._id} />}
       </section>
-
 
     </main >
   )

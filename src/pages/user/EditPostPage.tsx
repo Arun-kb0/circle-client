@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import PostImages from '../../components/user/feed/PostImages';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PostType } from '../../constants/FeedTypes';
 import { useForm } from 'react-hook-form';
 import {
-  selectPostCroppedImage, selectPostImageToCrop, selectUploadFiles,
+  selectPostCroppedImage, selectPostImageToCrop, 
   selectUploadFilesStatus, setCroppedImage, setImageToCrop
 } from '../../features/post/postSlice';
 import { AppDispatch } from '../../app/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { updatePost, uploadFiles } from '../../features/post/postApi';
-import { IoCloudUploadOutline } from 'react-icons/io5';
-import Spinner from '../../components/Spinner';
-import { imaggaScale } from '@cloudinary/url-gen/actions/resize';
-import { image } from '@cloudinary/url-gen/qualifiers/source';
-import { useAnimationControls } from 'framer-motion';
-import { BsDisplayport } from 'react-icons/bs';
 import PostForm from '../../components/user/createPost/PostForm';
+import { AnimatePresence } from 'framer-motion';
+import OrbAnimation from '../../components/basic/OrbAnimation';
 
 type Props = {}
 
@@ -41,6 +36,7 @@ const EditPostPage = (props: Props) => {
     post.media ? Array(post.media.length).fill(null) : []
   );
   const [resetActiveIndex, setResetActiveIndex] = useState(false)
+  const [loaderModelOpen, setLoaderModelOpen] = useState(false)
 
   const dispatch = useDispatch<AppDispatch>()
   const uploadFilesStatus = useSelector(selectUploadFilesStatus)
@@ -60,6 +56,7 @@ const EditPostPage = (props: Props) => {
 
   const onSubmit = async (data: FromDataType) => {
     console.log("data = ")
+    setLoaderModelOpen(true)
     const cloudinaryUrlRegex = /^https:\/\/res\.cloudinary\.com\/.*$/;
     const existingImageUrls = images.filter(item => cloudinaryUrlRegex.test(item))
     const updatedImageFiles = imageFiles.filter(file => file !== null)
@@ -70,9 +67,11 @@ const EditPostPage = (props: Props) => {
         mediaType: 'text',
         media: [`${data.message}`],
       }
-      dispatch(updatePost(updatedPost))
+      await dispatch(updatePost(updatedPost))
       dispatch(setCroppedImage({ url: undefined, blob: undefined }))
       dispatch(setImageToCrop(undefined))
+      setLoaderModelOpen(false)
+      navigator('/')
       return
     }
 
@@ -88,10 +87,12 @@ const EditPostPage = (props: Props) => {
       tags: hashtags ? hashtags : [],
     }
     console.log(updatedPost)
-    dispatch(updatePost(updatedPost))
+    await dispatch(updatePost(updatedPost))
     dispatch(setCroppedImage({ url: undefined, blob: undefined }))
     dispatch(setImageToCrop(undefined))
-  };
+    setLoaderModelOpen(false)
+    navigator('/')
+  }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -157,50 +158,18 @@ const EditPostPage = (props: Props) => {
       <div className="p-4 sm:ml-64" >
         <div className="p-4 mt-14">
 
-          {/* <form onSubmit={handleSubmit(onSubmit)} className="flex items-center justify-center" >
-            <div className='space-y-4'>
-
-              {images.length > 0 &&
-                <PostImages
-                  media={images}
-                  isEdit={true}
-                  deleteFunction={handleDeleteImage}
-                  resetActiveIndex={resetActiveIndex}
-                  handleImageCrop={handleImageCrop}
-                />
-              }
-              <div>
-                <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <IoCloudUploadOutline size={52} />
-                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
-                  </div>
-                  <input
-                    id="dropzone-file"
-                    type="file"
-                    multiple
-                    accept="image/jpeg, image/png, image/gif, image/webp, video/mp4, video/webm, video/ogg"
-                    className="hidden"
-                    {...register('image')}
-                    onChange={handleFileChange}
-                  />
-                  <label htmlFor="message" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">upload images</label>
-                </label>
-              </div>
-
-              <label htmlFor="message" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">update tags and description</label>
-              <textarea
-                className="block p-2.5 w-full text-MD text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 h-23"
-                {...register('message')}
+          <AnimatePresence
+            initial={false}
+            mode='wait'
+            onExitComplete={() => null}
+          >
+            {loaderModelOpen &&
+              <OrbAnimation
+                message='Updating your post....'
+                handleClose={() => { setLoaderModelOpen(false) }}
               />
-              <button type="submit" className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" >
-                {uploadFilesStatus === 'loading' && <Spinner />}
-                Update post
-              </button>
-
-            </div>
-          </form> */}
+            }
+          </AnimatePresence>
 
           <PostForm
             isEdit={true}

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import UserCard from '../../components/user/follow/UserCard';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectUserSuggested, selectUserSuggestedCurrentPage,
@@ -7,10 +6,7 @@ import {
 } from '../../features/user/userSlice';
 import { AppDispatch } from '../../app/store';
 import { getSuggestedPeople } from '../../features/user/userApi';
-import Spinner from '../../components/Spinner';
-import { Waypoint } from 'react-waypoint';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import UserSkeletonLoader from '../../components/basic/UserSkeletonLoader';
+import UsersList from '../../components/user/follow/UsersList';
 
 
 type Props = {}
@@ -41,30 +37,12 @@ const FollowPeople = (props: Props) => {
       <div className="p-4 sm:ml-64" >
         <div className="p-4 mt-14 flex flex-wrap justify-start gap-8 lg:w-[160vh] md:w-[100vh]">
 
-          <InfiniteScroll
-            className='p-4 mt-14 flex flex-wrap justify-start gap-8'
-            scrollableTarget='home'
-            dataLength={users.length}
-            next={loadMorePosts}
+          <UsersList
+            users={users}
+            loadMorePosts={loadMorePosts}
             hasMore={hasMore}
-            loader={
-              <div className='space-y-4 flex flex-wrap'>
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <UserSkeletonLoader key={index} />
-                ))}
-              </div>
-            }
-          >
-            {users.map(user => (
-              <UserCard
-                key={user._id}
-                userId={user._id}
-                name={user.name}
-                image={user.image?.url}
-                isFollowing={true}
-              />
-            ))}
-          </InfiniteScroll>
+            isFollowing={false}
+          />
 
         </div>
       </div>

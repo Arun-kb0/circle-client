@@ -1,6 +1,10 @@
 import { ActionCreator, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { PaginationUsers, StateType, UserType } from "../../constants/types"
-import { blockUser, followUser, getAllUsers, getFollowers, getSuggestedPeople, unblockUser, unFollow } from "./userApi"
+import {
+  blockUser, followUser, getAllUsers, getFollowers,
+  getFollowing,
+  getSuggestedPeople, getUser, unblockUser, unFollow
+} from "./userApi"
 import { RootState } from "../../app/store"
 
 
@@ -21,6 +25,13 @@ type UserStateType = {
   suggestedNumberOfPages: number
   suggestedCurrentPage: number
 
+  followingPeople: UserType[]
+  followingPeopleStatus: StateType
+  followingNumberOfPages: number
+  followingCurrentPage: number
+
+  otherUser?: UserType
+
   error: string | undefined
 }
 
@@ -39,12 +50,30 @@ const initialState: UserStateType = {
   suggestedNumberOfPages: 0,
   suggestedCurrentPage: 0,
   error: undefined,
+
+  followingPeople: [],
+  followingPeopleStatus: "loading",
+  followingNumberOfPages: 0,
+  followingCurrentPage: 0
 }
 
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {},
+  reducers: {
+
+    clearFollowers: (state) => {
+      state.followCurrentPage = 0
+      state.usersNumberOfPages = 0
+      state.followers = []
+    },
+    clearFollowing: (state) => {
+      state.followingCurrentPage = 0
+      state.followingNumberOfPages = 0
+      state.followingPeople = []
+    }
+
+  },
 
   extraReducers: (builder) => {
     builder
@@ -92,7 +121,7 @@ const userSlice = createSlice({
         const { user } = action.payload
         const updatedUsers = state.suggestedPeople.filter(item => item._id !== user._id)
         state.suggestedPeople = updatedUsers
-        state.followers.unshift(user)
+        state.followingPeople.unshift(user)
       })
       .addCase(followUser.rejected, (state, action) => {
         state.error = action.error.message
@@ -100,8 +129,8 @@ const userSlice = createSlice({
 
       .addCase(unFollow.fulfilled, (state, action: PayloadAction<{ user: UserType }>) => {
         const { user } = action.payload
-        const updatedUsers = state.followers.filter(item => item._id !== user._id)
-        state.followers = updatedUsers
+        const updatedUsers = state.followingPeople.filter(item => item._id !== user._id)
+        state.followingPeople = updatedUsers
         state.suggestedPeople.unshift(user)
       })
       .addCase(unFollow.rejected, (state, action) => {
@@ -125,6 +154,23 @@ const userSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(getFollowing.pending, (state) => {
+        state.followingPeopleStatus = 'loading'
+      })
+      .addCase(getFollowing.fulfilled, (state, action: PayloadAction<PaginationUsers>) => {
+        state.followingPeopleStatus = 'success'
+        const { users, numberOfPages, currentPage } = action.payload
+        const existingUserIds = new Set(state.followingPeople.map(user => user._id));
+        const newUsers = users.filter(user => !existingUserIds.has(user._id));
+        state.followingPeople = [...state.followingPeople, ...newUsers]
+        state.followingNumberOfPages = numberOfPages
+        state.followingCurrentPage = currentPage
+      })
+      .addCase(getFollowing.rejected, (state, action) => {
+        state.followingPeopleStatus = 'failed'
+        state.error = action.error.message
+      })
+
       .addCase(getSuggestedPeople.pending, (state) => {
         state.suggestedPeopleStatus = 'loading'
       })
@@ -144,6 +190,13 @@ const userSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(getUser.fulfilled, (state, action) => {
+        state.otherUser = action.payload.user
+      })
+      .addCase(getUser.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
   }
 })
 
@@ -160,15 +213,21 @@ export const selectUserFollowCurrentPage = (state: RootState) => state.user.foll
 export const selectUserFollowNumberOfPages = (state: RootState) => state.user.followNumberOfPages
 export const selectUserFollowStatus = (state: RootState) => state.user.followStatus
 
+export const selectUserFollowing = (state: RootState) => state.user.followingPeople
+export const selectUserFollowingCurrentPage = (state: RootState) => state.user.followingCurrentPage
+export const selectUserFollowingNumberOfPages = (state: RootState) => state.user.followingNumberOfPages
+export const selectUserFollowingStatus = (state: RootState) => state.user.followingPeopleStatus
+
 export const selectUserSuggested = (state: RootState) => state.user.suggestedPeople
 export const selectUserSuggestedCurrentPage = (state: RootState) => state.user.suggestedCurrentPage
 export const selectUserSuggestedNumberOfPages = (state: RootState) => state.user.suggestedNumberOfPages
 export const selectUserSuggestedStatus = (state: RootState) => state.user.suggestedPeopleStatus
 
-
+export const selectUserOtherUser = (state: RootState) => state.user.otherUser
 
 export const {
-
+  clearFollowers,
+  clearFollowing
 } = userSlice.actions
 
 export default userSlice.reducer

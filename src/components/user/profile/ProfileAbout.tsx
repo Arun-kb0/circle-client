@@ -47,7 +47,8 @@ const ProfileAbout = (props: Props) => {
     console.log(data)
     let result: any = ''
     if (data.image) {
-      result = await dispatch(uploadFiles(data.image)).unwrap()
+      const fileArray = Array.from(data.image)
+      result = await dispatch(uploadFiles(fileArray)).unwrap()
       console.log(result)
     }
     const userReq: Partial<UserType> = {

@@ -1,25 +1,40 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FaUserCircle } from 'react-icons/fa';
 import { MdMoreHoriz } from "react-icons/md";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
-import { followUser, unFollow } from '../../../features/user/userApi';
-import { Link } from 'react-router-dom';
+import { followUser, getUser, unFollow } from '../../../features/user/userApi';
+import {  useLocation, useNavigate } from 'react-router-dom';
+import { clearFollowers, clearFollowing, selectUserFollowing } from '../../../features/user/userSlice';
 
 type Props = {
   userId: string
   name: string
   image: string | undefined
-  isFollowing: boolean
 }
 
-const UserCard = ({ userId, name, image, isFollowing }: Props) => {
+const UserCard = ({ userId, name, image }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
+  const navigator = useNavigate()
+  const location = useLocation()
+  const followingUsers = useSelector(selectUserFollowing)
+  const [isFollowing, setIsFollowing] = useState<boolean>(() => {
+    if (location.pathname === '/follow-people') return false
+    if (location.pathname === '/following') return true
+    return Boolean(followingUsers.findIndex(following => following._id === userId))
+  })
 
   const handleFollow = () => { dispatch(followUser(userId)) }
   const handleUnFollow = () => { dispatch(unFollow(userId)) }
   const handleRemove = () => { }
   const handleMessage = () => { }
+
+  const handleProfileNav = async () => {
+    dispatch(clearFollowers())
+    dispatch(clearFollowing())
+    await dispatch(getUser(userId))
+    navigator('/user-profile')
+  }
 
   return (
     <article className="max-w-sm w-52 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -45,12 +60,12 @@ const UserCard = ({ userId, name, image, isFollowing }: Props) => {
       </div>
 
       <div className="flex flex-col items-center pb-10">
-        <Link to='/user-profile' >
+        <button onClick={handleProfileNav} >
           {image
             ? <img className="w-24 h-24 mb-3 rounded-full object-cover shadow-lg" src={image} alt="Bonnie image" />
             : <FaUserCircle className='w-24 h-24 mb-3 shadow-lg' />
           }
-        </Link>
+        </button>
         <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">{name}</h5>
         {isFollowing
           ? <div className="flex mt-4 md:mt-6">

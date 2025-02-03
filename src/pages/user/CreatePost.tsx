@@ -5,12 +5,16 @@ import { createPost, uploadFiles } from '../../features/post/postApi';
 import { PostType } from '../../constants/FeedTypes';
 import {
   selectPostCreateCache, selectPostCroppedImage,
-  selectPostImageToCrop, 
+  selectPostImageToCrop,
+  selectPostImageToCropIndex,
   selectUploadFilesStatus, setCreatePostCache,
-  setCroppedImage, setImageToCrop
+  setCroppedImage, setImageToCrop,
+  setImageToCropIndex
 } from '../../features/post/postSlice';
 import PostForm from '../../components/user/createPost/PostForm';
 import { useNavigate } from 'react-router-dom';
+import OrbAnimation from '../../components/basic/OrbAnimation';
+import { AnimatePresence } from 'framer-motion';
 
 
 type Props = {}
@@ -27,14 +31,16 @@ const CreatePost = (props: Props) => {
   const croppedImage = useSelector(selectPostCroppedImage)
   const imageToCrop = useSelector(selectPostImageToCrop)
   const postCache = useSelector(selectPostCreateCache)
+  const imageToCropIndex = useSelector(selectPostImageToCropIndex)
 
   const [images, setImages] = useState<string[]>(postCache.images)
   const [imageFiles, setImageFiles] = useState<File[]>(postCache.imageFiles)
   const [resetActiveIndex, setResetActiveIndex] = useState(false)
-
+  const [loaderModelOpen, setLoaderModelOpen] = useState(false)
 
   const onSubmit = async (data: FromDataType) => {
     console.log("data = ")
+    setLoaderModelOpen(true)
     const cloudinaryUrlRegex = /^https:\/\/res\.cloudinary\.com\/.*$/;
     const existingImageUrls = images.filter(item => cloudinaryUrlRegex.test(item))
     const updatedImageFiles = imageFiles.filter(file => file !== null)
@@ -48,10 +54,12 @@ const CreatePost = (props: Props) => {
         media: [`${content}`],
         tags: hashtags ? hashtags : [],
       }
-      dispatch(createPost(updatedPost))
+      await dispatch(createPost(updatedPost))
       dispatch(setCroppedImage({ url: undefined, blob: undefined }))
       dispatch(setImageToCrop(undefined))
       dispatch(setCreatePostCache({ imageFiles: [], images: [] }))
+      setLoaderModelOpen(false)
+      navigator('/')
       return
     }
 
@@ -63,11 +71,13 @@ const CreatePost = (props: Props) => {
       tags: hashtags ? hashtags : [],
     }
     console.log(updatedPost)
-    dispatch(createPost(updatedPost))
+    await dispatch(createPost(updatedPost)).unwrap()
     dispatch(setCroppedImage({ url: undefined, blob: undefined }))
     dispatch(setImageToCrop(undefined))
     dispatch(setCreatePostCache({ imageFiles: [], images: [] }))
-  };
+    setLoaderModelOpen(false)
+    navigator('/')
+  }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -91,7 +101,7 @@ const CreatePost = (props: Props) => {
     })
   }
 
-  const handleDeleteImage = (index: number) => {
+  const handleDeleteImage = async (index: number) => {
     const imageToDelete = images[index]
     if (imageToDelete === croppedImage) dispatch(setCroppedImage({ url: undefined, blob: undefined }))
     setImages((prevImages) => prevImages.filter((_, i) => i !== index))
@@ -99,8 +109,9 @@ const CreatePost = (props: Props) => {
     setResetActiveIndex(true)
   }
 
-  const handleImageCrop = (index: number) => {
-    // ! file for this need to be deleted
+  const handleImageCrop = async (index: number) => {
+    await handleDeleteImage(index)
+
     dispatch(setImageToCrop(images[index]));
     navigator('/crop');
   }
@@ -110,14 +121,6 @@ const CreatePost = (props: Props) => {
     const { url, blob } = croppedImage
     if (!url || !blob) return
     if (images.includes(url)) return
-    console.log('use effect')
-    // ! remove  duplicate while navigating to corp page
-    // ! working code below
-    // const updatedImages = images.filter(item => item !== imageToCrop)
-    // const updatedFiles = imageFiles.filter(item => {
-    //   if (!item) return true
-    //   return item.name !== imageToCrop
-    // })
     const updatedFiles = imageFiles
     const updatedImages = images
     setImages([...updatedImages, url])
@@ -141,6 +144,19 @@ const CreatePost = (props: Props) => {
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
       <div className="p-4 sm:ml-64" >
         <div className="p-4 mt-14 w-[70vw]">
+
+          <AnimatePresence
+            initial={false}
+            mode='wait'
+            onExitComplete={() => null}
+          >
+            {loaderModelOpen &&
+              <OrbAnimation
+                message="creating your post...."
+                handleClose={() => { setLoaderModelOpen(false) }}
+              />
+            }
+          </AnimatePresence>
 
           <PostForm
             isEdit={false}

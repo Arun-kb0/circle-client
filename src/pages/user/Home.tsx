@@ -1,12 +1,23 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Feed from '../../components/user/feed/Feed'
 import { TbPhoto } from "react-icons/tb";
 import { TbVideo } from "react-icons/tb";
 import { Link } from 'react-router-dom';
 import SpringButton from '../../components/basic/SpringButton';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../app/store';
+import { getFollowing } from '../../features/user/userApi';
+import { selectAuthUser } from '../../features/auth/authSlice';
 
 const Home = () => {
-  // ! add create post page
+  const dispatch = useDispatch<AppDispatch>()
+  const user = useSelector(selectAuthUser)
+
+  useEffect(() => {
+    if(!user) return
+    dispatch(getFollowing({ userId: user._id, page: 1 }))
+  }, [])
+
   return (
     <main id='home' className='main-section justify-center relative overflow-hidden ' >
       <div className="p-4 sm:ml-64" >

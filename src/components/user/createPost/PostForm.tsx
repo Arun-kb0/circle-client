@@ -45,7 +45,7 @@ const PostForm = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex items-center justify-center">
-      <div className='space-y-4'>
+      <div className='space-y-4  md:h-96 lg:w-[50vw]'>
 
         {images.length > 0 &&
           <PostImages
