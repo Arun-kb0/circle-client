@@ -35,11 +35,11 @@ const ChatUser = ({ name, image, userId, messageCount }: Props) => {
             : <FaUserCircle size={35} />
           }
           <span className="sr-only">Notifications</span>
-          <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">{messageCount}</div>
+          {/* <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">{messageCount}</div> */}
         </button>
       </div>
       <div className="flex-1 min-w-0 ms-4">
-        <p className="text-sm font-medium text-gray-900 truncate dark:text-white"> {name} </p>
+        <p className="capitalize text-sm font-medium text-gray-900 truncate dark:text-white"> {name} </p>
       </div>
     </section>
   )

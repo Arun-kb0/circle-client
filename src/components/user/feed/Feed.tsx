@@ -14,7 +14,7 @@ import { AppDispatch } from '../../../app/store';
 import { getPosts, updatePost } from '../../../features/post/postApi';
 import LikedUsersModel from './LikedUsersModel';
 import InfiniteScroll from 'react-infinite-scroll-component'
-import PostSkeltonLoader from '../../basic/PostSkeltonLoader';
+import PostSkeltonLoader from '../../basic/PostSkeletonLoader';
 
 
 const Feed = () => {

@@ -54,7 +54,7 @@ const ChatMessage = ({ id, name, time, status, message, userImage }: Props) => {
 
     <article className="flex items-start gap-2.5 justify-start relative">
       {userImage
-        ? <img className="w-8 h-8 rounded-full" src={userImage} alt={name} />
+        ? <img className="w-8 h-8 rounded-full object-cover" src={userImage} alt={name} />
         : <FaUserCircle />
       }
 

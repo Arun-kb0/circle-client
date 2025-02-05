@@ -1,33 +1,41 @@
 import React, { useEffect, useState } from 'react'
 import ChatUser from './ChatUser';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUserFollowCurrentPage, selectUserFollowers, selectUserFollowNumberOfPages, selectUserFollowStatus } from '../../../features/user/userSlice';
+import {
+  selectUserFollowing, selectUserFollowingCurrentPage,
+  selectUserFollowingNumberOfPages, selectUserFollowingStatus,
+} from '../../../features/user/userSlice';
 import { AppDispatch } from '../../../app/store';
-import { getFollowers } from '../../../features/user/userApi';
+import { getFollowers, getFollowing } from '../../../features/user/userApi';
 import { Waypoint } from 'react-waypoint';
 import Spinner from '../../Spinner';
+import { selectAuthUser } from '../../../features/auth/authSlice';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import ChatUserSkeletonLoader from '../../basic/ChatUserSkeletonLoader';
 
 
 type Props = {}
 
 const ChatUsers = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>()
-  const users = useSelector(selectUserFollowers)
-  const numberOfPages = useSelector(selectUserFollowNumberOfPages)
-  const page = useSelector(selectUserFollowCurrentPage)
-  const status = useSelector(selectUserFollowStatus)
+  const currentUser = useSelector(selectAuthUser)
+  const users = useSelector(selectUserFollowing)
+  const numberOfPages = useSelector(selectUserFollowingNumberOfPages)
+  const page = useSelector(selectUserFollowingCurrentPage)
+  const status = useSelector(selectUserFollowingStatus)
   const [hasMore, setHasMore] = useState<boolean>(() => page <= numberOfPages);
 
   useEffect(() => {
-    console.log(page)
+    if (!currentUser) return
     if (!users || users.length === 0) {
-      dispatch(getFollowers(1))
+      dispatch(getFollowing({ userId: currentUser._id, page: 1 }))
     }
   }, [])
 
   const loadMoreUsers = () => {
+    if (!currentUser) return
     if (status === 'loading' || !hasMore) return
-    dispatch(getFollowers(page + 1))
+    dispatch(getFollowing({ userId: currentUser._id, page: page + 1 }))
     const newPage = page + 1
     setHasMore(newPage <= numberOfPages)
   }
@@ -35,34 +43,36 @@ const ChatUsers = (props: Props) => {
 
   return (
     <section className="w-full overflow-y-auto max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
-      <div className="flex items-center justify-between mb-4">  <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">People</h5></div>
-      <div className="flow-root">
-        <ul role="list" className="divide-y divide-gray-200 dark:divide-gray-700">
-          {users.map((user) => (
-            <li className="py-3 sm:py-4">
-              <ChatUser
-                key={user._id}
-                userId={user._id}
-                name={user.name}
-                image={user.image?.url}
-                messageCount={21}
-              />
-            </li>
-          ))}
-        </ul>
-      </div>
 
-      {hasMore && status === 'success' &&
-        <Waypoint
-          onEnter={loadMoreUsers}
-          bottomOffset="-100px"
-        >
-          <div> <Spinner /></div>
-        </Waypoint>
-      }
+      <div className="flex items-center justify-between mb-4"> <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white capitalize">people</h5></div>
+      <InfiniteScroll
+        className='flow-root divide-y divide-gray-200 dark:divide-gray-700'
+        dataLength={users.length}
+        next={loadMoreUsers}
+        hasMore={hasMore}
+        loader={
+          <div className='space-y-4'>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <ChatUserSkeletonLoader key={index} />
+            ))}
+          </div>
+        }
+        height={window.innerHeight - 240}
+      >
+        {users.map((user) => (
+          <article className="py-3 sm:py-4">
+            <ChatUser
+              key={user._id}
+              userId={user._id}
+              name={user.name}
+              image={user.image?.url}
+              messageCount={21}
+            />
+          </article>
+        ))}
+      </InfiniteScroll>
 
     </section>
-
   )
 }
 

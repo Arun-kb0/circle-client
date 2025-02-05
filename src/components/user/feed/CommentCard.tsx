@@ -11,7 +11,7 @@ import {
 } from '../../../features/post/postSlice'
 import { AppDispatch } from '../../../app/store'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import CommentSkeltonLoader from '../../basic/CommentSkeltonLoader'
+import CommentSkeltonLoader from '../../basic/CommentSkeletonLoader'
 import RecursiveComments from './RecursiveComments'
 
 type FormData = {

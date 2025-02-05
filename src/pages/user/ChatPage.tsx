@@ -11,10 +11,10 @@ const ChatPage = (props: Props) => {
       <div className="p-4 sm:ml-64" >
         <div className="lg:p-4 sm:p-1 mt-14 flex justify-between gap-8 lg:w-[160vh] md:w-[100vh] sm:w-[80vh]">
 
-          <div className='w-full rounded-lg bg-gray-900 p-3  '>
+          <div className='rounded-lg bg-gray-900 p-3  w-8/12 '>
             <ChatSection />
           </div>
-          <div className=' col-3/12'>
+          <div className='w-3/12'>
             <ChatUsers />
           </div>
 

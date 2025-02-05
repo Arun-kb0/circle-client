@@ -12,7 +12,7 @@ import { getUserCreatedPosts } from '../../../features/post/postApi'
 import { AnimatePresence } from 'framer-motion'
 import Comments from '../feed/Comments'
 import PostCard from '../feed/PostCard'
-import PostSkeltonLoader from '../../basic/PostSkeltonLoader'
+import PostSkeltonLoader from '../../basic/PostSkeletonLoader'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
 

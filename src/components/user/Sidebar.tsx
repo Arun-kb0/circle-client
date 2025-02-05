@@ -13,7 +13,6 @@ import { clearFollowers, clearFollowing } from '../../features/user/userSlice';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../app/store';
 import { clearUserCreatedPosts } from '../../features/post/postSlice';
-import { getUser } from '../../features/user/userApi';
 
 type Props = {}
 
@@ -30,6 +29,11 @@ const Sidebar = (props: Props) => {
   const handleNavigateToFollowing = async () => {
     await handleClearProfile()
     navigate('/following')
+  }
+
+  const handleNavigateToChat = async () => {
+    await handleClearProfile()
+    navigate('/chat')
   }
 
   return (
@@ -94,10 +98,10 @@ const Sidebar = (props: Props) => {
           </li>
           <li>
             <SpringButton>
-              <Link to='/chat' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <button onClick={handleNavigateToChat}  className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <TbMessageCircle size={22} />
                 <span className="ms-3">Messaging</span>
-              </Link>
+              </button>
             </SpringButton>
           </li>
 

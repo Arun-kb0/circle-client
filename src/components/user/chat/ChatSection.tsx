@@ -20,6 +20,9 @@ import DropDown from '../../basic/DropDown';
 import { DropDownElementsType } from '../../../constants/types';
 import Spinner from '../../Spinner';
 import { Waypoint } from 'react-waypoint';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import ChatSkeltonLoader from '../../basic/ChatSkeltonLoader';
+import EmojiPicker, { EmojiClickData, EmojiStyle, Theme } from 'emoji-picker-react';
 
 
 type Props = {}
@@ -30,6 +33,8 @@ const ChatSection = (props: Props) => {
 
   const ref = useRef<HTMLDivElement | null>(null)
   const [open, setOpen] = useState(false)
+  const [emojiModelOpen, setEmojiModelOpen] = useState<boolean>(false)
+  const [emoji, setEmoji] = useState<EmojiClickData | null>(null)
 
   const user = useSelector(selectAuthUser)
   const messageObj = useSelector(selectChatMessages)
@@ -90,11 +95,11 @@ const ChatSection = (props: Props) => {
   ]
 
   return (
-    <section>
-      <div className='relative flex justify-start bg-gray-800 px-3 gap-4 items-center py-3 rounded-lg shadow-lg'>
+    <section >
+      <div className='relative flex justify-start bg-gray-800 px-3 gap-4 items-center py-3 rounded-lg shadow-lg '>
         <Link to='/user-profile'>
           {chatUser?.image
-            ? <img className="w-8 h-8 rounded-full" src={chatUser?.image} alt="Neil image" />
+            ? <img className="w-8 h-8 rounded-full object-cover mx-2" src={chatUser?.image} alt="Neil image" />
             : <FaUserCircle size={35} />
           }
         </Link>
@@ -111,10 +116,25 @@ const ChatSection = (props: Props) => {
         </div>
       </div>
 
-      <section className='w-full h-[70vh] space-y-3 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-200 py-4'>
+      <InfiniteScroll
+        className='w-full h-[60vh] space-y-3 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-200 py-4'
+        dataLength={messages.length}
+        next={loadMoreMessages}
+        hasMore={hasMore}
+        loader={
+          <div className='space-y-4'>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <ChatSkeltonLoader
+                key={index}
+                isSend={index % 2 === 0 ? true : false}
+              />
+            ))}
+          </div>
+        }
+        height={window.innerHeight - 240}
+      >
         {!chatUser && <div className='w-full h-full flex justify-center items-center'> <h5 className='font-semibold text-lg'>select a user to chat</h5> </div>}
         {chatUser && !hasMore && messages.length === 0 && <div className="text-center">No messages</div>}
-
         {messages.map((message) => (
           user?._id === message.authorId
             ? <SendMessage
@@ -138,20 +158,26 @@ const ChatSection = (props: Props) => {
         ))}
         <div ref={ref} className='w-full h-24'></div>
 
-        {hasMore && status === 'success' &&
-          <Waypoint
-            onEnter={loadMoreMessages}
-            bottomOffset="-100px"
-          >
-            <div> <Spinner /></div>
-          </Waypoint>
-        }
+      </InfiniteScroll>
 
-      </section>
+      <div className='relative h-10 w-20'>
+        <EmojiPicker
+          className="absolute z-20 top-0 right-[-600px] bottom-0"
+          open={emojiModelOpen}
+          theme={Theme.DARK}
+          emojiStyle={EmojiStyle.APPLE}
+          width={350}
+          height={450}
+          onEmojiClick={e => setEmoji(e)}
+        />
+      </div>
 
       <ChatInput
         handleScrollToMessage={handleScrollToMessage}
+        setEmojiModelOpen={setEmojiModelOpen}
+        emoji={emoji}
       />
+
     </section>
   )
 }

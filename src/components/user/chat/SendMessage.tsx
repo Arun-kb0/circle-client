@@ -63,7 +63,7 @@ const SendMessage = ({ id, name, time, status, message, userImage }: Props) => {
         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{status}</span>
       </div>
       {userImage
-        ? <img className="w-8 h-8 rounded-full" src={userImage} alt={name} />
+        ? <img className="lg:w-8 lg:h-8 h-5 w-5 rounded-full object-cover " src={userImage} alt={name} />
         : <FaUserCircle />
       }
 

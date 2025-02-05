@@ -6,7 +6,7 @@ import { AppDispatch } from '../../../app/store'
 import { SubmitHandler } from 'react-hook-form'
 import { selectPostSelectedPost } from '../../../features/post/postSlice'
 import ActionBtn from './ActionBtn'
-import CommentSkeltonLoader from '../../basic/CommentSkeltonLoader'
+import CommentSkeltonLoader from '../../basic/CommentSkeletonLoader'
 import { TbUserQuestion } from 'react-icons/tb'
 
 
