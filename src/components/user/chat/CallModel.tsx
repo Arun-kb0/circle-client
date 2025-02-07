@@ -17,6 +17,7 @@ import SocketIoClient from "../../../config/SocketIoClient";
 import { SignalDataType } from "../../../constants/types";
 import { v4 as uuid } from 'uuid'
 import { selectAuthUser } from "../../../features/auth/authSlice";
+import callRingAudio from '../../../assets/audio/chime_ding.mp3'
 
 type Props = {
   handleClose: () => void;
@@ -42,11 +43,13 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const [isJoined, setIsJoined] = useState(false);
   const negotiationPendingRef = useRef(false);
-
+  const [incomingOffer, setIncomingOffer] = useState<RTCSessionDescriptionInit | null>(null);
+  
 
   const play = () => {
-
+    new Audio(callRingAudio).play()
   }
+  
 
 
   const cleanupResources = useCallback(() => {
@@ -71,7 +74,7 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
     }
 
     peerConnection.ontrack = ({ streams }) => {
-      console.log('peerConnection.ontrack = ' ,streams.toString())
+      console.log('peerConnection.ontrack = ', streams.toString())
       if (streams[0]) {
         setRemoteStream(streams[0])
         if (remoteVideoRef.current) {
@@ -90,6 +93,7 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
   }, [callRoomId, socket])
 
   const callUser = useCallback(async () => {
+
     if (negotiationPendingRef.current) return
     const peerConnection = createPeerConnection()
     localStream?.getTracks().forEach((track) => {
@@ -108,7 +112,7 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
         caller: socket.id
       })
       socket.emit(socketEvents.callStarted, { roomId: callRoomId })
-      
+
       console.log('call request send ')
       console.log(socketEvents.signal)
       console.log(socketEvents.callStarted)
@@ -120,23 +124,45 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
 
 
   const handleSignal = useCallback(async (data: any) => {
-      console.log('handle signal')
-      console.log('handle signal data.type', data.type)
-      const peerConnection = peerConnectionRef.current || createPeerConnection()
-      peerConnectionRef.current = peerConnection
+    // ! working code
+    // console.log('handle signal')
+    // console.log('handle signal data.type', data.type)
+    // const peerConnection = peerConnectionRef.current || createPeerConnection()
+    // peerConnectionRef.current = peerConnection
 
-      try {
-        if (data.type === 'offer') {
-          await handleOffer(peerConnection, data.offer)
-        } else if (data.type === 'answer') {
-          await handleAnswer(peerConnection, data.answer)
-        } else if (data.candidate) {
-          const newCandidate = new RTCIceCandidate(data.candidate)
-          await peerConnection.addIceCandidate(newCandidate)
+    // try {
+    //   if (data.type === 'offer') {
+    //     await handleOffer(peerConnection, data.offer)
+    //   } else if (data.type === 'answer') {
+    //     await handleAnswer(peerConnection, data.answer)
+    //   } else if (data.candidate) {
+    //     const newCandidate = new RTCIceCandidate(data.candidate)
+    //     await peerConnection.addIceCandidate(newCandidate)
+    //   }
+    // } catch (error) {
+    //   console.log(error)
+    // }
+
+    // ! test
+      console.log('handle signal, type:', data.type);
+      if (data.type === 'offer') {
+        // Save the offer so the user can manually answer it
+        setIncomingOffer(data.offer);
+      } else {
+        const pc = peerConnectionRef.current || createPeerConnection();
+        peerConnectionRef.current = pc;
+        try {
+          if (data.type === 'answer') {
+            await handleAnswer(pc, data.answer);
+          } else if (data.candidate) {
+            const newCandidate = new RTCIceCandidate(data.candidate);
+            await pc.addIceCandidate(newCandidate);
+          }
+        } catch (error) {
+          console.error(error);
         }
-      } catch (error) {
-        console.log(error)
       }
+
   }, [createPeerConnection])
 
   useEffect(() => {
@@ -164,7 +190,7 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
         if (!isJoined) {
           console.log('call started true')
           setIsCallStarted(true)
-          play()
+        play()
           setIsJoined(true);
           // if (callUser) callUser();
         } else {
@@ -189,7 +215,7 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
   const handleOffer = async (peerConnection: RTCPeerConnection, offer: RTCSessionDescriptionInit) => {
     if (!offer || peerConnection.signalingState !== 'stable') return
     await peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
-   
+
     localStream?.getTracks().forEach((track) => {
       peerConnection.addTrack(track, localStream)
     })
@@ -225,10 +251,22 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
   }, [localStream])
 
   const endCall = useCallback(() => {
+    handleClose()
     cleanupResources()
   }, [cleanupResources, callRoomId])
 
 
+  const answerCall = useCallback(async () => {
+    if (!incomingOffer) return;
+    const pc = peerConnectionRef.current || createPeerConnection();
+    peerConnectionRef.current = pc;
+    try {
+      await handleOffer(pc, incomingOffer);
+      setIncomingOffer(null);
+    } catch (error) {
+      console.error('Error answering call:', error);
+    }
+  }, [incomingOffer, createPeerConnection]);
 
   return (
     <BackdropVerifyOtp onClick={handleClose}>
@@ -264,9 +302,13 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
             <button onClick={callUser} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
               <FaVideo size={20} />
             </button>
-            <button onClick={callUser} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
-              <MdCall size={20} />
-            </button>
+            {incomingOffer
+              ? <button onClick={answerCall} className="text-green-700 border border-green-700 hover:bg-green-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:focus:ring-green-800 dark:hover:bg-green-500">
+               <MdCall size={20} />
+                </button>
+              : <button onClick={callUser} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+                <MdCall size={20} />
+              </button>}
             <button onClick={endCall} className="text-red-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500">
               <MdCallEnd size={20} />
             </button>
