@@ -6,6 +6,7 @@ import configureAxios from "../../config/configureAxios";
 import { UserType } from "../../constants/types";
 import { setAuthUser } from "../auth/authSlice";
 
+// ! check and remove 
 export const uploadProfileImage = createAsyncThunk('/user/image', async (file: File, { dispatch, getState }) => {
   try {
     console.log(dispatch, getState)
@@ -131,7 +132,6 @@ export const getFollowers = createAsyncThunk('/user/get-followers', async ({ use
     const dispatchFunction = dispatch as AppDispatch
     if (!accessToken) throw new Error('no accessToken found ')
     if (!userId) throw new Error('no userId found ')
-    console.log("userId ",userId)
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.get(`/user/followers`, { params: { page, userId } })
     removeInterceptors()
@@ -148,7 +148,6 @@ export const getFollowing = createAsyncThunk('/user/get-following', async ({ use
     const dispatchFunction = dispatch as AppDispatch
     if (!accessToken) throw new Error('no accessToken found ')
     if (!userId) throw new Error('no userId found ')
-    console.log("userId ",userId)
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.get(`/user/following`, { params: { page, userId } })
     removeInterceptors()
@@ -160,8 +159,6 @@ export const getFollowing = createAsyncThunk('/user/get-following', async ({ use
 
 export const getSuggestedPeople = createAsyncThunk('/user/get-suggested-people', async (page: number = 1, { dispatch, getState }) => {
   try {
-    console.log('getSuggestedPeople')
-    console.log(page)
     const state = getState() as RootState
     const accessToken = state.auth.accessToken
     const currentUser = state.auth.user

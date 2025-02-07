@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { AppDispatch } from './app/store'
 import Navbar from './components/Navbar'
-import { ToastContainer } from 'react-toastify'
+import { toast, ToastContainer } from 'react-toastify'
 import Signup from './pages/Signup'
 import Login from './pages/Login'
 import RequireAuth from './components/RequireAuth'
@@ -21,17 +21,17 @@ import ResetPassword from './pages/ResetPassword'
 import GlobalFeed from './pages/user/GlobalFeed'
 import CreatePost from './pages/user/CreatePost'
 import ChatPage from './pages/user/ChatPage'
-import Following from './pages/user/FollowingPage'
 import FollowPeople from './pages/user/FollowPeople'
 import { setIsInChat } from './features/chat/chatSlice'
-import { receiveMessage } from './features/chat/chatApi'
+import { callUserConnection, receiveMessage } from './features/chat/chatApi'
 import ProfilePage from './pages/user/ProfilePage'
 import EditPostPage from './pages/user/EditPostPage'
 import CropperPage from './pages/user/CropperPage'
 import FollowersPage from './pages/user/FollowingPage'
 import { selectAuthUser } from './features/auth/authSlice'
 import OtherUserProfilePage from './pages/user/OtherUserProfilePage'
-
+import socketEvents from './constants/socketEvents'
+import SocketIoClient from './config/SocketIoClient'
 
 function App() {
   const location = useLocation()
@@ -43,9 +43,25 @@ function App() {
     dispatch(refresh())
   }, [])
 
+  const socket = SocketIoClient.getInstance()
   useEffect(() => {
-    dispatch(receiveMessage())
-  }, [])
+
+    socket.on(socketEvents.receiveMessage, (data) => {
+      toast('new message')
+      dispatch(receiveMessage(data))
+      console.log(data)
+    })
+    // socket.on(socketEvents.callUserConnected, (data) => {
+    //   toast('new call')
+    //   dispatch(callUserConnection(data))
+    //   console.log(data)
+    // })
+
+    return () => {
+      socket.off(socketEvents.receiveMessage)
+      socket.off(socketEvents.callUserConnected)
+    }
+  }, [dispatch, socket])
 
   useEffect(() => {
     location.pathname === '/chat'

@@ -12,22 +12,23 @@ import {
 } from '../../../features/chat/chatSlice';
 import { AppDispatch } from '../../../app/store';
 import { selectAuthUser } from '../../../features/auth/authSlice';
-import { FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle, FaVideo } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { IoMdMore } from 'react-icons/io';
 import { clearChat, getRoomMessages, receiveMessage } from '../../../features/chat/chatApi';
 import DropDown from '../../basic/DropDown';
 import { DropDownElementsType } from '../../../constants/types';
-import Spinner from '../../Spinner';
-import { Waypoint } from 'react-waypoint';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ChatSkeltonLoader from '../../basic/ChatSkeltonLoader';
 import EmojiPicker, { EmojiClickData, EmojiStyle, Theme } from 'emoji-picker-react';
+import { MdCall } from 'react-icons/md';
 
 
-type Props = {}
+type Props = {
+  handleCallModelOpen: (type: 'audio' | 'video') => void
+}
 
-const ChatSection = (props: Props) => {
+const ChatSection = ({handleCallModelOpen}: Props) => {
   const socket = SocketIoClient.getInstance()
   const dispatch = useDispatch<AppDispatch>()
 
@@ -80,7 +81,7 @@ const ChatSection = (props: Props) => {
 
   useEffect(() => {
     dispatch(setAllAsReadMsgNotification())
-    dispatch(receiveMessage())
+    // dispatch(receiveMessage())
     handleScrollToMessage()
   }, [socket])
 
@@ -99,12 +100,18 @@ const ChatSection = (props: Props) => {
       <div className='relative flex justify-start bg-gray-800 px-3 gap-4 items-center py-3 rounded-lg shadow-lg '>
         <Link to='/user-profile'>
           {chatUser?.image
-            ? <img className="w-8 h-8 rounded-full object-cover mx-2" src={chatUser?.image} alt="Neil image" />
+            ? <img className="w-8 h-8 rounded-full object-cover mx-2" src={chatUser?.image} alt={chatUser.name} />
             : <FaUserCircle size={35} />
           }
         </Link>
         <h5 className='font-bold '>{chatUser?.name}</h5>
-        <div className='w-full flex justify-end item-center'>
+        <div className='w-full flex justify-end item-center gap-4'>
+          <button onClick={()=> handleCallModelOpen('video') }>
+            <FaVideo size={20} />
+          </button>
+          <button onClick={() => handleCallModelOpen('audio')}>
+            <MdCall size={20} />
+          </button>
           <button onClick={() => setOpen(prev => !prev)} className="inline-flex self-center items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800 dark:focus:ring-gray-600" >
             <IoMdMore size={25} />
           </button>

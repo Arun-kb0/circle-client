@@ -57,7 +57,7 @@ const SendMessage = ({ id, name, time, status, message, userImage }: Props) => {
       <div className="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-s-xl rounded-ss-xl rounded-t-xl dark:bg-gray-800">
         <div className="flex items-center space-x-2 rtl:space-x-reverse">
           <span className="text-sm font-semibold text-gray-900 dark:text-white">{name}</span>
-          <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{moment(time).format("hh:mm:ss")}</span>
+          <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{moment(time).fromNow()}</span>
         </div>
         <p className="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{message}</p>
         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{status}</span>

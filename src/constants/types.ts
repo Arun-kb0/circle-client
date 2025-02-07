@@ -81,3 +81,12 @@ export type PaginationMessages = {
   numberOfPages: number,
   currentPage: number
 }
+
+export type SignalDataType = {
+  type: string;
+  roomId: string;
+  caller: string;
+  offer?: RTCSessionDescription;
+  answer?: RTCSessionDescription;
+  candidate?: RTCIceCandidate;
+}

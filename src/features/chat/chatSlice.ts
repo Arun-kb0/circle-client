@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { ChatUserType, NotificationType, PaginationMessages, StateType } from "../../constants/types"
+import { ChatUserType, NotificationType, PaginationMessages, StateType, UserType } from "../../constants/types"
 import { RootState } from "../../app/store"
 import { MessageType } from '../../constants/types'
 import { v4 as uuid } from "uuid"
@@ -17,6 +17,10 @@ type ChatStateType = {
   messageNotification: NotificationType[]
   unreadNotificationCount: number
   error: string | undefined
+
+  callRoomId: string | null
+  callUser: ChatUserType | null
+  callStatus: StateType
 }
 
 
@@ -32,7 +36,11 @@ const initialState: ChatStateType = {
   messages: null,
   messagesCurrentPage: 0,
   messagesNumberOfPages: 0,
-  messageStatus: "idle"
+  messageStatus: "idle",
+
+  callRoomId: null,
+  callUser: null,
+  callStatus: "idle"
 }
 
 const chatSlice = createSlice({
@@ -93,7 +101,15 @@ const chatSlice = createSlice({
     setAllAsReadMsgNotification: (state) => {
       state.unreadNotificationCount = 0
       state.messageNotification.forEach(item => item.status === 'read')
-    }
+    },
+
+    setCallRoomId: (state, action: PayloadAction<{ roomId: string, user: ChatUserType | null }>) => {
+      const { roomId, user } = action.payload
+      state.callStatus = 'idle'
+      state.callRoomId = roomId
+      state.callUser = user
+    },
+
 
 
   },
@@ -171,13 +187,18 @@ export const selectChatMessageNumberOfPages = (state: RootState) => state.chat.m
 export const selectChatMessageCurrentPage = (state: RootState) => state.chat.messagesCurrentPage
 export const selectChatMessageStatus = (state: RootState) => state.chat.messageStatus
 
+export const selectChatCallRoomId = (state: RootState) => state.chat.callRoomId
+export const selectChatCallUser = (state: RootState) => state.chat.callUser
+export const selectChatCallStatus = (state: RootState) => state.chat.callStatus
+
 
 export const {
   setRoomId,
   addMessage,
   setIsInChat,
   showMsgNotification,
-  setAllAsReadMsgNotification
+  setAllAsReadMsgNotification,
+  setCallRoomId
 } = chatSlice.actions
 
 export default chatSlice.reducer
