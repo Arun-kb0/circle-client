@@ -3,7 +3,7 @@ import {
   adminLogin, adminSignup, googleOauthLogin, login, logout, refresh, resendOtp,
   resetPassword, resetPwdVerifyOtp, resetResendOtp, signup, verifyEmail
 } from "./authApi";
-import { StateType, UserType } from "../../constants/types";
+import { AuthenticationResponseType, StateType, UserType } from "../../constants/types";
 import { RootState } from "../../app/store";
 import { uploadProfileImage } from "../user/userApi";
 
@@ -18,7 +18,7 @@ type AuthStateType = {
   resetPwdStatus: StateType
   status: StateType,
   error: string | undefined
-
+  friendsRoomId: string | null
 }
 
 const initialState: AuthStateType = {
@@ -32,7 +32,8 @@ const initialState: AuthStateType = {
   resetPwd: undefined,
   resetPwdEmail: undefined,
   resetPwdOtpId: undefined,
-  resetPwdStatus: 'idle'
+  resetPwdStatus: 'idle',
+  friendsRoomId: null
 }
 
 const authSlice = createSlice({
@@ -64,11 +65,12 @@ const authSlice = createSlice({
       .addCase(login.pending, (state) => {
         state.status = 'loading'
       })
-      .addCase(login.fulfilled, (state, action) => {
+      .addCase(login.fulfilled, (state, action: PayloadAction<AuthenticationResponseType>) => {
         state.status = 'success'
-        const { user, accessToken } = action.payload
+        const { user, accessToken, friendsRoomId } = action.payload
         state.accessToken = accessToken
         state.user = user
+        state.friendsRoomId = friendsRoomId
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed'
@@ -155,11 +157,12 @@ const authSlice = createSlice({
         state.error = action.error.message
       })
 
-      .addCase(refresh.fulfilled, (state, action: PayloadAction<{ user: UserType, accessToken: string }>) => {
+      .addCase(refresh.fulfilled, (state, action: PayloadAction<AuthenticationResponseType>) => {
         state.status = 'success'
-        const { user, accessToken } = action.payload
+        const { user, accessToken ,friendsRoomId} = action.payload
         state.accessToken = accessToken
         state.user = user
+        state.friendsRoomId = friendsRoomId
       })
       .addCase(refresh.rejected, (state, action) => {
         state.status = 'failed'
@@ -221,7 +224,7 @@ export const selectAuthStatus = (state: RootState) => state.auth.status
 export const selectAuthError = (state: RootState) => state.auth.error
 
 export const selectAuthResetStatus = (state: RootState) => state.auth.resetPwdStatus
-
+export const selectAuthFriendsRoomId = (state:RootState )=> state.auth.friendsRoomId
 
 export const {
   setAuthUser

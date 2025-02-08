@@ -16,8 +16,9 @@ import socketEvents from "../../../constants/socketEvents";
 import SocketIoClient from "../../../config/SocketIoClient";
 import { SignalDataType } from "../../../constants/types";
 import { v4 as uuid } from 'uuid'
-import { selectAuthUser } from "../../../features/auth/authSlice";
+import { selectAuthFriendsRoomId, selectAuthUser } from "../../../features/auth/authSlice";
 import callRingAudio from '../../../assets/audio/chime_ding.mp3'
+import { selectCallNotification } from "../../../features/notification/notificationSlice";
 
 type Props = {
   handleClose: () => void;
@@ -31,6 +32,8 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
   const status = useSelector(selectChatCallStatus);
   const chatUser = useSelector(selectChatUser)
   const user = useSelector(selectAuthUser)
+  const friendsRoomId = useSelector(selectAuthFriendsRoomId)
+  const callNotificationState = useSelector(selectCallNotification)
 
   const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
@@ -44,12 +47,12 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
   const [isJoined, setIsJoined] = useState(false);
   const negotiationPendingRef = useRef(false);
   const [incomingOffer, setIncomingOffer] = useState<RTCSessionDescriptionInit | null>(null);
-  
+
 
   const play = () => {
     new Audio(callRingAudio).play()
   }
-  
+
 
 
   const cleanupResources = useCallback(() => {
@@ -68,7 +71,8 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
           type: 'candidate',
           candidate,
           roomId: callRoomId,
-          caller: socket.id
+          caller: socket.id,
+          receiverId: friendsRoomId
         })
       }
     }
@@ -109,7 +113,8 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
         type: 'offer',
         offer,
         roomId: callRoomId,
-        caller: socket.id
+        caller: socket.id,
+        receiverId: friendsRoomId
       })
       socket.emit(socketEvents.callStarted, { roomId: callRoomId })
 
@@ -124,44 +129,24 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
 
 
   const handleSignal = useCallback(async (data: any) => {
-    // ! working code
-    // console.log('handle signal')
-    // console.log('handle signal data.type', data.type)
-    // const peerConnection = peerConnectionRef.current || createPeerConnection()
-    // peerConnectionRef.current = peerConnection
-
-    // try {
-    //   if (data.type === 'offer') {
-    //     await handleOffer(peerConnection, data.offer)
-    //   } else if (data.type === 'answer') {
-    //     await handleAnswer(peerConnection, data.answer)
-    //   } else if (data.candidate) {
-    //     const newCandidate = new RTCIceCandidate(data.candidate)
-    //     await peerConnection.addIceCandidate(newCandidate)
-    //   }
-    // } catch (error) {
-    //   console.log(error)
-    // }
-
-    // ! test
-      console.log('handle signal, type:', data.type);
-      if (data.type === 'offer') {
-        // Save the offer so the user can manually answer it
-        setIncomingOffer(data.offer);
-      } else {
-        const pc = peerConnectionRef.current || createPeerConnection();
-        peerConnectionRef.current = pc;
-        try {
-          if (data.type === 'answer') {
-            await handleAnswer(pc, data.answer);
-          } else if (data.candidate) {
-            const newCandidate = new RTCIceCandidate(data.candidate);
-            await pc.addIceCandidate(newCandidate);
-          }
-        } catch (error) {
-          console.error(error);
+    console.log('handle signal, type:', data.type);
+    if (data.type === 'offer') {
+      // Save the offer so the user can manually answer it
+      setIncomingOffer(data.offer);
+    } else {
+      const pc = peerConnectionRef.current || createPeerConnection();
+      peerConnectionRef.current = pc;
+      try {
+        if (data.type === 'answer') {
+          await handleAnswer(pc, data.answer);
+        } else if (data.candidate) {
+          const newCandidate = new RTCIceCandidate(data.candidate);
+          await pc.addIceCandidate(newCandidate);
         }
+      } catch (error) {
+        console.error(error);
       }
+    }
 
   }, [createPeerConnection])
 
@@ -190,7 +175,7 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
         if (!isJoined) {
           console.log('call started true')
           setIsCallStarted(true)
-        play()
+          play()
           setIsJoined(true);
           // if (callUser) callUser();
         } else {
@@ -211,7 +196,6 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
     }
   }, [localStream])
 
-
   const handleOffer = async (peerConnection: RTCPeerConnection, offer: RTCSessionDescriptionInit) => {
     if (!offer || peerConnection.signalingState !== 'stable') return
     await peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
@@ -225,7 +209,8 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
       type: 'answer',
       answer,
       roomId: callRoomId,
-      caller: socket.id
+      caller: socket.id,
+      receiverId: friendsRoomId
     })
   }
 
@@ -268,6 +253,12 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
     }
   }, [incomingOffer, createPeerConnection]);
 
+  // useEffect(() => {
+  //   if (callNotificationState !== 'incoming-call') return
+  //   answerCall()
+  // }, [callNotificationState])
+
+
   return (
     <BackdropVerifyOtp onClick={handleClose}>
       <motion.div
@@ -304,8 +295,8 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
             </button>
             {incomingOffer
               ? <button onClick={answerCall} className="text-green-700 border border-green-700 hover:bg-green-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:focus:ring-green-800 dark:hover:bg-green-500">
-               <MdCall size={20} />
-                </button>
+                <MdCall size={20} />
+              </button>
               : <button onClick={callUser} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
                 <MdCall size={20} />
               </button>}

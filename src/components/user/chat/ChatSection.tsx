@@ -129,14 +129,15 @@ const ChatSection = ({handleCallModelOpen}: Props) => {
         next={loadMoreMessages}
         hasMore={hasMore}
         loader={
-          <div className='space-y-4'>
-            {Array.from({ length: 3 }).map((_, index) => (
-              <ChatSkeltonLoader
-                key={index}
-                isSend={index % 2 === 0 ? true : false}
-              />
-            ))}
-          </div>
+          <></>
+          // <div className='space-y-4'>
+          //   {Array.from({ length: 3 }).map((_, index) => (
+          //     <ChatSkeltonLoader
+          //       key={index}
+          //       isSend={index % 2 === 0 ? true : false}
+          //     />
+          //   ))}
+          // </div>
         }
         height={window.innerHeight - 240}
       >

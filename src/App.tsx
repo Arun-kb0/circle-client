@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { AppDispatch } from './app/store'
 import Navbar from './components/Navbar'
 import { toast, ToastContainer } from 'react-toastify'
@@ -28,26 +28,54 @@ import ProfilePage from './pages/user/ProfilePage'
 import EditPostPage from './pages/user/EditPostPage'
 import CropperPage from './pages/user/CropperPage'
 import FollowersPage from './pages/user/FollowingPage'
-import { selectAuthUser } from './features/auth/authSlice'
+import { selectAuthFriendsRoomId, selectAuthUser } from './features/auth/authSlice'
 import OtherUserProfilePage from './pages/user/OtherUserProfilePage'
 import socketEvents from './constants/socketEvents'
 import SocketIoClient from './config/SocketIoClient'
+import { UserRoomNotificationType } from './constants/types'
+import { setCallNotificationState } from './features/notification/notificationSlice'
 
 function App() {
+  const socket = SocketIoClient.getInstance()
+  const navigate = useNavigate()
   const location = useLocation()
   const dispatch = useDispatch<AppDispatch>()
   const hideNavbarPaths = ['/login', '/signup', '/resetPwd', '/admin/signup', '/admin/login']
   const user = useSelector(selectAuthUser)
+  const friendsRoomId = useSelector(selectAuthFriendsRoomId)
 
   useEffect(() => {
     dispatch(refresh())
   }, [])
 
-  const socket = SocketIoClient.getInstance()
   useEffect(() => {
+    console.log(socketEvents.joinUserRoom, 'roomId', friendsRoomId)
+    if (!friendsRoomId) return
+    socket.emit(socketEvents.joinUserRoom, friendsRoomId)
+    console.log(socketEvents.joinUserRoom, 'emitted roomId', friendsRoomId)
+  }, [friendsRoomId])
+
+  useEffect(() => {
+    if (!user) return
+
+    socket.on(socketEvents.userRoomNotification, (data: UserRoomNotificationType) => {
+      console.log(socketEvents.userRoomNotification)
+      console.log(data)
+      switch (data.type) {
+        case 'incoming-call': {
+          toast('Incoming call')
+          dispatch(setCallNotificationState(data.type))
+          navigate('/chat')
+          break
+        }
+        default:
+          console.log('no matched notification type')
+          break
+      }
+    })
 
     socket.on(socketEvents.receiveMessage, (data) => {
-      toast('new message')
+      // toast('new message')
       dispatch(receiveMessage(data))
       console.log(data)
     })
@@ -61,7 +89,7 @@ function App() {
       socket.off(socketEvents.receiveMessage)
       socket.off(socketEvents.callUserConnected)
     }
-  }, [dispatch, socket])
+  }, [dispatch, socket, friendsRoomId])
 
   useEffect(() => {
     location.pathname === '/chat'

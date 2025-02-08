@@ -1,5 +1,5 @@
 
-
+export type CallStatusType = 'idle' | 'incoming-call' | 'call-end' | 'call-active'
 export type StateType = 'loading' | 'success' | 'failed' | 'idle'
 
 export type UserType = {
@@ -86,7 +86,21 @@ export type SignalDataType = {
   type: string;
   roomId: string;
   caller: string;
+  receiverId: string
   offer?: RTCSessionDescription;
   answer?: RTCSessionDescription;
   candidate?: RTCIceCandidate;
+}
+
+
+export type UserRoomNotificationType = {
+  type: 'incoming-call'
+  roomId: string
+  caller: string
+}
+
+export type AuthenticationResponseType = {
+  user : UserType 
+  accessToken : string  
+  friendsRoomId : string  
 }

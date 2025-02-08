@@ -1,5 +1,10 @@
 
 enum socketEvents {
+  // * user
+  joinUserRoom = 'join-user-room',
+  userRoomNotification= 'user-room-notification',
+
+  // * chat
   joinRoom = 'join-room',
   sendMessage = 'send-message',
   receiveMessage = 'receive-message',

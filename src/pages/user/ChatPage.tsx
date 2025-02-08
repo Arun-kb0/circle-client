@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ChatUsers from '../../components/user/chat/ChatUsers'
 import ChatSection from '../../components/user/chat/ChatSection'
 import { AnimatePresence } from 'framer-motion'
@@ -10,6 +10,8 @@ import { selectChatUser, setCallRoomId } from '../../features/chat/chatSlice'
 import { selectAuthUser } from '../../features/auth/authSlice'
 import SocketIoClient from '../../config/SocketIoClient'
 import socketEvents from '../../constants/socketEvents'
+import { generateRoomId } from '../../util/generator'
+import { selectCallNotification } from '../../features/notification/notificationSlice'
 
 type Props = {}
 
@@ -20,9 +22,12 @@ const ChatPage = (props: Props) => {
   const chatUser = useSelector(selectChatUser)
   const user = useSelector(selectAuthUser)
   const socket = SocketIoClient.getInstance()
+  const callNotification = useSelector(selectCallNotification)
 
   const handleCallModelOpen = (type: 'video' | 'audio') => {
+    console.log('handleCallModelOpen')
     if (!chatUser || !user) return
+    console.log('handleCallModelOpen',chatUser  )
     setCallModelOpen(true)
     setCallModelType(type)
     // dispatch(joinCallRoom({
@@ -34,17 +39,24 @@ const ChatPage = (props: Props) => {
     const senderId = user?._id
     const receiverId = chatUser?.userId
     if (!senderId || !receiverId) return
-    const roomId = senderId < receiverId
-      ? `${senderId}-${receiverId}-call`
-      : `${receiverId}-${senderId}-call`
+    // const roomId = senderId < receiverId
+    //   ? `${senderId}-${receiverId}-call`
+    //   : `${receiverId}-${senderId}-call`
+    const roomId = generateRoomId(senderId, receiverId)
     const chatRoom = {
-      roomId,
+      roomId: `${roomId}-call`,
       userId: senderId,
       targetId: receiverId,
     }
     socket.emit(socketEvents.joinCallRoom, chatRoom)
     dispatch(setCallRoomId({ roomId, user: chatUser }))
   }
+
+  useEffect(() => {
+    if (callNotification === 'incoming-call') {
+      handleCallModelOpen('video')
+    }
+  }, [callNotification])
 
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
