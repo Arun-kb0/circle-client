@@ -78,6 +78,7 @@ const ProfilePosts = ({ userId }: Props) => {
         height={window.innerHeight - 240}
       >
         {status === 'success' && posts.map((post) => (
+          post.status === 'active' &&
           <PostCard
             key={post._id}
             post={post}

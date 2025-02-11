@@ -50,7 +50,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
   })
 
   const handleImageView = () => {
-
+    
   }
 
   const handleLike = () => {

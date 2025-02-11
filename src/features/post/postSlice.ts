@@ -1,11 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { CommentPaginationRes, CommentType, LikeType, PostPaginationRes, PostType } from '../../constants/FeedTypes'
+import {
+  CommentPaginationRes, CommentType, LikeType,
+  PostPaginationRes, PostType
+} from '../../constants/FeedTypes'
 import {
   createComment, createPost, deleteComment,
-  deletePost, getComments, getPosts, getUserCreatedPosts, like,
-  unlike,
-  updateComment, updatePost,
-  uploadFiles
+  deletePost, getComments, getPosts,
+  getUserCreatedPosts, like, unlike,
+  updateComment, updatePost, uploadFiles
 } from './postApi'
 import { RootState } from '../../app/store'
 import { StateType } from '../../constants/types'
@@ -132,7 +134,7 @@ const postSlice = createSlice({
       state.userCreatedPostsNumberOfPages = 0
     }
 
-   
+
   },
 
   extraReducers: (builder) => {
