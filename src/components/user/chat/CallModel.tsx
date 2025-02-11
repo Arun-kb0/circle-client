@@ -19,6 +19,7 @@ import { v4 as uuid } from 'uuid'
 import { selectAuthFriendsRoomId, selectAuthUser } from "../../../features/auth/authSlice";
 import callRingAudio from '../../../assets/audio/chime_ding.mp3'
 import { selectCallNotification } from "../../../features/notification/notificationSlice";
+import { AiOutlineConsoleSql } from "react-icons/ai";
 
 type Props = {
   handleClose: () => void;
@@ -28,7 +29,7 @@ type Props = {
 const CallModel = ({ handleClose, callModelType }: Props) => {
   const socket = SocketIoClient.getInstance()
   const callRoomId = useSelector(selectChatCallRoomId);
-  // const callUser = useSelector(selectChatCallUser);
+  const callUserDetails = useSelector(selectChatCallUser);
   const status = useSelector(selectChatCallStatus);
   const chatUser = useSelector(selectChatUser)
   const user = useSelector(selectAuthUser)
@@ -53,8 +54,6 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
     new Audio(callRingAudio).play()
   }
 
-
-
   const cleanupResources = useCallback(() => {
     localStream?.getTracks().forEach((track) => track.stop())
     peerConnectionRef.current?.close()
@@ -72,7 +71,8 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
           candidate,
           roomId: callRoomId,
           caller: socket.id,
-          receiverId: friendsRoomId
+          receiverId: friendsRoomId,
+          user: callUserDetails,
         })
       }
     }
@@ -114,7 +114,8 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
         offer,
         roomId: callRoomId,
         caller: socket.id,
-        receiverId: friendsRoomId
+        receiverId: friendsRoomId,
+        user: callUserDetails
       })
       socket.emit(socketEvents.callStarted, { roomId: callRoomId })
 
@@ -131,7 +132,6 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
   const handleSignal = useCallback(async (data: any) => {
     console.log('handle signal, type:', data.type);
     if (data.type === 'offer') {
-      // Save the offer so the user can manually answer it
       setIncomingOffer(data.offer);
     } else {
       const pc = peerConnectionRef.current || createPeerConnection();
@@ -210,7 +210,8 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
       answer,
       roomId: callRoomId,
       caller: socket.id,
-      receiverId: friendsRoomId
+      receiverId: friendsRoomId,
+      user: callUserDetails
     })
   }
 
@@ -253,10 +254,21 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
     }
   }, [incomingOffer, createPeerConnection]);
 
-  // useEffect(() => {
-  //   if (callNotificationState !== 'incoming-call') return
-  //   answerCall()
-  // }, [callNotificationState])
+
+  useEffect(() => {
+    if (callNotificationState === 'incoming-call') {
+      const chatRoom = {
+        roomId: callUserDetails,
+        userId: user?._id,
+        targetId: chatUser?.userId,
+      }
+      socket.emit(socketEvents.joinCallRoom, chatRoom)
+      socket.on(socketEvents.signal, handleSignal)
+    }
+    return () => {
+      socket.off(socketEvents.signal, handleSignal)
+    }
+  }, [callNotificationState])
 
 
   return (
@@ -299,7 +311,8 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
               </button>
               : <button onClick={callUser} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
                 <MdCall size={20} />
-              </button>}
+              </button>
+            }
             <button onClick={endCall} className="text-red-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500">
               <MdCallEnd size={20} />
             </button>

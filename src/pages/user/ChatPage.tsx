@@ -10,7 +10,7 @@ import { selectChatUser, setCallRoomId } from '../../features/chat/chatSlice'
 import { selectAuthUser } from '../../features/auth/authSlice'
 import SocketIoClient from '../../config/SocketIoClient'
 import socketEvents from '../../constants/socketEvents'
-import { generateRoomId } from '../../util/generator'
+import { generateCallRoomId } from '../../util/generator'
 import { selectCallNotification } from '../../features/notification/notificationSlice'
 
 type Props = {}
@@ -39,12 +39,9 @@ const ChatPage = (props: Props) => {
     const senderId = user?._id
     const receiverId = chatUser?.userId
     if (!senderId || !receiverId) return
-    // const roomId = senderId < receiverId
-    //   ? `${senderId}-${receiverId}-call`
-    //   : `${receiverId}-${senderId}-call`
-    const roomId = generateRoomId(senderId, receiverId)
+    const roomId = generateCallRoomId(senderId, receiverId)
     const chatRoom = {
-      roomId: `${roomId}-call`,
+      roomId: `${roomId}`,
       userId: senderId,
       targetId: receiverId,
     }

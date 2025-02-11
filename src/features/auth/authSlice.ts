@@ -169,11 +169,7 @@ const authSlice = createSlice({
         state.error = action.error.message
       })
 
-      .addCase(logout.fulfilled, (state) => {
-        state.status = 'idle'
-        state.accessToken = undefined
-        state.user = undefined
-      })
+      .addCase(logout.fulfilled, () => initialState)
 
       .addCase(uploadProfileImage.pending, (state) => {
         state.status = 'loading'

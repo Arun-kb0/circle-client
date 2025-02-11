@@ -97,6 +97,7 @@ export type UserRoomNotificationType = {
   type: 'incoming-call'
   roomId: string
   caller: string
+  chatUser?:ChatUserType
 }
 
 export type AuthenticationResponseType = {

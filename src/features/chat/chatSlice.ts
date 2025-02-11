@@ -108,8 +108,12 @@ const chatSlice = createSlice({
       state.callStatus = 'idle'
       state.callRoomId = roomId
       state.callUser = user
+      state.chatUser = user
     },
 
+    setAllChatRooms: (state, action) => {
+
+    }
 
 
   },
@@ -132,7 +136,7 @@ const chatSlice = createSlice({
           const messageIds = new Set(state.messages[messages[0].roomId].map(msg => msg.id))
           const filteredMsgs = messages.filter(msg => messageIds.has(msg.id))
           state.messages[messages[0].roomId].push(...filteredMsgs)
-          state.messages[messages[0].roomId].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+          state.messages[messages[0].roomId].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
         }
         state.messagesNumberOfPages = numberOfPages
         state.messagesCurrentPage = currentPage
@@ -198,7 +202,8 @@ export const {
   setIsInChat,
   showMsgNotification,
   setAllAsReadMsgNotification,
-  setCallRoomId
+  setCallRoomId,
+  setAllChatRooms
 } = chatSlice.actions
 
 export default chatSlice.reducer

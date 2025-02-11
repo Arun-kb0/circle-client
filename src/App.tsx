@@ -22,7 +22,7 @@ import GlobalFeed from './pages/user/GlobalFeed'
 import CreatePost from './pages/user/CreatePost'
 import ChatPage from './pages/user/ChatPage'
 import FollowPeople from './pages/user/FollowPeople'
-import { setIsInChat } from './features/chat/chatSlice'
+import { selectChatUser, setAllChatRooms, setCallRoomId, setIsInChat, setRoomId } from './features/chat/chatSlice'
 import { callUserConnection, receiveMessage } from './features/chat/chatApi'
 import ProfilePage from './pages/user/ProfilePage'
 import EditPostPage from './pages/user/EditPostPage'
@@ -34,6 +34,7 @@ import socketEvents from './constants/socketEvents'
 import SocketIoClient from './config/SocketIoClient'
 import { UserRoomNotificationType } from './constants/types'
 import { setCallNotificationState } from './features/notification/notificationSlice'
+import { getFollowers } from './features/user/userApi'
 
 function App() {
   const socket = SocketIoClient.getInstance()
@@ -42,6 +43,7 @@ function App() {
   const dispatch = useDispatch<AppDispatch>()
   const hideNavbarPaths = ['/login', '/signup', '/resetPwd', '/admin/signup', '/admin/login']
   const user = useSelector(selectAuthUser)
+  const chatUser = useSelector(selectChatUser)
   const friendsRoomId = useSelector(selectAuthFriendsRoomId)
 
   useEffect(() => {
@@ -57,14 +59,25 @@ function App() {
 
   useEffect(() => {
     if (!user) return
-
-    socket.on(socketEvents.userRoomNotification, (data: UserRoomNotificationType) => {
+    socket.on(socketEvents.userRoomNotification, async (data: UserRoomNotificationType) => {
       console.log(socketEvents.userRoomNotification)
       console.log(data)
       switch (data.type) {
         case 'incoming-call': {
           toast('Incoming call')
+          if (!data.chatUser) throw new Error('chat user not found in incoming call')
+          console.log(data.chatUser)
+          // if (chatUser && chatUser.userId === data.chatUser.userId) return
+          const chatRoomId = data.roomId.endsWith('-call')
+            ? data.roomId.slice(0, -5)
+            : data.roomId
+          // console.log("incoming-call chatRoomId = ", data.roomId)
+          // console.log("incoming-call callRoomId = ", chatRoomId, data.roomId)
+
+          dispatch(setRoomId({ roomId: chatRoomId, user: data.chatUser }))
+          dispatch(setCallRoomId({ roomId: data.roomId, user: data.chatUser }))
           dispatch(setCallNotificationState(data.type))
+          await dispatch(getFollowers({ userId: user._id, page: 1 }))
           navigate('/chat')
           break
         }
