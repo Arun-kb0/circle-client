@@ -35,6 +35,7 @@ import SocketIoClient from './config/SocketIoClient'
 import { UserRoomNotificationType } from './constants/types'
 import { setCallNotificationState } from './features/notification/notificationSlice'
 import { getFollowers } from './features/user/userApi'
+import PostManagement from './pages/admin/PostManagement'
 
 function App() {
   const socket = SocketIoClient.getInstance()
@@ -145,6 +146,7 @@ function App() {
         <Route element={<RequireAuth role={roles.admin} />} >
           <Route path='/admin'>
             <Route index element={<AdminHome />} />
+            <Route path='post' element={<PostManagement />} />
 
           </Route>
         </Route>

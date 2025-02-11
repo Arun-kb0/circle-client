@@ -15,9 +15,10 @@ import { AppDispatch } from '../../app/store';
 import { logout } from '../../features/auth/authApi';
 import { selectAuthUser } from '../../features/auth/authSlice';
 import { FaUserCircle } from 'react-icons/fa';
-import logo from '../../assets/vite.png'
 import { clearUserCreatedPosts } from '../../features/post/postSlice';
 import { clearFollowers, clearFollowing } from '../../features/user/userSlice';
+import logo from '../../assets/vite.png'
+
 
 type Props = {
   handleLogout: () => void

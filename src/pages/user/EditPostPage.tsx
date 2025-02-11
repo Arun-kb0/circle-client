@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { PostType } from '../../constants/FeedTypes';
 import { useForm } from 'react-hook-form';
 import {
-  selectPostCroppedImage, selectPostImageToCrop, 
+  selectPostCroppedImage, selectPostImageToCrop,
   selectUploadFilesStatus, setCroppedImage, setImageToCrop
 } from '../../features/post/postSlice';
 import { AppDispatch } from '../../app/store';
@@ -67,7 +67,7 @@ const EditPostPage = (props: Props) => {
         mediaType: 'text',
         media: [`${data.message}`],
       }
-      await dispatch(updatePost(updatedPost))
+      await dispatch(updatePost({ post: updatedPost }))
       dispatch(setCroppedImage({ url: undefined, blob: undefined }))
       dispatch(setImageToCrop(undefined))
       setLoaderModelOpen(false)
@@ -87,7 +87,7 @@ const EditPostPage = (props: Props) => {
       tags: hashtags ? hashtags : [],
     }
     console.log(updatedPost)
-    await dispatch(updatePost(updatedPost))
+    await dispatch(updatePost({ post: updatedPost }))
     dispatch(setCroppedImage({ url: undefined, blob: undefined }))
     dispatch(setImageToCrop(undefined))
     setLoaderModelOpen(false)

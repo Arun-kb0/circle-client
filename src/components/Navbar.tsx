@@ -8,6 +8,7 @@ import { logout } from '../features/auth/authApi'
 import { AppDispatch } from '../app/store'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from './user/Sidebar'
+import AdminSidebar from './admin/AdminSidebar'
 
 
 const Navbar = () => {
@@ -27,7 +28,10 @@ const Navbar = () => {
           <UserNav handleLogout={handleLogout} />
           <Sidebar />
         </>
-        : <AdminNav handleLogout={handleLogout} />
+        : <>
+          <AdminNav handleLogout={handleLogout} />
+          <AdminSidebar />
+        </>
       }
     </header>
   )

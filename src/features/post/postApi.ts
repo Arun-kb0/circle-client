@@ -6,6 +6,7 @@ import errorHandler from "../../errorHandler/errorHandler";
 import { CommentType, LikeType, PostType } from "../../constants/FeedTypes";
 import { toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
+import { DataStrategyFunctionArgs } from "react-router-dom";
 
 
 type GetUserCreatedPostsArgs = { userId: string, page: number }
@@ -58,16 +59,18 @@ export const createPost = createAsyncThunk('/post/create', async (post: Partial<
   }
 })
 
-export const updatePost = createAsyncThunk('/post/update', async (post: Partial<PostType>, { dispatch, getState }) => {
+type UpdatePostArgs = { post: Partial<PostType>, isAdmin?: boolean }
+export const updatePost = createAsyncThunk('/post/update', async ({ post, isAdmin = false }: UpdatePostArgs, { dispatch, getState }) => {
   try {
     const state = getState() as RootState
     const accessToken = state.auth.accessToken
     const dispatchFunction = dispatch as AppDispatch
     if (!accessToken) throw new Error(' no accessToken found ')
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
-    const res = await axiosPrivate.patch(`/post/${post._id}`, { post })
+    const path = isAdmin ? `/admin/post/` : '/post/'
+    const res = await axiosPrivate.patch(`${path}${post._id}`, { post })
     removeInterceptors()
-    toast('update post success')
+    // toast('update post success')
     return res.data
   } catch (error) {
     console.log(error)
@@ -246,6 +249,30 @@ export const uploadFiles = createAsyncThunk('/cloudinary/upload', async (files: 
     )
 
     return { urls } as any
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+type SearchPostArgs = { page: number, startDate?: string, endDate?: string, searchText?: string, isAdmin?: boolean }
+export const searchPost = createAsyncThunk('/posts/all', async ({ page, searchText, startDate, endDate, isAdmin = false }: SearchPostArgs, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const path = isAdmin ? '/admin/post/search-post' : '/post/search-post'
+    const params = {
+      page,
+      searchText,
+      startDate,
+      endDate,
+    }
+    const res = await axiosPrivate.get(path, { params })
+    removeInterceptors()
+    return res.data
   } catch (error) {
     console.log(error)
     return errorHandler(error)

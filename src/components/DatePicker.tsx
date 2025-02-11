@@ -34,7 +34,7 @@ const DatePicker = ({ startDate, setStartDate, endDate, setEndDate }: Props) => 
           onChange={handleStartDateChange}
           showTimeSelect
           dateFormat="Pp"
-          className="border border-gray-300 rounded p-2 w-full"
+          className="border border-gray-300 rounded p-2 w-full bg-gray-200 text-gray-800"
         />
       </div>
 
@@ -47,7 +47,7 @@ const DatePicker = ({ startDate, setStartDate, endDate, setEndDate }: Props) => 
           onChange={handleEndDateChange}
           showTimeSelect
           dateFormat="Pp"
-          className="border border-gray-300 rounded p-2 w-full"
+          className="border border-gray-300 rounded p-2 w-full bg-gray-200 text-gray-800"
         />
       </div>
     </section>

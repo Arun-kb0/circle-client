@@ -1,18 +1,127 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Search from './Search'
+import SpringButton from './basic/SpringButton'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch } from '../app/store'
+import { selectAuthUser } from '../features/auth/authSlice'
+import { useState } from 'react'
+import { DropDownElementsType } from '../constants/types'
+import { logout } from '../features/auth/authApi'
+import { RxHamburgerMenu } from 'react-icons/rx'
+import { TbHome } from 'react-icons/tb'
+import { FiSearch } from 'react-icons/fi'
+import { BsBell } from 'react-icons/bs'
+import BadgeButton from './basic/BadgeButton'
+import { FaUserCircle } from 'react-icons/fa'
+import DropDown from './basic/DropDown'
+import logo from '../assets/vite.png'
+
 
 type Props = {
   handleLogout: () => void
 }
 
 const AdminNav = ({ handleLogout }: Props) => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch<AppDispatch>()
+  const user = useSelector(selectAuthUser)
+
+  const [userDropDown, setUserDropDown] = useState(false)
+  const [notificationDropDown, setNotificationDropDown] = useState(false)
+
+  const handleClearProfile = async () => {
+  }
+
+  const userDropDownElements: DropDownElementsType[] = [
+    {
+      handler: async () => {
+        await handleClearProfile()
+        navigate('/profile')
+      },
+      name: "profile"
+    },
+    {
+      handler: () => { dispatch(logout()) },
+      name: 'logout'
+    }
+  ]
+
+
   return (
-    <nav className='sm:text-lg text-sm  my-2 w-full px-4 flex justify-center items-center gap-4 capitalize text-green-500 font-semibold '>
-      <h1 className='sm:flex hidden text-orange-400 text-x'>Admin Panel</h1>
-      <Search/>
-      <Link to="/admin">Home</Link>
-      <Link to="/admin/create">create</Link>
-      <button onClick={handleLogout}> Logout</button>
+    <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+      <div className="px-3 py-3 lg:px-5 lg:pl-3">
+        <div className="flex items-center justify-between">
+
+          <div className="flex items-center">
+            <button className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+              <SpringButton>
+                <RxHamburgerMenu size={22} />
+              </SpringButton>
+            </button>
+
+            <div className="flex items-center ms-3">
+              <div>
+                <img className='w-10 h-10 object-cover' src={logo} alt="" />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center">
+            <div className="flex items-center ms-3">
+              <div>
+                <Link to='/' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
+                  <SpringButton>
+                    <TbHome className='text-gray-200 ' size={25} />
+                  </SpringButton>
+                </Link>
+              </div>
+            </div>
+            <div className="flex items-center ms-3">
+              <div>
+                <Link to='/' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
+                  <SpringButton>
+                    <FiSearch className='text-gray-200 ' size={25} />
+                  </SpringButton>
+                </Link>
+              </div>
+            </div>
+
+
+          </div>
+
+          <div className="flex items-center">
+
+            <div className="flex items-center ms-3 relative">
+              <div>
+                <button onClick={() => setNotificationDropDown(prev => !prev)} className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
+                  <SpringButton>
+                    <BsBell className='text-gray-200 ' size={23} />
+                  </SpringButton>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center ms-3 relative ">
+              <div>
+                <button onClick={() => setUserDropDown(prev => !prev)} type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
+                  <SpringButton>
+                    {user?.image?.url
+                      ? <img className="w-8 h-8 rounded-full object-cover" src={user.image.url} alt="Neil image" />
+                      : <FaUserCircle size={35} />
+                    }
+                  </SpringButton>
+                </button>
+              </div>
+              <DropDown
+                open={userDropDown}
+                elements={userDropDownElements}
+                position='top-10 right-0'
+              />
+            </div>
+          </div>
+
+        </div>
+      </div>
     </nav>
   )
 }

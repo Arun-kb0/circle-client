@@ -5,6 +5,7 @@ import { AppDispatch, RootState } from "../../app/store";
 import configureAxios from "../../config/configureAxios";
 import { UserType } from "../../constants/types";
 import { setAuthUser } from "../auth/authSlice";
+import { toast } from "react-toastify";
 
 // ! check and remove 
 export const uploadProfileImage = createAsyncThunk('/user/image', async (file: File, { dispatch, getState }) => {
@@ -17,8 +18,8 @@ export const uploadProfileImage = createAsyncThunk('/user/image', async (file: F
 
 
 // * admin 
-type GetAllUsersArg = { page: number, startDate?: string, endDate?: string, searchText?: string }
-export const getAllUsers = createAsyncThunk('/user/all', async ({ page, startDate, endDate, searchText }: GetAllUsersArg, { dispatch, getState }) => {
+type GetAllUsersArg = { page: number, startDate?: string, endDate?: string, searchText?: string, isAdmin?: boolean }
+export const getAllUsers = createAsyncThunk('/user/all', async ({ page, startDate, endDate, searchText, isAdmin = false }: GetAllUsersArg, { dispatch, getState }) => {
   try {
     const state = getState() as RootState
     const accessToken = state.auth.accessToken
@@ -26,7 +27,8 @@ export const getAllUsers = createAsyncThunk('/user/all', async ({ page, startDat
     if (!accessToken) throw new Error(' no accessToken found ')
 
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
-    const res = await axiosPrivate.get("/user/all", {
+    const path = isAdmin ? '/admin/user/all' : '/user/all'
+    const res = await axiosPrivate.get(path, {
       params: {
         page,
         startDate,
@@ -65,8 +67,9 @@ export const blockUser = createAsyncThunk('/user/block', async (userId: string, 
     const dispatchFunction = dispatch as AppDispatch
     if (!accessToken) throw new Error(' no accessToken found ')
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
-    const res = await axiosPrivate.post(`/user/block?userId=${userId}`)
+    const res = await axiosPrivate.post(`/admin/user/block?userId=${userId}`)
     removeInterceptors()
+    toast('User blocked')
     const { userId: blockedId } = res.data
     return blockedId
   } catch (error) {
@@ -82,10 +85,9 @@ export const unblockUser = createAsyncThunk('/user/unblock', async (userId: stri
     if (!accessToken) throw new Error(' no accessToken found ')
 
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
-    const res = await axiosPrivate.post(`/user/unblock?userId=${userId}`)
+    const res = await axiosPrivate.post(`/admin/user/unblock?userId=${userId}`)
     removeInterceptors()
-
-    // const res = await axiosInstance.post(`/user/block?userId=${userId}`)
+    toast('User unblocked')
     const { userId: unblockedId } = res.data
     return unblockedId
   } catch (error) {
