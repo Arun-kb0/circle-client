@@ -1,3 +1,4 @@
+import { relativeTimeRounding } from "moment"
 import { connect, Socket } from "socket.io-client"
 
 const SOCKET_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:5001'
@@ -5,11 +6,12 @@ const SOCKET_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:5001'
 class SocketIoClient {
   private static instance: Socket | null = null
 
-  static getInstance() {
-    if (!SocketIoClient.instance) {
+  static getInstance(userId?: string) {
+    if (!SocketIoClient.instance && userId) {
       SocketIoClient.instance = connect(SOCKET_URL, {
         reconnectionAttempts: 3,
         timeout: 10000, // 10 seconds
+        query: { userId }
       })
 
       SocketIoClient.instance.on('connect', () => {
@@ -25,8 +27,8 @@ class SocketIoClient {
 
   static connect() {
     const socket = SocketIoClient.getInstance()
-    if (!socket.connected) {
-      socket.connect()
+    if (!socket?.connected) {
+      socket?.connect()
     }
   }
 

@@ -11,7 +11,6 @@ import configureAxios from "../../config/configureAxios";
 import PeerServer from "../../config/PeerServer";
 import { toast } from "react-toastify";
 
-const socket = SocketIoClient.getInstance()
 const peerServer = PeerServer.getInstance()
 
 // * api calls
@@ -72,7 +71,8 @@ export const clearChat = createAsyncThunk('/chat/clear-chat', async (_, { dispat
 type JoinRoomArgsType = { senderId: string, receiverId: string, chatUser: ChatUserType }
 export const joinRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsType) => (dispatch: AppDispatch) => {
   try {
-    if (!socket.connected) socket.connect()
+    const socket = SocketIoClient.getInstance()
+    if (!socket?.connected) socket?.connect()
     const roomId = senderId < receiverId
       ? `${senderId}-${receiverId}`
       : `${receiverId}-${senderId}`
@@ -82,7 +82,7 @@ export const joinRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsType) =
       userId: senderId,
       targetId: receiverId,
     }
-    socket.emit(socketEvents.joinRoom, chatRoom)
+    socket?.emit(socketEvents.joinRoom, chatRoom)
     dispatch(setRoomId({ roomId, user: chatUser }))
   } catch (error) {
     console.error(error)
@@ -92,9 +92,10 @@ export const joinRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsType) =
 type SendMessageArgs = { currentMessage: string, user: UserType, roomId: string }
 export const sendMessage = ({ currentMessage, user, roomId }: SendMessageArgs) => (dispatch: AppDispatch, getState: () => RootState) => {
   try {
+    const socket = SocketIoClient.getInstance()
     const chatUser = getState().chat.chatUser
     if (!chatUser) return
-    if (!socket.connected) socket.connect()
+    if (!socket?.connected) socket?.connect()
     const messageData = {
       id: uuid(),
       roomId,
@@ -109,7 +110,7 @@ export const sendMessage = ({ currentMessage, user, roomId }: SendMessageArgs) =
       createdAt: new Date().toISOString(),
     }
 
-    socket.emit(socketEvents.sendMessage, messageData)
+    socket?.emit(socketEvents.sendMessage, messageData)
     console.log('chatApi')
     console.log(messageData)
 
@@ -129,12 +130,12 @@ export const sendMessage = ({ currentMessage, user, roomId }: SendMessageArgs) =
 
 export const receiveMessage = (data: any) => (dispatch: AppDispatch, getState: () => RootState) => {
   try {
-    // if (!socket.connected) socket.connect()
-    // socket.off(socketEvents.receiveMessage)
+    // if (!socket?.connected) socket?.connect()
+    // socket?.off(socketEvents.receiveMessage)
     // const user = getState().auth.user
     // if (!user) return
 
-    // socket.on(socketEvents.receiveMessage, (data) => {
+    // socket?.on(socketEvents.receiveMessage, (data) => {
     //   dispatch(showMsgNotification({ message: data, userId: user._id }))
     //   dispatch(addMessage(data))
     // })
@@ -152,7 +153,8 @@ export const receiveMessage = (data: any) => (dispatch: AppDispatch, getState: (
 // * call room socket
 export const joinCallRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsType) => (dispatch: AppDispatch) => {
   try {
-    if (!socket.connected) socket.connect()
+    const socket = SocketIoClient.getInstance()
+    if (!socket?.connected) socket?.connect()
     const roomId = senderId < receiverId
       ? `${senderId}-${receiverId}-call`
       : `${receiverId}-${senderId}-call`
@@ -161,7 +163,7 @@ export const joinCallRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsTyp
       userId: senderId,
       targetId: receiverId,
     }
-    socket.emit(socketEvents.joinCallRoom, chatRoom)
+    socket?.emit(socketEvents.joinCallRoom, chatRoom)
     dispatch(setCallRoomId({ roomId: roomId, user: chatUser }))
   } catch (error) {
     console.error(error)
@@ -172,13 +174,13 @@ export const joinCallRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsTyp
 export const callUserConnection = (data: any) => (dispatch: AppDispatch, getState: () => RootState) => {
   try {
     // console.log('callUserConnection before socket connection check')
-    // if (!socket.connected) socket.connect()
-    // socket.off(socketEvents.callUserConnected)
+    // if (!socket?.connected) socket?.connect()
+    // socket?.off(socketEvents.callUserConnected)
     // const user = getState().auth.user
     // if (!user) return
     // console.log('callUserConnection after socket connection check')
 
-    // socket.on(socketEvents.callUserConnected, (data: { roomId: string, userId: string }) => {
+    // socket?.on(socketEvents.callUserConnected, (data: { roomId: string, userId: string }) => {
     //   console.log('callUserConnection call-user-connected event data = ', data)
     //   dispatch(setCallRoomId({ roomId: data.roomId, user: null }))
     // })

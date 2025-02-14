@@ -33,6 +33,8 @@ type UserStateType = {
   otherUser?: UserType
 
   error: string | undefined
+  onlineUsers: string[]
+  socketId: string | undefined
 }
 
 const initialState: UserStateType = {
@@ -54,7 +56,9 @@ const initialState: UserStateType = {
   followingPeople: [],
   followingPeopleStatus: "loading",
   followingNumberOfPages: 0,
-  followingCurrentPage: 0
+  followingCurrentPage: 0,
+  onlineUsers: [],
+  socketId: undefined
 }
 
 const userSlice = createSlice({
@@ -71,6 +75,14 @@ const userSlice = createSlice({
       state.followingCurrentPage = 0
       state.followingNumberOfPages = 0
       state.followingPeople = []
+    },
+
+    setOnlineUsers: (state, action: PayloadAction<string[]>) => {
+      console.log('online users = ', action.payload.toString())
+      state.onlineUsers = action.payload
+    },
+    setUserSocketId: (state, action: PayloadAction<string>) => {
+      state.socketId = action.payload
     }
 
   },
@@ -224,10 +236,13 @@ export const selectUserSuggestedNumberOfPages = (state: RootState) => state.user
 export const selectUserSuggestedStatus = (state: RootState) => state.user.suggestedPeopleStatus
 
 export const selectUserOtherUser = (state: RootState) => state.user.otherUser
+export const selectUserOnlineUsers= (state: RootState) => state.user.onlineUsers
 
 export const {
   clearFollowers,
-  clearFollowing
+  clearFollowing,
+  setOnlineUsers,
+  setUserSocketId
 } = userSlice.actions
 
 export default userSlice.reducer

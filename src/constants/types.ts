@@ -105,3 +105,11 @@ export type AuthenticationResponseType = {
   accessToken : string  
   friendsRoomId : string  
 }
+
+
+export type CallUserEventDataType = {
+  signal: any
+  from: string
+  name: string
+  userToCall: string
+}

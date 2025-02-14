@@ -12,7 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import "react-datepicker/dist/react-datepicker.css";
 import Home from './pages/user/Home'
 import AdminHome from './pages/admin/UserManagement'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { refresh } from './features/auth/authApi'
 import AdminLogin from './pages/AdminLogin'
 import AdminSignup from './pages/AdminSignup'
@@ -36,9 +36,11 @@ import { UserRoomNotificationType } from './constants/types'
 import { setCallNotificationState } from './features/notification/notificationSlice'
 import { getFollowers } from './features/user/userApi'
 import PostManagement from './pages/admin/PostManagement'
+import { Socket } from 'socket.io-client'
+import { setOnlineUsers, setUserSocketId } from './features/user/userSlice'
 
 function App() {
-  const socket = SocketIoClient.getInstance()
+  // const socket = SocketIoClient.getInstance()
   const navigate = useNavigate()
   const location = useLocation()
   const dispatch = useDispatch<AppDispatch>()
@@ -46,21 +48,39 @@ function App() {
   const user = useSelector(selectAuthUser)
   const chatUser = useSelector(selectChatUser)
   const friendsRoomId = useSelector(selectAuthFriendsRoomId)
+  const [socket, setSocket] = useState<Socket | null>(null)
 
   useEffect(() => {
     dispatch(refresh())
   }, [])
 
   useEffect(() => {
+    if (!user) return
+    const newSocket = SocketIoClient.getInstance(user._id)
+    setSocket(newSocket)
+  }, [user])
+
+  useEffect(() => {
+    if (!user) return
+    socket?.on(socketEvents.getOnlineUsers, (data) => {
+      dispatch(setOnlineUsers(data.onlineUsers))
+    })
+    socket?.on(socketEvents.me, (data) => {
+      console.log('userSocketId = ', data.userSocketId)
+      dispatch(setUserSocketId(data.userSocketId))
+    })
+  }, [user, socket])
+
+  useEffect(() => {
     console.log(socketEvents.joinUserRoom, 'roomId', friendsRoomId)
     if (!friendsRoomId) return
-    socket.emit(socketEvents.joinUserRoom, friendsRoomId)
+    socket?.emit(socketEvents.joinUserRoom, friendsRoomId)
     console.log(socketEvents.joinUserRoom, 'emitted roomId', friendsRoomId)
   }, [friendsRoomId])
 
   useEffect(() => {
     if (!user) return
-    socket.on(socketEvents.userRoomNotification, async (data: UserRoomNotificationType) => {
+    socket?.on(socketEvents.userRoomNotification, async (data: UserRoomNotificationType) => {
       console.log(socketEvents.userRoomNotification)
       console.log(data)
       switch (data.type) {
@@ -88,20 +108,20 @@ function App() {
       }
     })
 
-    socket.on(socketEvents.receiveMessage, (data) => {
+    socket?.on(socketEvents.receiveMessage, (data) => {
       // toast('new message')
       dispatch(receiveMessage(data))
       console.log(data)
     })
-    // socket.on(socketEvents.callUserConnected, (data) => {
+    // socket?.on(socketEvents.callUserConnected, (data) => {
     //   toast('new call')
     //   dispatch(callUserConnection(data))
     //   console.log(data)
     // })
 
     return () => {
-      socket.off(socketEvents.receiveMessage)
-      socket.off(socketEvents.callUserConnected)
+      socket?.off(socketEvents.receiveMessage)
+      socket?.off(socketEvents.callUserConnected)
     }
   }, [dispatch, socket, friendsRoomId])
 
