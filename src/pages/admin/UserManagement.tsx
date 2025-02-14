@@ -66,6 +66,9 @@ const AdminHome = (props: Props) => {
         <div className="lg:p-4 sm:p-1 mt-14 flex justify-between gap-8 lg:w-[160vh] md:w-[100vh] sm:w-[80vh]">
 
           <div className='mt-10'>
+            
+            <h5 className='text-2xl font-semibold text-center capitalize tracking-wider'>User Management</h5>
+
             <div className='flex space-x-5 items-end'>
               <DatePicker
                 startDate={startDate}

@@ -1,6 +1,6 @@
 import React from 'react'
 import { FaRegUser } from "react-icons/fa6";
-import { TbMessageCircle } from "react-icons/tb";
+import { TbMessageCircle, TbReportAnalytics } from "react-icons/tb";
 import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
 import { LuUserRoundPlus } from "react-icons/lu";
 import { HiOutlineGift } from "react-icons/hi2";
@@ -59,9 +59,9 @@ const AdminSidebar = (props: Props) => {
           </li>
           <li>
             <SpringButton>
-              <Link to='/admin/post' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                <LuUserRoundPlus size={22} />
-                <span className="ms-3">Follow</span>
+              <Link to='/admin/report' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <TbReportAnalytics size={22} />
+                <span className="ms-3">Report</span>
               </Link>
             </SpringButton>
           </li>

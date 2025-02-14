@@ -38,6 +38,7 @@ import { getFollowers } from './features/user/userApi'
 import PostManagement from './pages/admin/PostManagement'
 import { Socket } from 'socket.io-client'
 import { setOnlineUsers, setUserSocketId } from './features/user/userSlice'
+import ReportManagement from './pages/admin/ReportManagement'
 
 function App() {
   // const socket = SocketIoClient.getInstance()
@@ -167,7 +168,7 @@ function App() {
           <Route path='/admin'>
             <Route index element={<AdminHome />} />
             <Route path='post' element={<PostManagement />} />
-
+            <Route path='report' element={<ReportManagement />} />
           </Route>
         </Route>
 

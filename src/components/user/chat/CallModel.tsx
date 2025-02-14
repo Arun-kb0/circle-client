@@ -14,13 +14,12 @@ import {
 } from "../../../features/chat/chatSlice"
 import socketEvents from "../../../constants/socketEvents"
 import SocketIoClient from "../../../config/SocketIoClient"
-import { CallUserEventDataType, SignalDataType } from "../../../constants/types"
-import { v4 as uuid } from 'uuid'
 import { selectAuthFriendsRoomId, selectAuthUser } from "../../../features/auth/authSlice"
 import callRingAudio from '../../../assets/audio/chime_ding.mp3'
 import { selectCallNotification } from "../../../features/notification/notificationSlice"
-import Peer from 'simple-peer'
-
+import useAudioStream from "../../../hook/useAudioStream"
+import AudioVisualizer from "./AudioVisualizer"
+import { IoVideocam, IoVideocamOff } from "react-icons/io5"
 
 type Props = {
   handleClose: () => void;
@@ -48,18 +47,14 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
   const [idToCall, setIdToCall] = useState(callRoomId)
   const [callEnded, setCallEnded] = useState(false)
   const [name, setName] = useState("")
+  const [callType, setCallType] = useState<typeof callModelType>(callModelType)
+
+  const { audioBlob: audioLocalBlob, setStream: setAudioLocalStream } = useAudioStream()
+  const { audioBlob: audioRemoteBlob, setStream: setAudioRemoteStream } = useAudioStream()
 
   const myVideo = useRef<HTMLVideoElement>(null)
   const userVideo = useRef<HTMLVideoElement>(null)
   const connectionRef = useRef<RTCPeerConnection | null>(null)
-
-  const iceConfiguration = {
-    iceServers: [
-      {
-        urls: "stun:stun.l.google.com:19302",
-      },
-    ],
-  }
 
   const play = () => {
     new Audio(callRingAudio).play()
@@ -73,25 +68,31 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
   }, [stream, socket])
 
   useEffect(() => {
-    // Get local video/audio stream
+    cleanupResources()
+    //* Get local video/audio stream
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
+      .getUserMedia({
+        video: callType === 'video',
+        audio: true
+      })
       .then((localStream) => {
-        setStream(localStream);
+        setStream(localStream)
+        const audioOnlyStream = new MediaStream(localStream.getAudioTracks())
+        setAudioLocalStream(audioOnlyStream)
         if (myVideo.current) {
           myVideo.current.srcObject = localStream;
         }
       })
-      .catch((err) => console.error("Error accessing media devices:", err));
+      .catch((err) => console.error("Error accessing media devices:", err))
 
-    
-    // Listen for incoming call event
+    //* Listen for incoming call event
     socket?.on(socketEvents.callUser, (data) => {
-      setReceivingCall(true);
-      setCaller(data.from);
-      setName(data.name);
-      setCallerSignal(data.signal);
-    });
+      setReceivingCall(true)
+      play()
+      setCaller(data.from)
+      setName(data.name)
+      setCallerSignal(data.signal)
+    })
 
     return () => {
       cleanupResources()
@@ -100,12 +101,14 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
 
   useEffect(() => {
     if (userVideo.current) {
-      userVideo.current.srcObject = remoteStream;
+      userVideo.current.srcObject = remoteStream
+      const audioOnlyStream = new MediaStream(remoteStream.getAudioTracks())
+      setAudioRemoteStream(audioOnlyStream)
       userVideo.current.onloadedmetadata = () => {
         userVideo.current!.play().catch(err => console.error("Error playing video:", err));
       }
     }
-  }, [remoteStream]);
+  }, [remoteStream])
 
   const createPeerConnection = () => {
     const peerConnection = new RTCPeerConnection()
@@ -121,8 +124,6 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
       setRemoteStream((prev) => {
         const newTracks = [...prev.getTracks(), event.track];
         const newStream = new MediaStream(newTracks);
-        console.log("New remoteStream video tracks:", newStream.getVideoTracks());
-        console.log("New remoteStream audio tracks:", newStream.getAudioTracks());
         return newStream;
       })
     }
@@ -131,7 +132,7 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
       if (event.candidate) {
         socket?.emit(socketEvents.iceCandidate, {
           candidate: event.candidate,
-          to: caller || idToCall, 
+          to: caller || idToCall,
         })
       }
     }
@@ -229,7 +230,9 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
       connectionRef.current = null
     }
     socket?.emit(socketEvents.leaveCall)
+    handleClose()
   }
+
 
   return (
     <BackdropVerifyOtp onClick={handleClose}>
@@ -243,33 +246,38 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
         <section className="rounded-lg bg-white dark:bg-gray-900 py-8 lg:py-16 antialiased h-[80vh] w-[60vw] overflow-hidden">
           {/* Video Call Section */}
           <div className="w-full h-full flex items-center justify-center">
-            <div className="p-3 mb-8 w-11/12 h-full flex flex-col md:flex-row gap-4 overflow-hidden rounded-lg border border-gray-400">
+            <div className=" p-3 mb-8 w-11/12 h-full flex flex-col md:flex-row gap-4 overflow-hidden rounded-lg border border-gray-400">
               {stream &&
-                <video
-                  ref={myVideo}
-                  playsInline
-                  autoPlay
-                  muted
-                  className="w-full md:w-1/2 h-full rounded-lg bg-black"
-                />
+                <div className="relative">
+                  <video
+                    ref={myVideo}
+                    playsInline
+                    autoPlay
+                    muted
+                    className="w-full md:w-1/2 h-full rounded-lg bg-black"
+                  />
+                  {audioLocalBlob && <AudioVisualizer audioBlob={audioLocalBlob} />}
+                </div>
               }
 
               {callAccepted && !callEnded
                 ? (
-                  <video
-                    ref={userVideo}
-                    playsInline
-                    autoPlay
-                    className="w-full md:w-1/2 h-full rounded-lg bg-black"
-                  />
+                  <div className="relative">
+                    <video
+                      ref={userVideo}
+                      playsInline
+                      autoPlay
+                      className="w-full md:w-1/2 h-full rounded-lg bg-black"
+                    />
+                    {audioRemoteBlob && <AudioVisualizer audioBlob={audioRemoteBlob} />}
+                  </div>
                 ) : null
               }
             </div>
           </div>
 
           <div className="flex gap-3 justify-center items-center">
-
-            {callAccepted && !callEnded
+            {(callAccepted && !callEnded) || receivingCall
               ? (
                 <button onClick={leaveCall} className="text-red-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500">
                   <MdCallEnd size={20} />
@@ -281,12 +289,25 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
                 </button>
               )
             }
-
             {receivingCall && !callAccepted &&
               <button onClick={answerCall} className="text-green-700 border border-green-700 hover:bg-green-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:focus:ring-green-800 dark:hover:bg-green-500">
                 <MdCall size={20} />
               </button>
             }
+
+            {/* ! calll type change logic */}
+            {/* {callType === 'video'
+              ? (
+                <button onClick={() => setCallType('audio')} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+                  <IoVideocamOff size={20} />
+                </button>
+              ) : (
+                <button onClick={() => setCallType('video')} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+                  <IoVideocam size={20} />
+                </button>
+              )
+            } */}
+            
           </div>
 
         </section>
