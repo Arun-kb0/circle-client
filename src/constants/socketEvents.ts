@@ -26,7 +26,17 @@ enum socketEvents {
   iceCandidate = 'ice-candidate',
 
   getOnlineUsers = 'get-online-users',
-  me = "me"
+  me = "me",
+
+  // * live stream
+  liveStreamStarted = 'live-stream-started',
+  liveStreamEnded = 'live-stream-ended',
+  userLiveStreamStarted = 'user-live-stream-started',
+  userLiveStreamEnded = 'user-live-stream-ended',
+  liveIceCandidate = 'live-ice-candidate',
+  answerLiveStream ='answer-live-stream',
+  answeredLiveStream = 'answered-live-stream'
+
 }
 
 export default socketEvents

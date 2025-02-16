@@ -113,3 +113,9 @@ export type CallUserEventDataType = {
   name: string
   userToCall: string
 }
+
+export type LiveUserDataType = {
+  signal: any
+  from: string
+  name: string
+}

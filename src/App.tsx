@@ -39,6 +39,8 @@ import PostManagement from './pages/admin/PostManagement'
 import { Socket } from 'socket.io-client'
 import { setOnlineUsers, setUserSocketId } from './features/user/userSlice'
 import ReportManagement from './pages/admin/ReportManagement'
+import GoLivePage from './pages/user/GoLivePage'
+import ViewLivePage from './pages/user/ViewLivePage'
 
 function App() {
   // const socket = SocketIoClient.getInstance()
@@ -132,6 +134,8 @@ function App() {
       : dispatch(setIsInChat(false))
   }, [location.pathname])
 
+  
+
   return (
     <>
       {!hideNavbarPaths.includes(location.pathname) && <Navbar />}
@@ -160,6 +164,8 @@ function App() {
           <Route path='/following' element={<FollowersPage userId={user?._id || ''} />} />
           <Route path='/follow-people' element={<FollowPeople />} />
           <Route path='/crop' element={<CropperPage />} />
+          <Route path='/go-live' element={<GoLivePage />} />
+          <Route path='/view-live' element={<ViewLivePage />} />
 
         </Route>
 

@@ -237,6 +237,7 @@ export const selectUserSuggestedStatus = (state: RootState) => state.user.sugges
 
 export const selectUserOtherUser = (state: RootState) => state.user.otherUser
 export const selectUserOnlineUsers= (state: RootState) => state.user.onlineUsers
+export const selectUserSocketId = (state: RootState) => state.user.socketId
 
 export const {
   clearFollowers,

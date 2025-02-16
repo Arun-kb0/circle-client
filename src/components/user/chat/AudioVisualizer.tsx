@@ -10,10 +10,7 @@ const AudioVisualizer = ({ audioBlob }: Props) => {
   const waveSurferRef = useRef<WaveSurfer | null>(null)
 
   useEffect(() => {
-    console.log('AudioVisualizer wavesurfer useEffect ref 1')
     if (!waveformRef.current) return;
-
-    console.log('AudioVisualizer wavesurfer useEffect ref 2')
 
     waveSurferRef.current = WaveSurfer.create({
       container: waveformRef.current,
@@ -32,12 +29,9 @@ const AudioVisualizer = ({ audioBlob }: Props) => {
   }, [])
 
   useEffect(() => {
-    console.log('AudioVisualizer audioBlob useEffect 1')
     if (audioBlob && waveSurferRef.current) {
       const blobUrl = URL.createObjectURL(audioBlob)
       waveSurferRef.current.load(blobUrl)
-      console.log('AudioVisualizer audioBlob useEffect 2')
-      console.log(blobUrl)
     }
   }, [audioBlob])
 

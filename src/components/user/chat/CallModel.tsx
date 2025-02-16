@@ -20,6 +20,7 @@ import { selectCallNotification } from "../../../features/notification/notificat
 import useAudioStream from "../../../hook/useAudioStream"
 import AudioVisualizer from "./AudioVisualizer"
 import { IoVideocam, IoVideocamOff } from "react-icons/io5"
+import usePeerConnection from "../../../hook/usePeerConnection"
 
 type Props = {
   handleClose: () => void;
@@ -37,20 +38,24 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
   const callNotificationState = useSelector(selectCallNotification)
 
 
-  const [me, setMe] = useState(callRoomId)
   const [stream, setStream] = useState<MediaStream>()
   const [remoteStream, setRemoteStream] = useState<MediaStream>(new MediaStream())
-  const [receivingCall, setReceivingCall] = useState(false)
+  const [idToCall, setIdToCall] = useState(callRoomId)
   const [caller, setCaller] = useState("")
+  const [me, setMe] = useState(callRoomId)
+  const [receivingCall, setReceivingCall] = useState(false)
   const [callerSignal, setCallerSignal] = useState<any>(null)
   const [callAccepted, setCallAccepted] = useState(false)
-  const [idToCall, setIdToCall] = useState(callRoomId)
   const [callEnded, setCallEnded] = useState(false)
   const [name, setName] = useState("")
   const [callType, setCallType] = useState<typeof callModelType>(callModelType)
 
   const { audioBlob: audioLocalBlob, setStream: setAudioLocalStream } = useAudioStream()
   const { audioBlob: audioRemoteBlob, setStream: setAudioRemoteStream } = useAudioStream()
+  // const {
+  //   setPeerStream, setPeerCaller, setPeerIdToCall,
+  //    remoteStream, createPeerConnection,
+  // } = usePeerConnection({ socket })
 
   const myVideo = useRef<HTMLVideoElement>(null)
   const userVideo = useRef<HTMLVideoElement>(null)
@@ -110,6 +115,7 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
     }
   }, [remoteStream])
 
+  // !replace this with hook
   const createPeerConnection = () => {
     const peerConnection = new RTCPeerConnection()
 
@@ -307,7 +313,7 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
                 </button>
               )
             } */}
-            
+
           </div>
 
         </section>
