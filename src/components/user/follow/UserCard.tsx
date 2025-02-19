@@ -68,7 +68,7 @@ const UserCard = ({ userId, name, image }: Props) => {
       <div className="flex flex-col items-center pb-10">
         <button onClick={handleProfileNav} >
           {image
-            ? <img className="w-24 h-24 mb-3 rounded-full object-cover shadow-lg" src={image} alt="Bonnie image" />
+            ? <img className="w-24 h-24 mb-3 rounded-full object-cover shadow-lg" src={image} alt={name} />
             : <FaUserCircle className='w-24 h-24 mb-3 shadow-lg' />
           }
         </button>

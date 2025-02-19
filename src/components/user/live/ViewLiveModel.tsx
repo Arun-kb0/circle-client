@@ -3,8 +3,15 @@ import SocketIoClient from '../../../config/SocketIoClient';
 import socketEvents from '../../../constants/socketEvents';
 import { selectUserSocketId, setUserSocketId } from '../../../features/user/userSlice';
 import { useSelector } from 'react-redux';
+import BackdropVerifyOtp from '../../backdrop/BackdropVerifyOtp';
+import { motion } from 'framer-motion'
+import { dropIn } from '../../../constants/animationDropins';
+import { IoMdCloseCircleOutline } from 'react-icons/io';
+import { IoClose } from 'react-icons/io5';
+import { selectAuthUser } from '../../../features/auth/authSlice';
 
 type Props = {
+  streamerId: string,
   handleClose: () => void
 }
 const config = {
@@ -12,12 +19,13 @@ const config = {
     { urls: 'stun:stun.l.google.com:19302' },
     // Optionally add TURN servers here for more robust connectivity.
   ]
-};
+}
 
 
-const ViewLiveModel = ({ handleClose }: Props) => {
+const ViewLiveModel = ({ handleClose, streamerId }: Props) => {
   const socket = SocketIoClient.getInstance();
   const userSocketId = useSelector(selectUserSocketId);
+  const user = useSelector(selectAuthUser)
 
   const [remoteStream, setRemoteStream] = useState<MediaStream>(new MediaStream());
   const [caller, setCaller] = useState(""); // Broadcaster's socket id
@@ -61,7 +69,8 @@ const ViewLiveModel = ({ handleClose }: Props) => {
         // Also send candidates to broadcaster
         socket?.emit(socketEvents.liveIceCandidate, {
           candidate: event.candidate,
-          to: caller, // send to broadcaster
+          to: caller,
+          streamerUserId: streamerId
         });
       }
     };
@@ -115,6 +124,8 @@ const ViewLiveModel = ({ handleClose }: Props) => {
   // When callerSignal (offer from broadcaster) is received,
   // set remote description, flush queued ICE candidates, create an answer, and send it back.
   useEffect(() => {
+    socket?.emit(socketEvents.joinRoomLive, { streamerId })
+
     if (callerSignal && connectionRef.current) {
       const pc = connectionRef.current;
       pc.setRemoteDescription(new RTCSessionDescription(callerSignal))
@@ -150,30 +161,42 @@ const ViewLiveModel = ({ handleClose }: Props) => {
   }, [remoteStream]);
 
   const handleEndViewing = () => {
-    cleanupRemoteStream();
-    socket?.emit(socketEvents.liveStreamEnded);
+    cleanupRemoteStream()
+    // socket?.emit(socketEvents.liveStreamEnded)
+    socket?.emit(socketEvents.liveUserDisconnect, { streamerId })
     if (connectionRef.current) {
       connectionRef.current.close();
       connectionRef.current = null;
     }
     handleClose();
-  };
+  }
 
-  
+
   return (
-    <section className="relative rounded-lg bg-white dark:bg-gray-900 py-8 lg:py-16 antialiased h-[80vh] w-[60vw] overflow-hidden">
+    <BackdropVerifyOtp onClick={handleEndViewing}>
+      <motion.div
+        onClick={(e) => e.stopPropagation()}
+        variants={dropIn}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+      >
 
-      <video
-        ref={userVideo}
-        autoPlay
-        playsInline
-        className="w-full h-full object-cover"
-      />
-      <button onClick={handleEndViewing} className="absolute top-0 right-0 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-        End Viewing
-      </button>
+        <section className="relative rounded-lg bg-white dark:bg-gray-900 py-8 lg:py-16 antialiased h-[80vh] w-[60vw] overflow-hidden">
+          <video
+            ref={userVideo}
+            autoPlay
+            playsInline
+            className="w-full h-full object-cover"
+          />
+          <button onClick={handleEndViewing} className="absolute top-0 right-0 m-3 text-red-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500">
+            <IoClose size={20} />
+          </button>
 
-    </section>
+        </section>
+
+      </motion.div>
+    </BackdropVerifyOtp>
 
   );
 }

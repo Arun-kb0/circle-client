@@ -118,4 +118,12 @@ export type LiveUserDataType = {
   signal: any
   from: string
   name: string
+  userId : string
+}
+
+
+
+export type AnsweredLiveDataType = {
+  signal: any
+  userId:string
 }

@@ -41,7 +41,6 @@ const FollowPeople = (props: Props) => {
             users={users}
             loadMorePosts={loadMorePosts}
             hasMore={hasMore}
-            isFollowing={false}
           />
 
         </div>

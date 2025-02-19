@@ -3,6 +3,7 @@ import { PaginationUsers, StateType, UserType } from "../../constants/types"
 import {
   blockUser, followUser, getAllUsers, getFollowers,
   getFollowing,
+  getLiveUsers,
   getSuggestedPeople, getUser, unblockUser, unFollow
 } from "./userApi"
 import { RootState } from "../../app/store"
@@ -35,6 +36,7 @@ type UserStateType = {
   error: string | undefined
   onlineUsers: string[]
   socketId: string | undefined
+  liveUsers: UserType[]
 }
 
 const initialState: UserStateType = {
@@ -58,7 +60,8 @@ const initialState: UserStateType = {
   followingNumberOfPages: 0,
   followingCurrentPage: 0,
   onlineUsers: [],
-  socketId: undefined
+  socketId: undefined,
+  liveUsers: []
 }
 
 const userSlice = createSlice({
@@ -209,6 +212,13 @@ const userSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(getLiveUsers.fulfilled, (state, action: PayloadAction<UserType[]>) => {
+        state.liveUsers = action.payload
+      })
+      .addCase(getLiveUsers.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
   }
 })
 
@@ -236,8 +246,10 @@ export const selectUserSuggestedNumberOfPages = (state: RootState) => state.user
 export const selectUserSuggestedStatus = (state: RootState) => state.user.suggestedPeopleStatus
 
 export const selectUserOtherUser = (state: RootState) => state.user.otherUser
-export const selectUserOnlineUsers= (state: RootState) => state.user.onlineUsers
+export const selectUserOnlineUsers = (state: RootState) => state.user.onlineUsers
 export const selectUserSocketId = (state: RootState) => state.user.socketId
+
+export const selectUserLiveUsers = (state: RootState) => state.user.liveUsers
 
 export const {
   clearFollowers,

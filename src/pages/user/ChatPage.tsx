@@ -45,7 +45,7 @@ const ChatPage = (props: Props) => {
       userId: senderId,
       targetId: receiverId,
     }
-    socket.emit(socketEvents.joinCallRoom, chatRoom)
+    socket?.emit(socketEvents.joinCallRoom, chatRoom)
     dispatch(setCallRoomId({ roomId, user: chatUser }))
   }
 

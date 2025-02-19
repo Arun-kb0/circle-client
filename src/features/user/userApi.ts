@@ -191,4 +191,20 @@ export const updatedUser = createAsyncThunk('/user/update', async (user: Partial
   }
 })
 
+export const getLiveUsers = createAsyncThunk('/user/live-users', async (_, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.get(`/user/live-users`,)
+    removeInterceptors()
+    console.log(res.data)
+    return res.data.users
+  } catch (error) {
+    return errorHandler(error)
+  }
+})
+
 

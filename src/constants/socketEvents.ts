@@ -35,7 +35,12 @@ enum socketEvents {
   userLiveStreamEnded = 'user-live-stream-ended',
   liveIceCandidate = 'live-ice-candidate',
   answerLiveStream ='answer-live-stream',
-  answeredLiveStream = 'answered-live-stream'
+  answeredLiveStream = 'answered-live-stream',
+  joinRoomLive = 'join-room-live',
+  joinedRoomLive = 'joined-room-live',
+  prepareLiveStream = 'prepare-live-stream',
+  liveUserDisconnect = 'live-user-disconnect',
+  liveUserDisconnected = 'live-user-disconnected',
 
 }
 

@@ -4,7 +4,7 @@ import socketEvents from '../../../constants/socketEvents';
 import { useSelector } from 'react-redux';
 import { selectUserSocketId } from '../../../features/user/userSlice';
 import { selectAuthUser } from '../../../features/auth/authSlice';
-import { LiveUserDataType } from '../../../constants/types';
+import { AnsweredLiveDataType, LiveUserDataType } from '../../../constants/types';
 
 
 type Props = {
@@ -16,21 +16,22 @@ const LiveStream = ({ }: Props) => {
   const user = useSelector(selectAuthUser);
   const userSocketId = useSelector(selectUserSocketId);
 
-  const [stream, setStream] = useState<MediaStream | null>(null);
   const [audioLocalStream, setAudioLocalStream] = useState<MediaStream | null>(null);
   const myVideo = useRef<HTMLVideoElement>(null);
-  const connectionRef = useRef<RTCPeerConnection | null>(null);
+  const [isStreamStarted, setIsStreamStarted] = useState<boolean>(false)
+  const stream = useRef<MediaStream | null>(null)
+  const peerConnectionRef = useRef<Map<string, RTCPeerConnection>>(new Map)
 
   // Cleanup: stop all tracks and close connection
   const cleanupResources = useCallback(() => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
+    if (stream.current) {
+      stream.current?.getTracks().forEach((track) => track.stop());
     }
-    if (connectionRef.current) {
-      connectionRef.current.close();
-      connectionRef.current = null;
-    }
-    socket?.emit(socketEvents.liveStreamEnded);
+    peerConnectionRef.current.forEach(pc => {
+      pc.close()
+    })
+    peerConnectionRef.current.clear()
+    socket?.emit(socketEvents.liveStreamEnded, { userId: user?._id });
   }, [stream, socket]);
 
   // Acquire local media stream
@@ -41,7 +42,8 @@ const LiveStream = ({ }: Props) => {
       .getUserMedia({ video: true, audio: true })
       .then((localStream) => {
         activeStream = localStream;
-        setStream(localStream);
+        stream.current = localStream
+        // setStream(localStream)
         const audioOnlyStream = new MediaStream(localStream.getAudioTracks());
         setAudioLocalStream(audioOnlyStream);
         if (myVideo.current) {
@@ -54,7 +56,7 @@ const LiveStream = ({ }: Props) => {
       if (activeStream) {
         activeStream.getTracks().forEach((track) => track.stop());
       }
-      socket?.emit(socketEvents.liveStreamEnded);
+      socket?.emit(socketEvents.liveStreamEnded, { userId: user?._id });
     };
   }, [socket]);
 
@@ -62,9 +64,10 @@ const LiveStream = ({ }: Props) => {
   const createPeerConnection = () => {
     const peerConnection = new RTCPeerConnection();
 
-    if (stream) {
-      stream.getTracks().forEach((track) => {
-        peerConnection.addTrack(track, stream);
+    if (stream.current) {
+      const currentStream = stream.current
+      currentStream.getTracks().forEach((track) => {
+        peerConnection.addTrack(track, currentStream);
       });
     }
 
@@ -72,6 +75,7 @@ const LiveStream = ({ }: Props) => {
       if (event.candidate) {
         socket?.emit(socketEvents.liveIceCandidate, {
           candidate: event.candidate,
+          streamerUserId: user?._id
         });
       }
     };
@@ -81,16 +85,23 @@ const LiveStream = ({ }: Props) => {
     };
 
     return peerConnection;
-  };
+  }
+
+  const reconnectToUser = (peerConnection: RTCPeerConnection, userId: string) => {
+    if (peerConnection.connectionState === 'closed') {
+      peerConnection.restartIce()
+    }
+  }
 
   // End the live stream
   const liveEnd = () => {
-    cleanupResources();
-    setStream(null);
-  };
+    cleanupResources()
+    stream.current = null
+    // setStream(null)
+    setIsStreamStarted(false)
+  }
 
-  // Start the live stream by creating an offer
-  const liveStart = async () => {
+  const liveStart = async (userId: string) => {
     if (!stream) {
       console.error("stream is null in liveStart");
       return;
@@ -99,9 +110,17 @@ const LiveStream = ({ }: Props) => {
       throw new Error("user or userSocketId is undefined");
     }
 
-    const peerConnection = createPeerConnection();
-    connectionRef.current = peerConnection;
+    if (peerConnectionRef.current.has(userId)) {
+      console.log(`connection already exists for ${userId}`)
+      // const existingPc = peerConnectionRef.current.get(userId)
+      // reconnectToUser(existingPc as RTCPeerConnection, userId)
+      return
+    }
 
+    const peerConnection = createPeerConnection();
+    // connectionRef.current = peerConnection;
+    peerConnectionRef.current.set(userId, peerConnection)
+    setIsStreamStarted(true)
     try {
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
@@ -110,51 +129,85 @@ const LiveStream = ({ }: Props) => {
         signal: offer,
         from: userSocketId,
         name: user.name,
+        userId: user._id
       };
-
-      // Emit live stream start with offer details
-      socket?.emit(socketEvents.liveStreamStarted, liveUserData);
+      socket?.emit(socketEvents.liveStreamStarted, liveUserData)
       // Optionally, you can play a ring sound:
       // new Audio(callRingAudio).play();
     } catch (err) {
       console.error("Error creating offer:", err);
     }
-  };
+  }
 
   useEffect(() => {
-    socket?.on(socketEvents.answeredLiveStream, (data) => {
+    socket?.on(socketEvents.answeredLiveStream, (data: AnsweredLiveDataType) => {
       console.log(socketEvents.answeredLiveStream)
-      if (connectionRef.current) {
-        connectionRef.current
-          .setRemoteDescription(new RTCSessionDescription(data))
+      console.log(data)
+      const pc = peerConnectionRef.current.get(data.userId)
+      if (pc) {
+        pc.setRemoteDescription(new RTCSessionDescription(data.signal))
           .then(() => console.log("Remote description set successfully"))
           .catch((error) => console.error("Error setting remote description:", error));
       }
-
     })
 
     return () => {
       socket?.off(socketEvents.answeredLiveStream)
     }
-  },[socket])
+  }, [socket])
+
+  useEffect(() => {
+    socket?.on(socketEvents?.joinedRoomLive, (data: { userId: string }) => {
+      console.log('user joined on live', data)
+      liveStart(data.userId)
+    })
+    socket?.on(socketEvents?.liveUserDisconnected, (data: { userId: string }) => {
+      console.log('user left room', data)
+      peerConnectionRef.current.delete(data.userId)
+    })
+
+    return () => {
+      socket?.off(socketEvents.liveUserDisconnected)
+      socket?.off(socketEvents.joinedRoomLive)
+    }
+  }, [socket, isStreamStarted])
+
+  const handlePrepareLive = () => {
+    socket?.emit(socketEvents.prepareLiveStream, { userId: user?._id })
+  }
+
+  //  ! stream console
+  useEffect(() => {
+    // console.log('stream useEffect ')
+    // console.log(stream.current)
+    console.log('peerConnectionRef = ')
+    console.log(peerConnectionRef.current)
+  }, [peerConnectionRef.current.size])
 
   return (
-    <section className="relative rounded-lg bg-white dark:bg-gray-900 py-8 lg:py-16 antialiased h-[80vh] w-[60vw] overflow-hidden">
-      <video
-        ref={myVideo}
-        autoPlay
-        muted
-        className="w-full h-full object-cover"
-      />
+    <section className="flex items-center rounded-lg bg-white dark:bg-gray-900 py-8 lg:py-16 antialiased h-[80vh] w-[60vw] overflow-hidden">
+      <div>
 
-      <div className='absolute top-0 right-0 '>
-        <button onClick={liveStart} className="capitalize text-sm text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-          start live
-        </button>
+        <video
+          ref={myVideo}
+          autoPlay
+          muted
+          className="w-full lg:h-full h-96 object-cover"
+        />
 
-        <button onClick={liveEnd} className="capitalize text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-          end stream
-        </button>
+        <div className='p-3 flex justify-center items-center'>
+          {isStreamStarted
+            ? (
+              <button onClick={liveEnd} className="capitalize rounded-xl text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">
+                end stream
+              </button>
+            ) : (
+              <button onClick={handlePrepareLive} className="capitalize rounded-xl text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">
+                start live
+              </button>
+            )
+          }
+        </div>
       </div>
 
     </section>
