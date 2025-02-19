@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { selectUserSocketId } from '../../../features/user/userSlice';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { AnsweredLiveDataType, LiveUserDataType } from '../../../constants/types';
+import LiveStreamChat from './liveStreamChat';
 
 
 type Props = {
@@ -186,8 +187,8 @@ const LiveStream = ({ }: Props) => {
 
   return (
     <section className="flex items-center rounded-lg bg-white dark:bg-gray-900 py-8 lg:py-16 antialiased h-[80vh] w-[60vw] overflow-hidden">
-      <div>
 
+      <div>
         <video
           ref={myVideo}
           autoPlay
@@ -195,7 +196,7 @@ const LiveStream = ({ }: Props) => {
           className="w-full lg:h-full h-96 object-cover"
         />
 
-        <div className='p-3 flex justify-center items-center'>
+        <div className='absolute top-20 left-1/2 p-3 flex justify-center items-center'>
           {isStreamStarted
             ? (
               <button onClick={liveEnd} className="capitalize rounded-xl text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">
@@ -208,6 +209,12 @@ const LiveStream = ({ }: Props) => {
             )
           }
         </div>
+
+        <LiveStreamChat
+          socket={socket}
+          streamerId={user?._id as string}
+        />
+
       </div>
 
     </section>

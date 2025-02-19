@@ -42,6 +42,9 @@ enum socketEvents {
   liveUserDisconnect = 'live-user-disconnect',
   liveUserDisconnected = 'live-user-disconnected',
 
+  liveSendMessage = 'live-send-message',
+  liveReceiveMessage = 'live-receive-message'
+
 }
 
 export default socketEvents

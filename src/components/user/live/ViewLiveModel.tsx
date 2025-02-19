@@ -9,6 +9,8 @@ import { dropIn } from '../../../constants/animationDropins';
 import { IoMdCloseCircleOutline } from 'react-icons/io';
 import { IoClose } from 'react-icons/io5';
 import { selectAuthUser } from '../../../features/auth/authSlice';
+import { LiveMessageType } from '../../../constants/types';
+import LiveStreamChat from './liveStreamChat';
 
 type Props = {
   streamerId: string,
@@ -171,7 +173,6 @@ const ViewLiveModel = ({ handleClose, streamerId }: Props) => {
     handleClose();
   }
 
-
   return (
     <BackdropVerifyOtp onClick={handleEndViewing}>
       <motion.div
@@ -182,17 +183,22 @@ const ViewLiveModel = ({ handleClose, streamerId }: Props) => {
         exit="exit"
       >
 
-        <section className="relative rounded-lg bg-white dark:bg-gray-900 py-8 lg:py-16 antialiased h-[80vh] w-[60vw] overflow-hidden">
+
+        <section className="bg-red-500 relative rounded-lg h-auto bg-white dark:bg-gray-900 py-8 lg:py-16 antialiased w-[60vw] overflow-hidden">
           <video
             ref={userVideo}
             autoPlay
             playsInline
-            className="w-full h-full object-cover"
+            className="w-full h-auto object-cover"
           />
           <button onClick={handleEndViewing} className="absolute top-0 right-0 m-3 text-red-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500">
             <IoClose size={20} />
           </button>
 
+          <LiveStreamChat
+            socket={socket}
+            streamerId={streamerId}
+          />
         </section>
 
       </motion.div>

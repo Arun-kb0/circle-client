@@ -121,9 +121,19 @@ export type LiveUserDataType = {
   userId : string
 }
 
-
-
 export type AnsweredLiveDataType = {
   signal: any
   userId:string
 }
+
+export type LiveMessageType = {
+  id: string
+  streamerId: string
+  authorId: string
+  authorName: string
+  authorImage?: string
+  message: string
+  createdAt: Date
+  updatedAt: Date
+}
+
