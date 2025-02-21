@@ -52,15 +52,15 @@ const LoginFrom = ({ role, name, homePath, signupPath, loginMsg, loginPath }: Pr
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='space-y-3 min-w-[300px]'>
-      <h2 className='title text-center'> {name} </h2>
+      <h2 className='title text-center text-black'> {name} </h2>
       <div className="grid space-y-4">
 
         <div>
-          <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+          <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 ">Email</label>
           <input
             type="text"
             id="email"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder='enter email'
             {...register('email', {
               required: 'email is required',
@@ -75,11 +75,11 @@ const LoginFrom = ({ role, name, homePath, signupPath, loginMsg, loginPath }: Pr
           }
         </div>
         <div>
-          <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+          <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 ">Password</label>
           <input
             type="password"
             id="password"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
             {...register('password', {
               required: 'password is required',
               pattern: {

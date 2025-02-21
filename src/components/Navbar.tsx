@@ -2,11 +2,13 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectAuthUser } from '../features/auth/authSlice'
 import { roles } from '../constants/enums'
-import UserNav from './UserNav'
+import UserNav from './user/UserNav'
 import AdminNav from './AdminNav'
 import { logout } from '../features/auth/authApi'
 import { AppDispatch } from '../app/store'
 import { useNavigate } from 'react-router-dom'
+import Sidebar from './user/Sidebar'
+import AdminSidebar from './admin/AdminSidebar'
 
 
 const Navbar = () => {
@@ -22,8 +24,14 @@ const Navbar = () => {
   return (
     <header className='flex justify-center items-center bg-gray-900'>
       {user && user.role === roles.user
-        ? <UserNav handleLogout={handleLogout} />
-        : <AdminNav handleLogout={handleLogout} />
+        ? <>
+          <UserNav handleLogout={handleLogout} />
+          <Sidebar />
+        </>
+        : <>
+          <AdminNav handleLogout={handleLogout} />
+          <AdminSidebar />
+        </>
       }
     </header>
   )

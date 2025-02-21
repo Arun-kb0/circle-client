@@ -4,6 +4,7 @@ import axiosInstance from "../../config/axiosInstance"
 import { toast } from "react-toastify"
 import { UserType } from "../../constants/types"
 import { RootState } from "../../app/store"
+import SocketIoClient from "../../config/SocketIoClient"
 
 export const googleOauthLogin = createAsyncThunk('/google-oauth-login', async (token: string) => {
   try {
@@ -16,7 +17,7 @@ export const googleOauthLogin = createAsyncThunk('/google-oauth-login', async (t
 
 
 type SignupArgs = Pick<UserType, 'name' | 'email' | 'password'>
-export const signup = createAsyncThunk('/signup', async (user: SignupArgs, {rejectWithValue}) => {
+export const signup = createAsyncThunk('/signup', async (user: SignupArgs, { rejectWithValue }) => {
   try {
     const res = await axiosInstance.post('/auth/signup', user)
     if (!res || (typeof res.status === 'string' && res.status !== 'success')) throw new Error('signup failed')
@@ -114,13 +115,15 @@ export const refresh = createAsyncThunk('/auth/refresh', async () => {
   }
 })
 
-export const logout = createAsyncThunk('/auth/logout', async () => {
+export const logout = createAsyncThunk('/auth/logout', async (_, { dispatch }) => {
   try {
+    const socket = SocketIoClient.getInstance()
     const res = await axiosInstance.get('/auth/logout', {
       withCredentials: true
     })
+    sessionStorage.clear()
     localStorage.clear()
-    console.log(res)
+    socket?.disconnect()
     return res.data
   } catch (error) {
     return errorHandler(error)

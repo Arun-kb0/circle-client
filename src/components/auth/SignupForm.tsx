@@ -55,14 +55,14 @@ const SignupForm = ({ role, name, homePath, loginPath, openModel }: Props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='space-y-3 min-w-[300px]'>
-      <h2 className='title'> {name} </h2>
+      <h2 className='title text-black'> {name} </h2>
       <div className="grid space-y-4">
         <div>
-          <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{role === roles.admin ? 'Root user' : 'Name'}</label>
+          <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 ">{role === roles.admin ? 'Root user' : 'Name'}</label>
           <input
             type="text"
             id="name"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder={role === roles.admin ? 'enter root user' : 'enter name'}
             defaultValue={user && user.name}
             {...register('name', {
@@ -84,11 +84,11 @@ const SignupForm = ({ role, name, homePath, loginPath, openModel }: Props) => {
           }
         </div>
         <div>
-          <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+          <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 ">Email</label>
           <input
             type="text"
             id="email"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder='enter email'
             defaultValue={user && user.email}
             {...register('email', {
@@ -104,12 +104,12 @@ const SignupForm = ({ role, name, homePath, loginPath, openModel }: Props) => {
           }
         </div>
         <div>
-          <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+          <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 ">Password</label>
           <input
             type={user ? "text" : "password"}
             defaultValue={user && user.password}
             id="password"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
             {...register('password', {
               required: 'password is required',
               pattern: {
@@ -123,12 +123,12 @@ const SignupForm = ({ role, name, homePath, loginPath, openModel }: Props) => {
           }
         </div>
         <div>
-          <label htmlFor="confirmPassword" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm Password</label>
+          <label htmlFor="confirmPassword" className="block mb-2 text-sm font-medium text-gray-900 ">Confirm Password</label>
           <input
             type="confirmPassword"
             id="confirmPassword"
             defaultValue={user && user.password}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
             {...register('confirmPassword', {
               required: 'password do not match',
               validate: (value) =>

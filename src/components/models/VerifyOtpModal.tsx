@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux'
 import { resendOtp, resetPwdVerifyOtp, resetResendOtp, verifyEmail } from '../../features/auth/authApi'
 import { AppDispatch } from '../../app/store'
 import { FieldValues, useForm } from 'react-hook-form'
+import { dropIn } from '../../constants/animationDropins'
 
 type Props = {
   componentType: 'email' | 'password'
@@ -13,26 +14,6 @@ type Props = {
 
 
 const VerifyOtpModal = ({ componentType, handleClose }: Props) => {
-  const dropIn = {
-    hidden: {
-      y: "-100vh",
-      opacity: 0
-    },
-    visible: {
-      y: "0",
-      opacity: 1,
-      transition: {
-        duration: 0.1,
-        type: "spring",
-        damping: 25,
-        stiffness: 500
-      }
-    },
-    exit: {
-      y: "100vh",
-      opacity: 1
-    }
-  }
 
   const dispatch = useDispatch<AppDispatch>()
   const [timeLeft, setTimeLeft] = useState(120)
@@ -71,7 +52,6 @@ const VerifyOtpModal = ({ componentType, handleClose }: Props) => {
   return (
     <BackdropVerifyOtp onClick={handleClose}>
       <motion.div
-        className=''
         onClick={(e) => e.stopPropagation()}
         variants={dropIn}
         initial="hidden"
