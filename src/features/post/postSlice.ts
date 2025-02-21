@@ -132,6 +132,13 @@ const postSlice = createSlice({
       state.userCreatedPosts = []
       state.userCreatedPostsCurrentPage = 0
       state.userCreatedPostsNumberOfPages = 0
+    },
+
+    setCommentReplayCount: (state, action: PayloadAction<{ commentId: string, count: number }>) => {
+      const { commentId, count } = action.payload
+      state.comments.forEach(comment => {
+        if (comment._id === commentId) comment.replayCount = count
+      })
     }
 
 
@@ -225,7 +232,7 @@ const postSlice = createSlice({
         if (!state.selectedPost) return
         state.commentStatus = 'success'
         const { comments, currentPage, numberOfPages, likes } = action.payload
-        state.comments = comments
+        state.comments = comments.sort((a,b)=> new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         state.commentCurrentPage = currentPage
         state.commentNumberOfPages = numberOfPages
         state.commentLikes = likes
@@ -401,7 +408,9 @@ export const {
   setCroppedImage,
   setCreatePostCache,
   setImageToCropIndex,
-  clearUserCreatedPosts
+  clearUserCreatedPosts,
+
+  setCommentReplayCount
 } = postSlice.actions
 
 export default postSlice.reducer

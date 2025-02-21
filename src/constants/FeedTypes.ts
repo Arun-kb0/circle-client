@@ -23,9 +23,9 @@ export type CommentType = {
   mediaType: 'gif' | 'text'
   status: 'active' | 'deleted' | 'blocked'
   authorId: string
-  authorImage: string
+  authorImage?: string
   authorName: string
-  parentId: string
+  parentId: string | null
   likesCount: number
   replayCount: number
   contentId: string
@@ -34,11 +34,6 @@ export type CommentType = {
   createdAt: Date
 }
 
-export type NestedCommentsType = {
-  id: string,
-  comment?: CommentType
-  items: NestedCommentsType[]
-}
 
 export type PostPaginationRes = {
   posts: PostType[],

@@ -203,6 +203,114 @@ export const deleteComment = createAsyncThunk('/comment/delete', async (commentI
   }
 })
 
+// * nested comments
+type GetChildCommentsArgs = { contentId: string, parentId: string, page: number }
+export const getChildComments = createAsyncThunk('/comment-child/get', async ({ contentId, parentId, page }: GetChildCommentsArgs, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.get(`/comment/child`, {
+      params: { contentId, parentId, page }
+    })
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+type CreateChildCommentArg = { comment: Partial<CommentType>, contentId: string, contentType: string, parentId: string }
+export const createChildComment = createAsyncThunk('/comment/create-child',
+  async ({ comment, contentId, contentType, parentId }: CreateChildCommentArg, { dispatch, getState }) => {
+    try {
+      const state = getState() as RootState
+      const accessToken = state.auth.accessToken
+      const dispatchFunction = dispatch as AppDispatch
+      if (!accessToken) throw new Error(' no accessToken found ')
+      const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+      const res = await axiosPrivate.post(`/comment/`, { comment, contentType, contentId, parentId })
+      removeInterceptors()
+      toast('Reply success')
+      return res.data
+    } catch (error) {
+      console.log(error)
+      return errorHandler(error)
+    }
+  })
+
+export const likeChildComment = createAsyncThunk('/like-child-comment', async ({ contentId, contentType }: LikeArgs, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.post(`/like/`, { contentId, contentType })
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+export const unlikeChildComment = createAsyncThunk('/unlike-child-comment', async (contentId: string, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.delete(`/like/${contentId}`)
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+
+export const updateChildComment = createAsyncThunk('/child-comment/update', async ({ comment, commentId }: UpdateCommentArgs, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.patch(`/comment`, { comment, commentId })
+    removeInterceptors()
+    toast('update comment success')
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+
+export const deleteChildComment = createAsyncThunk('/child-comment/delete', async (commentId: string, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state?.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.delete(`/comment/${commentId}`)
+    removeInterceptors()
+    toast('delete comment success')
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+// * file upload 
 export const uploadFiles = createAsyncThunk('/cloudinary/upload', async (files: File[]) => {
   try {
     // ! raeplace with this
