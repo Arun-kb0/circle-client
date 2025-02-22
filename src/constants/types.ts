@@ -53,12 +53,13 @@ export type ChatUserType = {
 }
 
 
-export type NotificationType = {
+export type NotificationType<T = any> = {
   id: string
   status: 'read' | 'unread'
   authorName: string
   message: string
-  time: Date
+  time: Date,
+  data?: T
 }
 
 
@@ -97,13 +98,13 @@ export type UserRoomNotificationType = {
   type: 'incoming-call'
   roomId: string
   caller: string
-  chatUser?:ChatUserType
+  chatUser?: ChatUserType
 }
 
 export type AuthenticationResponseType = {
-  user : UserType 
-  accessToken : string  
-  friendsRoomId : string  
+  user: UserType
+  accessToken: string
+  friendsRoomId: string
 }
 
 
@@ -118,12 +119,12 @@ export type LiveUserDataType = {
   signal: any
   from: string
   name: string
-  userId : string
+  userId: string
 }
 
 export type AnsweredLiveDataType = {
   signal: any
-  userId:string
+  userId: string
 }
 
 export type LiveMessageType = {

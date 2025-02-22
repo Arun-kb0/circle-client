@@ -18,6 +18,7 @@ import { FaUserCircle } from 'react-icons/fa';
 import { clearUserCreatedPosts } from '../../features/post/postSlice';
 import { clearFollowers, clearFollowing } from '../../features/user/userSlice';
 import logo from '../../assets/vite.png'
+import Notifications from '../notification/Notifications';
 
 
 type Props = {
@@ -105,6 +106,10 @@ const UserNav = ({ handleLogout }: Props) => {
                     <BsBell className='text-gray-200 ' size={23} />
                   </SpringButton>
                 </button>
+                <Notifications
+                  open={notificationDropDown}
+                  position='right-1'
+                />
               </div>
             </div>
 
