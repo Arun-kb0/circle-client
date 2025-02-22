@@ -1,5 +1,6 @@
-import React, { forwardRef, ForwardedRef, useEffect } from 'react'
+import React, { forwardRef, ForwardedRef, useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import { MdGif } from 'react-icons/md';
 
 
 type FormData = {
@@ -8,12 +9,12 @@ type FormData = {
 
 type Props = {
   handleCommentSubmit: SubmitHandler<FormData>
+  setIsGifPickerOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 
-
 const CommentForm = forwardRef<HTMLTextAreaElement, Props>(
-  ({ handleCommentSubmit }: Props, ref: React.ForwardedRef<HTMLTextAreaElement>) => {
+  ({ handleCommentSubmit, setIsGifPickerOpen }: Props, ref: React.ForwardedRef<HTMLTextAreaElement>) => {
 
     const {
       register,
@@ -29,6 +30,7 @@ const CommentForm = forwardRef<HTMLTextAreaElement, Props>(
 
     return (
       <form onSubmit={handleSubmit(onSubmit)} className="mb-6">
+
         <div className="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
           <label htmlFor="commentInput" className="sr-only">Your comment</label>
           <textarea
@@ -47,11 +49,17 @@ const CommentForm = forwardRef<HTMLTextAreaElement, Props>(
             }}
           />
         </div>
-        <button type="submit" className="text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
-          Post comment
-        </button>
+
+        <div className='flex gap-1 items-center'>
+          <button type="submit" className="text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-xs px-5 py-2.5 text-center me-2 mb-2">
+            Post comment
+          </button>
+          <button onClick={() => setIsGifPickerOpen(prev => !prev)} className="mx-1  text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-xs px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+            <MdGif size={18} />
+          </button>
+        </div>
+
       </form>
     )
   })
-
 export default CommentForm

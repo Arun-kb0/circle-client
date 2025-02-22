@@ -16,7 +16,9 @@ import {
 } from '../../../features/post/postApi';
 import { selectPostSelectedPost, setCommentReplayCount } from '../../../features/post/postSlice';
 import { toast } from 'react-toastify';
-
+import GifPicker from '../../basic/GifPicker';
+import { MdGif } from 'react-icons/md';
+import { stringOrNumber } from '@cloudinary/url-gen/types/types';
 
 type Props = {
   comment: CommentType
@@ -35,13 +37,14 @@ const CommentBox = ({ comment: currentComment, level, commentLikesArray }: Props
 
   const [isOpen, setIsOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false)
-  const [editValue, setEditValue] = useState(comment.media)
+  const [editValue, setEditValue] = useState(comment.mediaType === 'text' ? comment.media : '')
   const [replayValue, setReplayValue] = useState('')
 
   const [comments, setComments] = useState<CommentType[]>([])
   const [showReplies, setShowReplies] = useState(false)
   const [showReplyInput, setShowReplyInput] = useState(false)
 
+  const [gifPickerOpen, setGifPickerOpen] = useState<'edit' | 'replay' | 'idle'>('idle')
 
   const [isLiked, setIsLiked] = useState(() => {
     if (!user) return false
@@ -61,24 +64,31 @@ const CommentBox = ({ comment: currentComment, level, commentLikesArray }: Props
     setIsCommentDeleted(true)
   }
 
-  const handleEdit = () => {
-    if (editValue.length === 0) return
+  const handleEdit = (mediaType: CommentType['mediaType'], url?: string) => {
+    if (mediaType == 'text' && editValue.length === 0) return
+    console.log(url)
+    const editedComment: CommentType = {
+      ...comment,
+      mediaType: mediaType === 'gif' ? 'gif' : 'text',
+      media: (mediaType === 'gif' && url) ? url : editValue
+    }
     comment.parentId
       ? dispatch(updateChildComment({
         commentId: comment._id,
-        comment: { ...comment, media: editValue }
+        comment: editedComment
       }))
       : dispatch(updateComment({
         commentId: comment._id,
-        comment: { ...comment, media: editValue }
+        comment: editedComment
       }))
-    setComment(prev => ({ ...prev, media: editValue }))
+    setComment(editedComment)
     setIsEdit(false)
     setIsOpen(false)
+    setGifPickerOpen('idle')
   }
 
   const handleEditOnEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') handleEdit()
+    if (e.key === 'Enter') handleEdit('text')
   }
 
   const handleLike = () => {
@@ -110,21 +120,26 @@ const CommentBox = ({ comment: currentComment, level, commentLikesArray }: Props
     setComments(data.comments)
   }
 
-  const handleReplay = async () => {
-    if (replayValue === '') {
+  const handleReplay = async (mediaType: CommentType['mediaType'], url?: string) => {
+    if (mediaType === 'text' && replayValue === '') {
       toast('Cannot create a empty reply')
       return
     }
+    const repliedComment: Partial<CommentType> = {
+      parentId: comment._id,
+      mediaType: mediaType === 'gif' ? 'gif' : 'text',
+      media: (mediaType === 'gif' && url) ? url : replayValue
+    }
     const data = await dispatch(createChildComment({
-      comment: { mediaType: 'text', media: replayValue, parentId: comment._id },
+      comment: repliedComment,
       contentId: selectedPost?._id as string,
       contentType: 'post',
       parentId: comment._id
     })).unwrap()
-
     setComment(prev => ({ ...prev, replayCount: prev.replayCount + 1 }))
     setReplayValue('')
     setShowReplyInput(false)
+    setGifPickerOpen('idle')
     if (!comment.parentId) {
       dispatch(setCommentReplayCount({
         commentId: comment._id,
@@ -135,21 +150,31 @@ const CommentBox = ({ comment: currentComment, level, commentLikesArray }: Props
 
   const handleReplyOnEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      handleReplay()
+      handleReplay('text')
     }
   }
 
+  const handleGifSelect = (url: string) => {
+    if (gifPickerOpen === 'idle') return
+    if (gifPickerOpen === 'edit') {
+      handleEdit('gif', url)
+    } else {
+      handleReplay('gif', url)
+    }
+    setShowReplyInput(false)
+  }
 
   return (
     <>
-      <article className={"relative text-base shadow-lg"}
+      <article className="text-base shadow-lg"
         style={{
           marginLeft: `${2 * level}rem`,
           display: isCommentDeleted ? 'none' : ''
         }}
       >
+        {gifPickerOpen !== 'idle' && <GifPicker onGifSelect={handleGifSelect} />}
 
-        <footer className="flex justify-between items-center">
+        <footer className="relative flex justify-between items-center">
           <div className="flex items-center">
             <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
               <SpringButton>
@@ -178,27 +203,35 @@ const CommentBox = ({ comment: currentComment, level, commentLikesArray }: Props
               handleRemove={handleRemove}
             />
           }
+
         </footer>
 
         <div className='border-l-2 border-b-2 border-gray-600 ml-2 p-2.5 rounded-bl-xl'>
-          {comment.mediaType === 'text' &&
-            isEdit
-            ?
-            <div>
-              <input
-                onChange={(e) => setEditValue(e.target.value)}
-                onKeyDown={handleEditOnEnter}
-                type="text"
-                id="first_name"
-                className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                value={editValue} required
-              />
-              <div className='flex gap-1 '>
-                <button onClick={handleEdit} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-xs px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">save</button>
-                <button onClick={() => setIsEdit(false)} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-xs px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">cancel</button>
+          {isEdit
+            ? (
+              <div>
+                <input
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onKeyDown={handleEditOnEnter}
+                  type="text"
+                  id="first_name"
+                  className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  value={editValue}
+                  required
+                />
+                <div className='flex gap-1 '>
+                  <button onClick={() => setGifPickerOpen('edit')} className="mx-1  text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-xs px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                    <MdGif size={18} />
+                  </button>
+                  <button onClick={() => handleEdit('text')} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-xs px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">save</button>
+                  <button onClick={() => setIsEdit(false)} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-xs px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">cancel</button>
+                </div>
               </div>
-            </div>
-            : <p className="text-sm text-gray-600 dark:text-gray-100">{comment.media} </p>
+            ) : (
+              comment.mediaType === 'gif'
+                ? <img src={comment.media} alt="media" />
+                : <p>{comment.media}</p>
+            )
           }
 
           {showReplyInput &&
@@ -212,8 +245,12 @@ const CommentBox = ({ comment: currentComment, level, commentLikesArray }: Props
                 className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 value={replayValue} required
               />
+
               <div className='flex gap-1 '>
-                <button onClick={handleReplay} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-xs px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">save</button>
+                <button onClick={() => setGifPickerOpen('replay')} className="mx-1  text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-xs px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                  <MdGif size={18} />
+                </button>
+                <button onClick={() => handleReplay('text')} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-xs px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">save</button>
                 <button onClick={() => setShowReplyInput(false)} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-xs px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">cancel</button>
               </div>
             </div>
