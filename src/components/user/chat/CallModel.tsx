@@ -52,6 +52,7 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
 
   const { audioBlob: audioLocalBlob, setStream: setAudioLocalStream } = useAudioStream()
   const { audioBlob: audioRemoteBlob, setStream: setAudioRemoteStream } = useAudioStream()
+  //  ! work on this hook if have time
   // const {
   //   setPeerStream, setPeerCaller, setPeerIdToCall,
   //    remoteStream, createPeerConnection,
@@ -115,7 +116,7 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
     }
   }, [remoteStream])
 
-  // !replace this with hook
+  // !replace this with hook if have time
   const createPeerConnection = () => {
     const peerConnection = new RTCPeerConnection()
 
@@ -165,8 +166,6 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
       const offer = await peerConnection.createOffer()
       await peerConnection.setLocalDescription(offer)
 
-
-      // Send the offer to the callee via signaling server
       const callUserData = {
         userToCall: id,
         signal: offer, // sending the SDP offer

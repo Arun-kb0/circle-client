@@ -74,12 +74,15 @@ function App() {
     })
   }, [user, socket])
 
+  // ! check this route and remove if not using
   useEffect(() => {
     console.log(socketEvents.joinUserRoom, 'roomId', friendsRoomId)
     if (!friendsRoomId) return
     socket?.emit(socketEvents.joinUserRoom, friendsRoomId)
     console.log(socketEvents.joinUserRoom, 'emitted roomId', friendsRoomId)
   }, [friendsRoomId])
+
+  
 
   useEffect(() => {
     if (!user) return
@@ -116,6 +119,8 @@ function App() {
       dispatch(receiveMessage(data))
       console.log(data)
     })
+
+    // ! check this method and implemnt call notification
     // socket?.on(socketEvents.callUserConnected, (data) => {
     //   toast('new call')
     //   dispatch(callUserConnection(data))
