@@ -12,7 +12,7 @@ import { toast } from 'react-toastify';
 
 type Props = {}
 
-const AdminHome = (props: Props) => {
+const UserManagement = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const [startDate, setStartDate] = useState<Date>(() => {
@@ -105,4 +105,4 @@ const AdminHome = (props: Props) => {
   )
 }
 
-export default AdminHome
+export default UserManagement

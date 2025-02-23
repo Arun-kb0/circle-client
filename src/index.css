@@ -44,6 +44,13 @@
     align-items: center;
   }
 
+  .nav-bg-color{
+    @apply  backdrop-blur-[20px];
+    background-color: rgba(255, 255, 255, 0.074);
+  }
+
+  /* * normal styles */
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
@@ -53,6 +60,16 @@
     /* Internet Explorer 10+ */
     scrollbar-width: none;
     /* Firefox */
+  }
+
+  .card-with-shadow {
+    border-radius: 10px;
+    background: #212121;
+    box-shadow: 15px 15px 30px rgb(16, 16, 16),
+      -15px -15px 30px rgb(18, 17, 17);
+    /* background: #212121; */
+    /* box-shadow: 15px 15px 30px rgb(25, 25, 25),
+      -15px -15px 30px rgb(60, 60, 60); */
   }
 
 }

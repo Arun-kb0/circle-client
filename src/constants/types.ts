@@ -138,3 +138,13 @@ export type LiveMessageType = {
   updatedAt: Date
 }
 
+
+export type LineChartDatum = {
+  x: string; // ISO date string (e.g., "2020-01-01")
+  y: number;
+}
+export type LineChartDataType = {
+  id: string;
+  color: string;
+  data: LineChartDatum[];
+}
