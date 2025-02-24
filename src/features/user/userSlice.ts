@@ -1,5 +1,5 @@
 import { ActionCreator, createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { PaginationUsers, StateType, UsersCountTypes, UserType } from "../../constants/types"
+import { PaginationUsers, PieChartType, StateType, UsersCountTypes, UserType } from "../../constants/types"
 import {
   blockUser, followUser, getAllUsers, getFollowers,
   getFollowing,
@@ -42,6 +42,7 @@ type UserStateType = {
   totalFemaleUsers: number
   totalMaleUsers: number
   totalOtherUsers: number
+  pieChartData: PieChartType[]
 }
 
 const initialState: UserStateType = {
@@ -71,7 +72,8 @@ const initialState: UserStateType = {
   totalUsers: 0,
   totalFemaleUsers: 0,
   totalMaleUsers: 0,
-  totalOtherUsers: 0
+  totalOtherUsers: 0,
+  pieChartData: []
 }
 
 const userSlice = createSlice({
@@ -235,6 +237,25 @@ const userSlice = createSlice({
         state.totalFemaleUsers = femaleUsersCount
         state.totalMaleUsers = maleUsersCount
         state.totalOtherUsers = otherUsersCount
+        const female: PieChartType = {
+          id: "Female",
+          label: "Female",
+          value: femaleUsersCount,
+          color: "hsl(182, 70%, 50%)",
+        }
+        const male: PieChartType = {
+          id: "Male",
+          label: "Male",
+          value: maleUsersCount,
+          color: "hsl(295, 70%, 50%)"
+        }
+        const other: PieChartType = {
+          id: "Not specified",
+          label: "Not specified",
+          value: otherUsersCount,
+          color: "hsl(268, 70%, 50%)",
+        }
+        state.pieChartData = [female, male, other]
       })
       .addCase(getUsersCount.rejected, (state, action) => {
         state.error = action.error.message
@@ -276,6 +297,7 @@ export const selectUserTotalUsers = (state: RootState) => state.user.totalUsers
 export const selectUserTotalFemaleUsers = (state: RootState) => state.user.totalFemaleUsers
 export const selectUserTotalMaleUsers = (state: RootState) => state.user.totalMaleUsers
 export const selectUserTotalOtherUsers = (state: RootState) => state.user.totalOtherUsers
+export const selectUserPieChartData = (state: RootState) => state.user.pieChartData
 
 export const {
   clearFollowers,

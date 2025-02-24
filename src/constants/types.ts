@@ -149,6 +149,13 @@ export type LineChartDataType = {
   data: LineChartDatum[];
 }
 
+export type PieChartType = {
+  id: string,
+  label: string,
+  value: number,
+  color: string
+}
+
 export type FeedCountsType = {
   totalPostsCount: number;
   totalCommentsCount: number

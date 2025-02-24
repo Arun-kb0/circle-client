@@ -2,6 +2,8 @@ import React from 'react'
 import LineChart from './LineChart'
 import { LineChartDataType } from '../../../constants/types'
 import PieChart from './PieChart'
+import { useSelector } from 'react-redux'
+import { selectUserPieChartData } from '../../../features/user/userSlice'
 
 const testLineChartData: LineChartDataType[] = [
   {
@@ -66,6 +68,8 @@ const testPieChartData = [
 type Props = {}
 
 const AdminHomeCharts = (props: Props) => {
+  const pieChartData = useSelector(selectUserPieChartData)
+
   return (
     <section className='flex gap-1 justify-between w-full h-[70vh] '>
 
@@ -79,7 +83,7 @@ const AdminHomeCharts = (props: Props) => {
       <div className="card-with-shadow w-[38%] h-[60vh]">
         <h5 className='text-lg capitalize text-center font-semibold py-1'>user chart</h5>
         <div className='h-[50vh]  p-1'>
-          <PieChart data={testPieChartData} />
+          <PieChart data={pieChartData} />
         </div>
       </div>
 
