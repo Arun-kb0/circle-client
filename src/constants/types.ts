@@ -148,3 +148,16 @@ export type LineChartDataType = {
   color: string;
   data: LineChartDatum[];
 }
+
+export type FeedCountsType = {
+  totalPostsCount: number;
+  totalCommentsCount: number
+  totalLikesCount: number
+}
+
+export type UsersCountTypes = {
+  usersCount: number
+  femaleUsersCount: number
+  maleUsersCount: number
+  otherUsersCount: number
+}

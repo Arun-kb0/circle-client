@@ -1,9 +1,13 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import AdminPostTable from '../AdminPostTable'
 import { PostType } from '../../../constants/FeedTypes';
+import { selectPostPopularPosts } from '../../../features/post/postSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { getPopularPosts } from '../../../features/post/postApi';
+import { AppDispatch } from '../../../app/store';
 
 
-export const posts: PostType[] = [
+export const testposts: PostType[] = [
   {
     _id: "post1",
     desc: "This is my first post!",
@@ -94,6 +98,13 @@ export const posts: PostType[] = [
 type Props = {}
 
 const PopularPosts = (props: Props) => {
+  const dispatch = useDispatch<AppDispatch>()
+  const posts = useSelector(selectPostPopularPosts)
+
+  useEffect(() => {
+    dispatch(getPopularPosts({ limit: 10 }))
+  }, [])
+  
   return (
     <section className='mt-6'>
       <h5 className='text-center text-xl text-bold capitalize'>popular posts</h5>

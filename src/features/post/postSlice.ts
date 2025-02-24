@@ -5,12 +5,12 @@ import {
 } from '../../constants/FeedTypes'
 import {
   createComment, createPost, deleteComment,
-  deletePost, getComments, getPosts,
+  deletePost, feedCounts, getComments, getPopularPosts, getPosts,
   getUserCreatedPosts, like, unlike,
   updateComment, updatePost, uploadFiles
 } from './postApi'
 import { RootState } from '../../app/store'
-import { StateType } from '../../constants/types'
+import { FeedCountsType, StateType } from '../../constants/types'
 
 type PostStateType = {
   selectedPost: PostType | null
@@ -52,6 +52,11 @@ type PostStateType = {
     images: string[],
     imageToRemove?: string
   }
+
+  totalPosts: number
+  totalComments: number
+  totalLikes: number
+  popularPosts: PostType[]
 }
 
 const initialState: PostStateType = {
@@ -90,7 +95,12 @@ const initialState: PostStateType = {
   createPostCache: {
     imageFiles: [],
     images: []
-  }
+  },
+
+  totalPosts: 0,
+  totalComments: 0,
+  totalLikes: 0,
+  popularPosts: []
 }
 
 const postSlice = createSlice({
@@ -232,7 +242,7 @@ const postSlice = createSlice({
         if (!state.selectedPost) return
         state.commentStatus = 'success'
         const { comments, currentPage, numberOfPages, likes } = action.payload
-        state.comments = comments.sort((a,b)=> new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        state.comments = comments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         state.commentCurrentPage = currentPage
         state.commentNumberOfPages = numberOfPages
         state.commentLikes = likes
@@ -362,6 +372,22 @@ const postSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(feedCounts.fulfilled, (state, action: PayloadAction<FeedCountsType>) => {
+        state.totalPosts = action.payload.totalPostsCount
+        state.totalComments = action.payload.totalCommentsCount
+        state.totalLikes = action.payload.totalLikesCount
+      })
+      .addCase(feedCounts.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+      
+      .addCase(getPopularPosts.fulfilled, (state, action: PayloadAction<PostType[]>) => {
+        state.popularPosts = action.payload
+      })
+      .addCase(getPopularPosts.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
   }
 })
 
@@ -399,6 +425,11 @@ export const selectPostImageToCrop = (state: RootState) => state.post.imageToCro
 export const selectPostImageToCropIndex = (state: RootState) => state.post.imageToCropIndex
 export const selectPostCroppedImage = (state: RootState) => state.post.croppedImage
 export const selectPostCreateCache = (state: RootState) => state.post.createPostCache
+
+export const selectTotalPostCounts = (state: RootState) => state.post.totalPosts
+export const selectTotalCommentCounts = (state: RootState) => state.post.totalComments
+export const selectTotalLikeCounts = (state: RootState) => state.post.totalLikes
+export const selectPostPopularPosts = (state: RootState) => state.post.popularPosts
 
 export const {
   selectPost,

@@ -1,10 +1,10 @@
 import { ActionCreator, createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { PaginationUsers, StateType, UserType } from "../../constants/types"
+import { PaginationUsers, StateType, UsersCountTypes, UserType } from "../../constants/types"
 import {
   blockUser, followUser, getAllUsers, getFollowers,
   getFollowing,
   getLiveUsers,
-  getSuggestedPeople, getUser, unblockUser, unFollow
+  getSuggestedPeople, getUser, getUsersCount, unblockUser, unFollow
 } from "./userApi"
 import { RootState } from "../../app/store"
 
@@ -36,7 +36,12 @@ type UserStateType = {
   error: string | undefined
   onlineUsers: string[]
   socketId: string | undefined
-  liveUsers: UserType[]
+  liveUsers: UserType[],
+
+  totalUsers: number
+  totalFemaleUsers: number
+  totalMaleUsers: number
+  totalOtherUsers: number
 }
 
 const initialState: UserStateType = {
@@ -61,7 +66,12 @@ const initialState: UserStateType = {
   followingCurrentPage: 0,
   onlineUsers: [],
   socketId: undefined,
-  liveUsers: []
+  liveUsers: [],
+
+  totalUsers: 0,
+  totalFemaleUsers: 0,
+  totalMaleUsers: 0,
+  totalOtherUsers: 0
 }
 
 const userSlice = createSlice({
@@ -219,6 +229,17 @@ const userSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(getUsersCount.fulfilled, (state, action: PayloadAction<UsersCountTypes>) => {
+        const { usersCount, femaleUsersCount, maleUsersCount, otherUsersCount } = action.payload
+        state.totalUsers = usersCount
+        state.totalFemaleUsers = femaleUsersCount
+        state.totalMaleUsers = maleUsersCount
+        state.totalOtherUsers = otherUsersCount
+      })
+      .addCase(getUsersCount.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
   }
 })
 
@@ -250,6 +271,11 @@ export const selectUserOnlineUsers = (state: RootState) => state.user.onlineUser
 export const selectUserSocketId = (state: RootState) => state.user.socketId
 
 export const selectUserLiveUsers = (state: RootState) => state.user.liveUsers
+
+export const selectUserTotalUsers = (state: RootState) => state.user.totalUsers
+export const selectUserTotalFemaleUsers = (state: RootState) => state.user.totalFemaleUsers
+export const selectUserTotalMaleUsers = (state: RootState) => state.user.totalMaleUsers
+export const selectUserTotalOtherUsers = (state: RootState) => state.user.totalOtherUsers
 
 export const {
   clearFollowers,

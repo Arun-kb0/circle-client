@@ -207,4 +207,21 @@ export const getLiveUsers = createAsyncThunk('/user/live-users', async (_, { dis
   }
 })
 
+type GetUserCountArgs = { startDate?: string, endDate?: string }
+export const getUsersCount = createAsyncThunk('/user/count', async ({ startDate, endDate }: GetUserCountArgs, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const params = { startDate, endDate }
+    const res = await axiosPrivate.get(`/admin/user/count`, { params })
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    return errorHandler(error)
+  }
+})
+
 

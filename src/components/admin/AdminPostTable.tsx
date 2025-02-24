@@ -34,7 +34,7 @@ const AdminPostTable = ({ posts, handleBlock, handleUnblock, }: Props) => {
           {posts.map((post) => (
             <tr key={post._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
               <td className="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                <div className="flex flex-wrap justify-start gap-1">
+                <div className="flex flex-wrap justify-start gap-1 max-w-40 overflow-hidden">
                   {post.mediaType !== 'text' ? (
                     post.media?.map(url => (
                       <img

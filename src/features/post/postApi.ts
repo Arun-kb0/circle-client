@@ -363,6 +363,7 @@ export const uploadFiles = createAsyncThunk('/cloudinary/upload', async (files: 
   }
 })
 
+
 type SearchPostArgs = { page: number, startDate?: string, endDate?: string, searchText?: string, isAdmin?: boolean }
 export const searchPost = createAsyncThunk('/posts/all', async ({ page, searchText, startDate, endDate, isAdmin = false }: SearchPostArgs, { dispatch, getState }) => {
   try {
@@ -386,3 +387,38 @@ export const searchPost = createAsyncThunk('/posts/all', async ({ page, searchTe
     return errorHandler(error)
   }
 })
+
+
+export const feedCounts = createAsyncThunk('/admin/posts/feed-counts', async (_, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.get('/admin/post/feed-counts')
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+type GetPopularPostsType = { limit: number }
+export const getPopularPosts = createAsyncThunk('/admin/posts/popular', async ({ limit }: GetPopularPostsType, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.get('/admin/post/popular', { params: { limit } })
+    removeInterceptors()
+    return res.data.posts
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
