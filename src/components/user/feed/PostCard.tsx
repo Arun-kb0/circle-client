@@ -11,13 +11,14 @@ import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
 import { deletePost, like, unlike } from '../../../features/post/postApi'
-import { selectPost, selectPostLikes, setCommentedUsersModelState, setLikedUsersModelState } from '../../../features/post/postSlice';
+import { selectPost, selectPostLikes, setCommentedUsersModelState, setLikedUsersModelState, setSharePostModelOpen } from '../../../features/post/postSlice';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { GoHeartFill } from "react-icons/go";
 import DropDown from '../../basic/DropDown';
 import { DropDownElementsType } from '../../../constants/types';
 import { IoIosMore } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
+import ShareComponent from '../../basic/ShareComponent';
 
 
 type Props = {
@@ -26,19 +27,20 @@ type Props = {
 }
 
 const PostCard = ({ post, openCommentModel }: Props) => {
-  const navigator = useNavigate()
+  const navigatorRouter = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const likes = useSelector(selectPostLikes)
   const user = useSelector(selectAuthUser)
 
   const [openPostDropdown, setOpenPostDropdown] = useState(false)
+
   const postDropdownElements: DropDownElementsType[] = [
     {
       handler: () => { dispatch(deletePost(post._id)) },
       name: "delete"
     },
     {
-      handler: () => { navigator('/edit-post', { state: post }) },
+      handler: () => { navigatorRouter('/edit-post', { state: post }) },
       name: 'edit'
     }
   ]
@@ -50,7 +52,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
   })
 
   const handleImageView = () => {
-    
+
   }
 
   const handleLike = () => {
@@ -63,8 +65,21 @@ const PostCard = ({ post, openCommentModel }: Props) => {
     setIsLiked(false)
   }
 
-  const handleShare = () => {
-
+  const handleShare = async () => {
+    // dispatch(setSharePostModelOpen({ open: true, postId: post._id }))
+    const url = window.location.href
+    const title = post.mediaType === 'text' ? post.desc : 'Shared post'
+    const text = 'shared post'
+    try {
+      if (navigator.share) {
+        await navigator.share({ url, title, text });
+        console.log('Content shared successfully!');
+      } else {
+        console.log('Web Share API is not supported in this browser.');
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
   }
 
   const handleShowLikedUsers = () => {
@@ -106,7 +121,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
       </div>
 
       {post.mediaType === 'image' && post.media &&
-        <PostImages  media={post.media}/>
+        <PostImages media={post.media} />
       }
       <div className="p-5">
         {post.mediaType === 'text' && post.media &&
@@ -153,6 +168,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
 
         </div>
       </div>
+
     </motion.div>
 
   )

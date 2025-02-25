@@ -7,18 +7,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   selectLikedUsersModelState,
   selectPost, selectPostNumberOfPages,
-  selectPostPage, selectPostPosts, selectPostStatus,
-  setLikedUsersModelState
+  selectPostPage, selectPostPosts, selectPostSharePostModelOpen, selectPostStatus,
+  setLikedUsersModelState,
+  setSharePostModelOpen
 } from '../../../features/post/postSlice';
 import { AppDispatch } from '../../../app/store';
 import { getPosts, updatePost } from '../../../features/post/postApi';
 import LikedUsersModel from './LikedUsersModel';
 import InfiniteScroll from 'react-infinite-scroll-component'
 import PostSkeltonLoader from '../../basic/PostSkeletonLoader';
+import { DataStrategyFunctionArgs } from 'react-router-dom';
+import ShareComponent from '../../basic/ShareComponent';
 
 
 const Feed = () => {
   const dispatch = useDispatch<AppDispatch>()
+  const sharePostModelOpen = useSelector(selectPostSharePostModelOpen)
 
   const [modelOpen, setModelOpen] = useState<Boolean>(false)
   const close = () => setModelOpen(false)
@@ -35,7 +39,6 @@ const Feed = () => {
   const status = useSelector(selectPostStatus)
   const [hasMore, setHasMore] = useState<boolean>(() => page <= numberOfPages)
 
-
   useEffect(() => {
     if (posts.length !== 0) return
     dispatch(getPosts(1))
@@ -45,11 +48,14 @@ const Feed = () => {
     setHasMore(page <= numberOfPages)
   }, [page, numberOfPages])
 
-
   const loadMorePosts = () => {
     console.log('waypoint triggered !!')
     if (status === 'loading' || page > numberOfPages) return
     dispatch(getPosts(page + 1))
+  }
+
+  const handleShareClose = () => {
+    dispatch(setSharePostModelOpen({ open: false, post: null }))
   }
 
   return (
@@ -66,7 +72,14 @@ const Feed = () => {
             handleClose={() => dispatch(setLikedUsersModelState(false))}
           />
         }
-
+        {sharePostModelOpen &&
+          <ShareComponent
+            url={''}
+            title={''}
+            text={''}
+            handleClose={handleShareClose}
+          />
+        }
       </AnimatePresence>
 
 

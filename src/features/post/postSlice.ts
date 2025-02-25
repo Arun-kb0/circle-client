@@ -62,6 +62,9 @@ type PostStateType = {
   totalLikes: number
   popularPosts: PostType[]
   postLineChartData: LineChartDataType | null
+
+  sharePostId: string | null
+  sharePostModelOpen: boolean
 }
 
 const initialState: PostStateType = {
@@ -106,7 +109,10 @@ const initialState: PostStateType = {
   totalComments: 0,
   totalLikes: 0,
   popularPosts: [],
-  postLineChartData: null
+  postLineChartData: null,
+
+  sharePostId: null,
+  sharePostModelOpen: false
 }
 
 const postSlice = createSlice({
@@ -155,6 +161,12 @@ const postSlice = createSlice({
       state.comments.forEach(comment => {
         if (comment._id === commentId) comment.replayCount = count
       })
+    },
+
+    setSharePostModelOpen: (state, action) => {
+      const { postId, open } = action.payload
+      state.sharePostId = postId
+      state.sharePostModelOpen = open
     }
 
 
@@ -451,6 +463,9 @@ export const selectTotalLikeCounts = (state: RootState) => state.post.totalLikes
 export const selectPostPopularPosts = (state: RootState) => state.post.popularPosts
 export const selectPostLineChartData = (state: RootState) => state.post.postLineChartData
 
+export const selectPostSharePostModelOpen = (state: RootState) => state.post.sharePostModelOpen
+export const selectPostSharePostId = (state: RootState) => state.post.sharePostId
+
 export const {
   selectPost,
   setCommentedUsersModelState,
@@ -461,7 +476,8 @@ export const {
   setImageToCropIndex,
   clearUserCreatedPosts,
 
-  setCommentReplayCount
+  setCommentReplayCount,
+  setSharePostModelOpen
 } = postSlice.actions
 
 export default postSlice.reducer
