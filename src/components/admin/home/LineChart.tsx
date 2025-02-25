@@ -59,13 +59,13 @@ const LineChart = ({ data }: Props) => (
     xScale={{
       type: 'time',
       format: '%Y-%m-%d',
-      precision: 'month'
+      precision: 'day'
     }}
     yScale={{
       type: 'linear',
       min: 'auto',
       max: 'auto',
-      stacked: true,
+      stacked: false,
       reverse: false
     }}
     xFormat="time:%b"
@@ -76,11 +76,11 @@ const LineChart = ({ data }: Props) => (
       tickSize: 5,
       tickPadding: 5,
       tickRotation: 0,
-      legend: 'Month',
+      legend: 'Date',
       legendOffset: 36,
       legendPosition: 'middle',
       truncateTickAt: 0,
-      format: '%b'
+      format: '%d' // '%b %d'
     }}
     axisLeft={{
       tickSize: 5,
@@ -126,6 +126,7 @@ const LineChart = ({ data }: Props) => (
       }
     ]}
     theme={darkTheme}
+    colors={(serie) => serie.color}
   />
 )
 

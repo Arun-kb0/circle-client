@@ -168,3 +168,8 @@ export type UsersCountTypes = {
   maleUsersCount: number
   otherUsersCount: number
 }
+
+export type CountByDataType = {
+  date: string
+  count: number
+}

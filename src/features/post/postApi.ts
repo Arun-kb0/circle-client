@@ -422,3 +422,23 @@ export const getPopularPosts = createAsyncThunk('/admin/posts/popular', async ({
   }
 })
 
+type getPostsCountByDate = { startDate: string, endDate: string }
+export const getPostsCountByDate = createAsyncThunk('/admin/posts/count-by-date', async ({ startDate, endDate }: getPostsCountByDate, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const params = { startDate, endDate }
+    const res = await axiosPrivate.get('/admin/post/line-chart', { params })
+    removeInterceptors()
+    console.log("get posts by date")
+    console.log(res.data)
+    return res.data.postsCountArray
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+

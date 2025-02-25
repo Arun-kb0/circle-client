@@ -1,10 +1,10 @@
 import { ActionCreator, createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { PaginationUsers, PieChartType, StateType, UsersCountTypes, UserType } from "../../constants/types"
+import { CountByDataType, LineChartDataType, PaginationUsers, PieChartType, StateType, UsersCountTypes, UserType } from "../../constants/types"
 import {
   blockUser, followUser, getAllUsers, getFollowers,
   getFollowing,
   getLiveUsers,
-  getSuggestedPeople, getUser, getUsersCount, unblockUser, unFollow
+  getSuggestedPeople, getUser, getUsersCount, getUsersCountByDateDetails, unblockUser, unFollow
 } from "./userApi"
 import { RootState } from "../../app/store"
 
@@ -43,6 +43,8 @@ type UserStateType = {
   totalMaleUsers: number
   totalOtherUsers: number
   pieChartData: PieChartType[]
+  userLineChartData: LineChartDataType | null
+
 }
 
 const initialState: UserStateType = {
@@ -73,7 +75,8 @@ const initialState: UserStateType = {
   totalFemaleUsers: 0,
   totalMaleUsers: 0,
   totalOtherUsers: 0,
-  pieChartData: []
+  pieChartData: [],
+  userLineChartData: null
 }
 
 const userSlice = createSlice({
@@ -261,6 +264,19 @@ const userSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(getUsersCountByDateDetails.fulfilled, (state, action: PayloadAction<CountByDataType[]>) => {
+        const userCountData = action.payload
+        const usersData: LineChartDataType = {
+          id: 'users',
+          color: 'hsl(133, 70%, 50%)',
+          data: userCountData?.map(item => ({ x: item.date, y: item.count }))
+        }
+        state.userLineChartData = usersData
+      })
+      .addCase(getUsersCountByDateDetails.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
   }
 })
 
@@ -298,6 +314,7 @@ export const selectUserTotalFemaleUsers = (state: RootState) => state.user.total
 export const selectUserTotalMaleUsers = (state: RootState) => state.user.totalMaleUsers
 export const selectUserTotalOtherUsers = (state: RootState) => state.user.totalOtherUsers
 export const selectUserPieChartData = (state: RootState) => state.user.pieChartData
+export const selectUserLineChartData = (state: RootState) => state.user.userLineChartData
 
 export const {
   clearFollowers,
