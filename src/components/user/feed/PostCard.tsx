@@ -76,14 +76,14 @@ const PostCard = ({ post, openCommentModel }: Props) => {
     <motion.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
-      className="lg:w-[50vw] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden"
+      className="nav-bg-color lg:w-[50vw] rounded-lg shadow overflow-hidden "
     >
       <div className="flex items-center justify-between m-2 relative" >
         <div className='flex justify-start items-center'>
           <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
             <SpringButton>
               {post.authorImage
-                ? <img className="mr-2 w-6 h-6 rounded-full object-cover" src={post.authorImage} alt="Michael Gough" />
+                ? <img className="mr-2 w-6 h-6 rounded-full object-cover" src={post.authorImage} alt={post.authorName} />
                 : <HiOutlineUserCircle size={22} className='mr-2 w-6 h-6 rounded-full' />
               }
             </SpringButton>
@@ -152,9 +152,6 @@ const PostCard = ({ post, openCommentModel }: Props) => {
           </button>
 
         </div>
-
-
-
       </div>
     </motion.div>
 

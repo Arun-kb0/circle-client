@@ -11,7 +11,7 @@ const LiveMessage = ({ message }: Props) => {
   return (
     <article className="flex items-start gap-2.5">
       {message.authorImage
-        ? <img className="w-8 h-8 rounded-full object-cover" src={message.authorImage} alt={message.authorName} />
+        ? <img className="w-6 h-6 rounded-full object-cover" src={message.authorImage} alt={message.authorName} />
         : <FaUserCircle size={22} />}
       <div className="flex flex-col w-full max-w-[320px] leading-1.5">
         <div className="flex items-center space-x-2 rtl:space-x-reverse">

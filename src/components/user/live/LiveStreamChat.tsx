@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid'
 import { useSelector } from 'react-redux'
 import { selectAuthUser } from '../../../features/auth/authSlice'
 import { Socket } from 'socket.io-client'
-import LiveMessage from './liveMessage'
+import LiveMessage from './LiveMessage'
 
 
 
@@ -64,9 +64,10 @@ const messages = [
 type Props = {
   streamerId: string
   socket: Socket | null
+  position?: string
 }
 
-const LiveStreamChat = ({ streamerId, socket }: Props) => {
+const LiveStreamChat = ({ streamerId, socket, position }: Props) => {
   const user = useSelector(selectAuthUser)
   const [messages, setMessages] = useState<LiveMessageType[]>([])
 
@@ -79,7 +80,7 @@ const LiveStreamChat = ({ streamerId, socket }: Props) => {
     })
 
   useEffect(() => {
-    socket?.on(socketEvents.liveReceiveMessage, (msg:LiveMessageType) => {
+    socket?.on(socketEvents.liveReceiveMessage, (msg: LiveMessageType) => {
       console.log(socketEvents.liveReceiveMessage)
       console.log(msg)
       setMessages(prev => [...prev, msg])
@@ -111,7 +112,7 @@ const LiveStreamChat = ({ streamerId, socket }: Props) => {
   }, [messages.length])
 
   return (
-    <section className="absolute top-[40%] w-full max-w-lg mx-auto h-[53%] bg-transparent bg-opacity-70 rounded-lg shadow-md flex flex-col justify-between">
+    <section className={`absolute top-[40%] w-full max-w-sm mx-auto h-[53%] bg-transparent bg-opacity-70 rounded-lg shadow-md flex flex-col justify-between`}>
       <div className="flex-1 overflow-y-scroll scrollbar-hide p-4 space-y-3 h-[40%]">
         {messages.map((msg) => (
           <LiveMessage key={msg.id} message={msg} />

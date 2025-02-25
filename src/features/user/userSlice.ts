@@ -1,10 +1,10 @@
 import { ActionCreator, createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { PaginationUsers, StateType, UserType } from "../../constants/types"
+import { CountByDataType, LineChartDataType, PaginationUsers, PieChartType, StateType, UsersCountTypes, UserType } from "../../constants/types"
 import {
   blockUser, followUser, getAllUsers, getFollowers,
   getFollowing,
   getLiveUsers,
-  getSuggestedPeople, getUser, unblockUser, unFollow
+  getSuggestedPeople, getUser, getUsersCount, getUsersCountByDateDetails, unblockUser, unFollow
 } from "./userApi"
 import { RootState } from "../../app/store"
 
@@ -36,7 +36,15 @@ type UserStateType = {
   error: string | undefined
   onlineUsers: string[]
   socketId: string | undefined
-  liveUsers: UserType[]
+  liveUsers: UserType[],
+
+  totalUsers: number
+  totalFemaleUsers: number
+  totalMaleUsers: number
+  totalOtherUsers: number
+  pieChartData: PieChartType[]
+  userLineChartData: LineChartDataType | null
+
 }
 
 const initialState: UserStateType = {
@@ -61,7 +69,14 @@ const initialState: UserStateType = {
   followingCurrentPage: 0,
   onlineUsers: [],
   socketId: undefined,
-  liveUsers: []
+  liveUsers: [],
+
+  totalUsers: 0,
+  totalFemaleUsers: 0,
+  totalMaleUsers: 0,
+  totalOtherUsers: 0,
+  pieChartData: [],
+  userLineChartData: null
 }
 
 const userSlice = createSlice({
@@ -219,6 +234,49 @@ const userSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(getUsersCount.fulfilled, (state, action: PayloadAction<UsersCountTypes>) => {
+        const { usersCount, femaleUsersCount, maleUsersCount, otherUsersCount } = action.payload
+        state.totalUsers = usersCount
+        state.totalFemaleUsers = femaleUsersCount
+        state.totalMaleUsers = maleUsersCount
+        state.totalOtherUsers = otherUsersCount
+        const female: PieChartType = {
+          id: "Female",
+          label: "Female",
+          value: femaleUsersCount,
+          color: "hsl(182, 70%, 50%)",
+        }
+        const male: PieChartType = {
+          id: "Male",
+          label: "Male",
+          value: maleUsersCount,
+          color: "hsl(295, 70%, 50%)"
+        }
+        const other: PieChartType = {
+          id: "Not specified",
+          label: "Not specified",
+          value: otherUsersCount,
+          color: "hsl(268, 70%, 50%)",
+        }
+        state.pieChartData = [female, male, other]
+      })
+      .addCase(getUsersCount.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
+      .addCase(getUsersCountByDateDetails.fulfilled, (state, action: PayloadAction<CountByDataType[]>) => {
+        const userCountData = action.payload
+        const usersData: LineChartDataType = {
+          id: 'users',
+          color: 'hsl(133, 70%, 50%)',
+          data: userCountData?.map(item => ({ x: item.date, y: item.count }))
+        }
+        state.userLineChartData = usersData
+      })
+      .addCase(getUsersCountByDateDetails.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
   }
 })
 
@@ -250,6 +308,13 @@ export const selectUserOnlineUsers = (state: RootState) => state.user.onlineUser
 export const selectUserSocketId = (state: RootState) => state.user.socketId
 
 export const selectUserLiveUsers = (state: RootState) => state.user.liveUsers
+
+export const selectUserTotalUsers = (state: RootState) => state.user.totalUsers
+export const selectUserTotalFemaleUsers = (state: RootState) => state.user.totalFemaleUsers
+export const selectUserTotalMaleUsers = (state: RootState) => state.user.totalMaleUsers
+export const selectUserTotalOtherUsers = (state: RootState) => state.user.totalOtherUsers
+export const selectUserPieChartData = (state: RootState) => state.user.pieChartData
+export const selectUserLineChartData = (state: RootState) => state.user.userLineChartData
 
 export const {
   clearFollowers,

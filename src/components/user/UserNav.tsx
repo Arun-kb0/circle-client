@@ -18,6 +18,8 @@ import { FaUserCircle } from 'react-icons/fa';
 import { clearUserCreatedPosts } from '../../features/post/postSlice';
 import { clearFollowers, clearFollowing } from '../../features/user/userSlice';
 import logo from '../../assets/vite.png'
+import Notifications from '../notification/Notifications';
+import IncomingCallAnimation from '../basic/IncomingCallAnimation';
 
 
 type Props = {
@@ -32,6 +34,9 @@ const UserNav = ({ handleLogout }: Props) => {
 
   const [userDropDown, setUserDropDown] = useState(false)
   const [notificationDropDown, setNotificationDropDown] = useState(false)
+  
+  const [callState, setCallState] = useState<'ring' | 'end'>('ring')
+  const [showIncomingCall, setShowIncomingCall] = useState<boolean>(false)
 
   const handleClearProfile = async () => {
     dispatch(clearUserCreatedPosts());
@@ -53,9 +58,12 @@ const UserNav = ({ handleLogout }: Props) => {
     }
   ]
 
+  const handleIncomingCall = () => {
+    navigate('/chat')
+  }
 
   return (
-    <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+    <nav className="fixed top-0 z-50 w-full nav-bg-color">
       <div className="px-3 py-3 lg:px-5 lg:pl-3">
         <div className="flex items-center justify-between">
 
@@ -92,11 +100,18 @@ const UserNav = ({ handleLogout }: Props) => {
                 </Link>
               </div>
             </div>
-
-
           </div>
 
           <div className="flex items-center">
+
+            {/* incoming call */}
+            <div className="flex items-center ms-3 relative">
+              {showIncomingCall &&
+                <a onClick={handleIncomingCall}>
+                  <IncomingCallAnimation state={callState} />
+                </a>
+              }
+            </div>
 
             <div className="flex items-center ms-3 relative">
               <div>
@@ -105,6 +120,10 @@ const UserNav = ({ handleLogout }: Props) => {
                     <BsBell className='text-gray-200 ' size={23} />
                   </SpringButton>
                 </button>
+                <Notifications
+                  open={notificationDropDown}
+                  position='right-1'
+                />
               </div>
             </div>
 

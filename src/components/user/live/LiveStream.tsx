@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { selectUserSocketId } from '../../../features/user/userSlice';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { AnsweredLiveDataType, LiveUserDataType } from '../../../constants/types';
-import LiveStreamChat from './liveStreamChat';
+import LiveStreamChat from './LiveStreamChat';
 
 
 type Props = {
@@ -20,6 +20,7 @@ const LiveStream = ({ }: Props) => {
   const [audioLocalStream, setAudioLocalStream] = useState<MediaStream | null>(null);
   const myVideo = useRef<HTMLVideoElement>(null);
   const [isStreamStarted, setIsStreamStarted] = useState<boolean>(false)
+  const [prepareLiveStream, setPrepareLiveStream] = useState<boolean>(false)
   const stream = useRef<MediaStream | null>(null)
   const peerConnectionRef = useRef<Map<string, RTCPeerConnection>>(new Map)
 
@@ -100,6 +101,7 @@ const LiveStream = ({ }: Props) => {
     stream.current = null
     // setStream(null)
     setIsStreamStarted(false)
+    setPrepareLiveStream(false)
   }
 
   const liveStart = async (userId: string) => {
@@ -175,6 +177,7 @@ const LiveStream = ({ }: Props) => {
 
   const handlePrepareLive = () => {
     socket?.emit(socketEvents.prepareLiveStream, { userId: user?._id })
+    setPrepareLiveStream(true)
   }
 
   //  ! stream console
@@ -197,7 +200,7 @@ const LiveStream = ({ }: Props) => {
         />
 
         <div className='absolute top-20 left-1/2 p-3 flex justify-center items-center'>
-          {isStreamStarted
+          {prepareLiveStream
             ? (
               <button onClick={liveEnd} className="capitalize rounded-xl text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">
                 end stream
@@ -211,6 +214,7 @@ const LiveStream = ({ }: Props) => {
         </div>
 
         <LiveStreamChat
+          position='top-10 '
           socket={socket}
           streamerId={user?._id as string}
         />

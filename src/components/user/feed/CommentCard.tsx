@@ -5,12 +5,13 @@ import { SubmitHandler } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { createComment, getComments } from '../../../features/post/postApi'
 import {
-  selectPostComment,selectPostCommentCurrentPage, selectPostCommentLikes,
+  selectPostComment, selectPostCommentCurrentPage, selectPostCommentLikes,
   selectPostCommentNumberOfPages, selectPostCommentStatus, selectPostSelectedPost
 } from '../../../features/post/postSlice'
 import { AppDispatch } from '../../../app/store'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import CommentSkeltonLoader from '../../basic/CommentSkeletonLoader'
+import GifPicker from '../../basic/GifPicker'
 
 
 type FormData = {
@@ -25,12 +26,13 @@ const CommentCard = () => {
   const numberOfPages = useSelector(selectPostCommentNumberOfPages)
   const status = useSelector(selectPostCommentStatus)
   const [hasMore, setHasMore] = useState<boolean>(() => page <= numberOfPages)
+  const [isGifPickerOpen, setIsGifPickerOpen] = useState<boolean>(false)
+
 
   const commentLikes = useSelector(selectPostCommentLikes)
   const selectedPost = useSelector(selectPostSelectedPost)
 
   const handleCommentSubmit: SubmitHandler<FormData> = (data) => {
-    console.log(data)
     if (!selectedPost) return
     dispatch(createComment({
       comment: { mediaType: 'text', media: data.comment },
@@ -55,6 +57,16 @@ const CommentCard = () => {
     dispatch(getComments({ contentId: selectedPost._id, page }))
   }
 
+  const handleGifSelect = (url: string) => {
+    if (!selectedPost) return
+    dispatch(createComment({
+      comment: { mediaType: 'gif', media: url },
+      contentId: selectedPost._id,
+      contentType: 'post'
+    }))
+    setIsGifPickerOpen(false)
+  }
+
   return (
     <section className="rounded-lg bg-white dark:bg-gray-900 py-8 lg:py-16 antialiased h-[80vh] w-[60vw] overflow-hidden ">
       <div className="max-w-2xl mx-auto px-4">
@@ -62,7 +74,10 @@ const CommentCard = () => {
           <h2 className="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">comments {comments.length}</h2>
         </div>
 
+        {isGifPickerOpen && <GifPicker onGifSelect={handleGifSelect} />}
+
         <CommentForm
+          setIsGifPickerOpen={setIsGifPickerOpen}
           handleCommentSubmit={handleCommentSubmit}
           ref={commentInputRef}
         />
@@ -91,6 +106,8 @@ const CommentCard = () => {
             />
           ))}
         </InfiniteScroll>
+
+
 
       </div>
     </section>

@@ -11,7 +11,7 @@ import Unauthorized from './components/Unauthorized'
 import 'react-toastify/dist/ReactToastify.css';
 import "react-datepicker/dist/react-datepicker.css";
 import Home from './pages/user/Home'
-import AdminHome from './pages/admin/UserManagement'
+import UserManagement from './pages/admin/UserManagement'
 import { useEffect, useState } from 'react'
 import { refresh } from './features/auth/authApi'
 import AdminLogin from './pages/AdminLogin'
@@ -41,6 +41,7 @@ import { setOnlineUsers, setUserSocketId } from './features/user/userSlice'
 import ReportManagement from './pages/admin/ReportManagement'
 import GoLivePage from './pages/user/GoLivePage'
 import ViewLivePage from './pages/user/ViewLivePage'
+import AdminHome from './pages/admin/AdminHome'
 
 function App() {
   // const socket = SocketIoClient.getInstance()
@@ -74,12 +75,15 @@ function App() {
     })
   }, [user, socket])
 
+  // ! check this route and remove if not using
   useEffect(() => {
     console.log(socketEvents.joinUserRoom, 'roomId', friendsRoomId)
     if (!friendsRoomId) return
     socket?.emit(socketEvents.joinUserRoom, friendsRoomId)
     console.log(socketEvents.joinUserRoom, 'emitted roomId', friendsRoomId)
   }, [friendsRoomId])
+
+  
 
   useEffect(() => {
     if (!user) return
@@ -116,6 +120,8 @@ function App() {
       dispatch(receiveMessage(data))
       console.log(data)
     })
+
+    // ! check this method and implemnt call notification
     // socket?.on(socketEvents.callUserConnected, (data) => {
     //   toast('new call')
     //   dispatch(callUserConnection(data))
@@ -173,6 +179,7 @@ function App() {
         <Route element={<RequireAuth role={roles.admin} />} >
           <Route path='/admin'>
             <Route index element={<AdminHome />} />
+            <Route path='user' element={<UserManagement />} />
             <Route path='post' element={<PostManagement />} />
             <Route path='report' element={<ReportManagement />} />
           </Route>
