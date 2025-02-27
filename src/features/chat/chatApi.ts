@@ -8,10 +8,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import errorHandler from "../../errorHandler/errorHandler";
 import { axiosPrivate } from "../../config/axiosInstance";
 import configureAxios from "../../config/configureAxios";
-import PeerServer from "../../config/PeerServer";
-import { toast } from "react-toastify";
 
-const peerServer = PeerServer.getInstance()
 
 // * api calls
 export const getRoomMessages = createAsyncThunk('/chat/getMessages', async (page: number = 1, { dispatch, getState }) => {

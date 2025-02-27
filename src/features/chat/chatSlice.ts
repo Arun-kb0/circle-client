@@ -127,7 +127,7 @@ const chatSlice = createSlice({
       })
       .addCase(getRoomMessages.fulfilled, (state, action: PayloadAction<PaginationMessages>) => {
         state.messageStatus = 'success'
-        console.log(action.payload)
+        if (!action.payload) return
         const { messages, numberOfPages, currentPage } = action.payload
         if (messages.length === 0) return
         if (!state.messages) state.messages = {}

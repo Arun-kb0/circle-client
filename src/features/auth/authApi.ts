@@ -118,12 +118,12 @@ export const refresh = createAsyncThunk('/auth/refresh', async () => {
 export const logout = createAsyncThunk('/auth/logout', async (_, { dispatch }) => {
   try {
     const socket = SocketIoClient.getInstance()
+    socket?.disconnect()
     const res = await axiosInstance.get('/auth/logout', {
       withCredentials: true
     })
     sessionStorage.clear()
     localStorage.clear()
-    socket?.disconnect()
     return res.data
   } catch (error) {
     return errorHandler(error)

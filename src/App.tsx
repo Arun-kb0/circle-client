@@ -44,7 +44,6 @@ import ViewLivePage from './pages/user/ViewLivePage'
 import AdminHome from './pages/admin/AdminHome'
 
 function App() {
-  // const socket = SocketIoClient.getInstance()
   const navigate = useNavigate()
   const location = useLocation()
   const dispatch = useDispatch<AppDispatch>()
@@ -67,12 +66,18 @@ function App() {
   useEffect(() => {
     if (!user) return
     socket?.on(socketEvents.getOnlineUsers, (data) => {
+      console.log('online users')
+      console.log(data.onlineUsers)
       dispatch(setOnlineUsers(data.onlineUsers))
     })
     socket?.on(socketEvents.me, (data) => {
       console.log('userSocketId = ', data.userSocketId)
       dispatch(setUserSocketId(data.userSocketId))
     })
+    return () => {
+      socket?.off(socketEvents.getOnlineUsers)
+      socket?.off(socketEvents.me)
+    }
   }, [user, socket])
 
   // ! check this route and remove if not using
