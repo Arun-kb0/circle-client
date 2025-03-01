@@ -11,6 +11,9 @@ const IncomingCallAnimation = ({ state }: Props) => {
   const audioRef = useRef<HTMLAudioElement>(new Audio(audioRingPhone));
 
   useEffect(() => {
+    if (!audioRef.current) {
+      throw new Error('audioRef.current is undefined')
+    }
     if (state === 'ring') {
       audioRef.current.play()
     } else {

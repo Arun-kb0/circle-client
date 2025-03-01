@@ -117,7 +117,6 @@ export const refresh = createAsyncThunk('/auth/refresh', async () => {
 
 export const logout = createAsyncThunk('/auth/logout', async (_, { dispatch }) => {
   try {
-
     SocketIoClient.disconnect()
     SocketIoClient.disconnectNotification()
     const res = await axiosInstance.get('/auth/logout', {

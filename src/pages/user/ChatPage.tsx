@@ -6,7 +6,7 @@ import CallModel from '../../components/user/chat/CallModel'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../../app/store'
 import { joinCallRoom } from '../../features/chat/chatApi'
-import { selectChatUser, setCallRoomId } from '../../features/chat/chatSlice'
+import { selectChatCallModelType, selectChatIsIncomingCall, selectChatUser, setCallRoomId } from '../../features/chat/chatSlice'
 import { selectAuthUser } from '../../features/auth/authSlice'
 import SocketIoClient from '../../config/SocketIoClient'
 import socketEvents from '../../constants/socketEvents'
@@ -22,7 +22,9 @@ const ChatPage = (props: Props) => {
   const chatUser = useSelector(selectChatUser)
   const user = useSelector(selectAuthUser)
   const socket = SocketIoClient.getInstance()
-  const callNotification = useSelector(selectCallNotification)
+  // const callNotification = useSelector(selectCallNotification)
+  const isIncomingCall = useSelector(selectChatIsIncomingCall) 
+  const incomingCallModelType = useSelector(selectChatCallModelType)
 
   const handleCallModelOpen = (type: 'video' | 'audio') => {
     console.log('handleCallModelOpen')
@@ -30,11 +32,6 @@ const ChatPage = (props: Props) => {
     console.log('handleCallModelOpen',chatUser  )
     setCallModelOpen(true)
     setCallModelType(type)
-    // dispatch(joinCallRoom({
-    //   senderId: user._id,
-    //   receiverId: chatUser.userId,
-    //   chatUser
-    // }))
 
     const senderId = user?._id
     const receiverId = chatUser?.userId
@@ -50,10 +47,10 @@ const ChatPage = (props: Props) => {
   }
 
   useEffect(() => {
-    if (callNotification === 'incoming-call') {
-      handleCallModelOpen('video')
+    if (isIncomingCall) {
+      handleCallModelOpen(incomingCallModelType as "video" | "audio")
     }
-  }, [callNotification])
+  }, [isIncomingCall])
 
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >

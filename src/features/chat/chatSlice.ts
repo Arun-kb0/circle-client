@@ -21,6 +21,9 @@ type ChatStateType = {
   callRoomId: string | null
   callUser: ChatUserType | null
   callStatus: StateType
+  isIncomingCall: boolean
+  callSignal: any
+  callModelType: undefined | 'video' | 'audio'
 }
 
 
@@ -40,7 +43,10 @@ const initialState: ChatStateType = {
 
   callRoomId: null,
   callUser: null,
-  callStatus: "idle"
+  callStatus: "idle",
+  isIncomingCall: false,
+  callSignal: undefined,
+  callModelType: undefined
 }
 
 const chatSlice = createSlice({
@@ -111,9 +117,14 @@ const chatSlice = createSlice({
       state.chatUser = user
     },
 
-    setAllChatRooms: (state, action) => {
+    setIncomingCallAndSignal: (state, action: PayloadAction<{ isIncomingCall: boolean, signal: any, callModelType: 'video' | 'audio' | undefined }>) => {
+      const { isIncomingCall, signal, callModelType } = action.payload
+      state.isIncomingCall = isIncomingCall
+      state.callSignal = signal
+      state.callModelType = callModelType
+    },
 
-    }
+    setAllChatRooms: (state, action) => { }
 
 
   },
@@ -194,6 +205,9 @@ export const selectChatMessageStatus = (state: RootState) => state.chat.messageS
 export const selectChatCallRoomId = (state: RootState) => state.chat.callRoomId
 export const selectChatCallUser = (state: RootState) => state.chat.callUser
 export const selectChatCallStatus = (state: RootState) => state.chat.callStatus
+export const selectChatIsIncomingCall = (state: RootState) => state.chat.isIncomingCall
+export const selectChatCallSignal = (state: RootState) => state.chat.callSignal
+export const selectChatCallModelType = (state: RootState) => state.chat.callModelType
 
 
 export const {
@@ -203,7 +217,8 @@ export const {
   showMsgNotification,
   setAllAsReadMsgNotification,
   setCallRoomId,
-  setAllChatRooms
+  setAllChatRooms,
+  setIncomingCallAndSignal
 } = chatSlice.actions
 
 export default chatSlice.reducer

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { RxHamburgerMenu } from "react-icons/rx";
 import { BsBell } from "react-icons/bs";
 import { TbHome } from "react-icons/tb";
@@ -8,7 +8,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import BadgeButton from '../basic/BadgeButton';
 import { AiOutlineMessage } from "react-icons/ai";
 import { useDispatch, useSelector } from 'react-redux';
-import { selectChatUnreadMsgNotification } from '../../features/chat/chatSlice';
+import { selectChatIsIncomingCall, selectChatUnreadMsgNotification, setIncomingCallAndSignal } from '../../features/chat/chatSlice';
 import DropDown from '../basic/DropDown';
 import { DropDownElementsType } from '../../constants/types';
 import { AppDispatch } from '../../app/store';
@@ -20,6 +20,7 @@ import { clearFollowers, clearFollowing, selectUserNotifications, selectUserUnre
 import logo from '../../assets/vite.png'
 import Notifications from '../notification/Notifications';
 import IncomingCallAnimation from '../basic/IncomingCallAnimation';
+import { MdCallEnd } from 'react-icons/md';
 
 
 type Props = {
@@ -30,15 +31,16 @@ const UserNav = ({ handleLogout }: Props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const user = useSelector(selectAuthUser)
+  const isIncomingCall = useSelector(selectChatIsIncomingCall)
   const unreadMsgNotificationCount = useSelector(selectChatUnreadMsgNotification)
   const unreadNotificationsCount = useSelector(selectUserUnreadNotificationsCount)
 
 
   const [userDropDown, setUserDropDown] = useState(false)
   const [notificationDropDown, setNotificationDropDown] = useState(false)
-  
+
   const [callState, setCallState] = useState<'ring' | 'end'>('ring')
-  const [showIncomingCall, setShowIncomingCall] = useState<boolean>(false)
+  const [showCallBtns, setShowCallBtns] = useState<boolean>(false)
 
   const handleClearProfile = async () => {
     dispatch(clearUserCreatedPosts());
@@ -61,8 +63,24 @@ const UserNav = ({ handleLogout }: Props) => {
   ]
 
   const handleIncomingCall = () => {
+    setShowCallBtns(false)
     navigate('/chat')
   }
+  const handleCallEnd = () => {
+    setCallState('end')
+    dispatch(setIncomingCallAndSignal({
+      isIncomingCall: false,
+      signal: undefined,
+      callModelType: undefined
+    }))
+  }
+
+  useEffect(() => {
+    setShowCallBtns(isIncomingCall)
+    if (isIncomingCall) {
+      setCallState('ring')
+    }
+  }, [isIncomingCall])
 
   return (
     <nav className="fixed top-0 z-50 w-full nav-bg-color">
@@ -108,10 +126,15 @@ const UserNav = ({ handleLogout }: Props) => {
 
             {/* incoming call */}
             <div className="flex items-center ms-3 relative">
-              {showIncomingCall &&
-                <a onClick={handleIncomingCall}>
-                  <IncomingCallAnimation state={callState} />
-                </a>
+              {showCallBtns &&
+                <div className="flex gap-1 items-center px-3">
+                  <button onClick={handleIncomingCall} >
+                    <IncomingCallAnimation state={callState} />
+                  </button>
+                  <button onClick={handleCallEnd} className='flex bg-red-500 text-white rounded-full p-1 items-center justify-center'  >
+                    <MdCallEnd size={16} />
+                  </button>
+                </div>
               }
             </div>
 

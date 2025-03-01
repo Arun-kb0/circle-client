@@ -22,7 +22,7 @@ import GlobalFeed from './pages/user/GlobalFeed'
 import CreatePost from './pages/user/CreatePost'
 import ChatPage from './pages/user/ChatPage'
 import FollowPeople from './pages/user/FollowPeople'
-import { selectChatUser, setAllChatRooms, setCallRoomId, setIsInChat, setRoomId } from './features/chat/chatSlice'
+import { selectChatUser, setAllChatRooms, setCallRoomId, setIncomingCallAndSignal, setIsInChat, setRoomId } from './features/chat/chatSlice'
 import { callUserConnection, receiveMessage } from './features/chat/chatApi'
 import ProfilePage from './pages/user/ProfilePage'
 import EditPostPage from './pages/user/EditPostPage'
@@ -161,9 +161,29 @@ function App() {
       console.log(data)
       dispatch(setNotificationSocketId(data.notificationSocketId))
     }
-    const handleNewNotification = (data: any) => {
+    const handleNewNotification = async (data: any) => {
       console.log(socketEvents.newNotification)
       console.log(data)
+      if (data.type === 'call') {
+        toast('Incoming call')
+        console.log('call notification handling')
+        const { data: extraData } = data
+        if (!extraData.chatUser) throw new Error('chat user not found in incoming call')
+        if (!user) throw new Error('auth user not found')
+        const chatRoomId = extraData.roomId.endsWith('-call')
+          ? extraData.roomId.slice(0, -5)
+          : extraData.roomId
+        dispatch(setRoomId({ roomId: chatRoomId, user: extraData.chatUser }))
+        dispatch(setCallRoomId({ roomId: extraData.roomId, user: extraData.chatUser }))
+        dispatch(setCallNotificationState(extraData.type))
+        dispatch(setIncomingCallAndSignal({
+          isIncomingCall: true,
+          signal: extraData.signal,
+          callModelType: extraData.callModelType
+        }))
+        await dispatch(getFollowers({ userId: user._id, page: 1 }))
+        return
+      }
       dispatch(setSingleNotification(data))
     }
 
