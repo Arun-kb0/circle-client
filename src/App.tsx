@@ -37,7 +37,7 @@ import { setCallNotificationState } from './features/notification/notificationSl
 import { getFollowers } from './features/user/userApi'
 import PostManagement from './pages/admin/PostManagement'
 import { Socket } from 'socket.io-client'
-import { setOnlineUsers, setUserSocketId } from './features/user/userSlice'
+import { setNotificationSocketId, setOnlineUsers, setSingleNotification, setUserSocketId } from './features/user/userSlice'
 import ReportManagement from './pages/admin/ReportManagement'
 import GoLivePage from './pages/user/GoLivePage'
 import ViewLivePage from './pages/user/ViewLivePage'
@@ -52,6 +52,7 @@ function App() {
   const chatUser = useSelector(selectChatUser)
   const friendsRoomId = useSelector(selectAuthFriendsRoomId)
   const [socket, setSocket] = useState<Socket | null>(null)
+  const [notificationSocket, setNotificationSocket] = useState<Socket | null>(null)
 
   useEffect(() => {
     dispatch(refresh())
@@ -61,6 +62,8 @@ function App() {
     if (!user) return
     const newSocket = SocketIoClient.getInstance(user._id)
     setSocket(newSocket)
+    const newNotificationSocket = SocketIoClient.getNotificationInstance(user._id)
+    setNotificationSocket(newNotificationSocket)
   }, [user])
 
   useEffect(() => {
@@ -74,9 +77,16 @@ function App() {
       console.log('userSocketId = ', data.userSocketId)
       dispatch(setUserSocketId(data.userSocketId))
     })
+    notificationSocket?.on(socketEvents.getNotificationSocketId, (data) => {
+      console.log('notification socket')
+      dispatch(setNotificationSocketId(data.notificationSocketId))
+    })
+
+
     return () => {
       socket?.off(socketEvents.getOnlineUsers)
       socket?.off(socketEvents.me)
+      notificationSocket?.off(socketEvents.getNotificationSocketId)
     }
   }, [user, socket])
 
@@ -88,7 +98,6 @@ function App() {
     console.log(socketEvents.joinUserRoom, 'emitted roomId', friendsRoomId)
   }, [friendsRoomId])
 
-  
 
   useEffect(() => {
     if (!user) return
@@ -145,7 +154,28 @@ function App() {
       : dispatch(setIsInChat(false))
   }, [location.pathname])
 
-  
+  // * notification useEffect
+  useEffect(() => {
+    const handleNotificationSocketId = (data: any) => {
+      console.log(socketEvents.getNotificationSocketId)
+      console.log(data)
+      dispatch(setNotificationSocketId(data.notificationSocketId))
+    }
+    const handleNewNotification = (data: any) => {
+      console.log(socketEvents.newNotification)
+      console.log(data)
+      dispatch(setSingleNotification(data))
+    }
+
+    notificationSocket?.on(socketEvents.getNotificationSocketId, handleNotificationSocketId)
+    notificationSocket?.on(socketEvents.newNotification, handleNewNotification)
+
+    return () => {
+      notificationSocket?.off(socketEvents.getNotificationSocketId, handleNotificationSocketId)
+      notificationSocket?.off(socketEvents.newNotification, handleNewNotification)
+    }
+  }, [notificationSocket])
+
 
   return (
     <>

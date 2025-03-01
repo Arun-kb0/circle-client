@@ -23,8 +23,6 @@ const Comments = ({ handleClose }: Props) => {
         exit="exit"
       >
         <CommentCard />
-        
-        {/* <TestComments/> */}
        
       </motion.div>
 

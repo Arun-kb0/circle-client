@@ -16,7 +16,7 @@ import { logout } from '../../features/auth/authApi';
 import { selectAuthUser } from '../../features/auth/authSlice';
 import { FaUserCircle } from 'react-icons/fa';
 import { clearUserCreatedPosts } from '../../features/post/postSlice';
-import { clearFollowers, clearFollowing } from '../../features/user/userSlice';
+import { clearFollowers, clearFollowing, selectUserNotifications, selectUserUnreadNotificationsCount } from '../../features/user/userSlice';
 import logo from '../../assets/vite.png'
 import Notifications from '../notification/Notifications';
 import IncomingCallAnimation from '../basic/IncomingCallAnimation';
@@ -30,7 +30,9 @@ const UserNav = ({ handleLogout }: Props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const user = useSelector(selectAuthUser)
-  const unreadNotificationCount = useSelector(selectChatUnreadMsgNotification)
+  const unreadMsgNotificationCount = useSelector(selectChatUnreadMsgNotification)
+  const unreadNotificationsCount = useSelector(selectUserUnreadNotificationsCount)
+
 
   const [userDropDown, setUserDropDown] = useState(false)
   const [notificationDropDown, setNotificationDropDown] = useState(false)
@@ -117,7 +119,10 @@ const UserNav = ({ handleLogout }: Props) => {
               <div>
                 <button onClick={() => setNotificationDropDown(prev => !prev)} className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
                   <SpringButton>
-                    <BsBell className='text-gray-200 ' size={23} />
+                    <BadgeButton
+                      count={unreadNotificationsCount}
+                      icon={<BsBell className='text-gray-200 ' size={23} />}
+                    />
                   </SpringButton>
                 </button>
                 <Notifications
@@ -132,7 +137,7 @@ const UserNav = ({ handleLogout }: Props) => {
                 <Link to='/chat' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
                   <SpringButton>
                     <BadgeButton
-                      count={unreadNotificationCount}
+                      count={unreadMsgNotificationCount}
                       icon={<AiOutlineMessage className='text-gray-200 ' size={23} />}
                     />
                   </SpringButton>

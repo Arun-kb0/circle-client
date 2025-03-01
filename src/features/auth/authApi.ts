@@ -3,7 +3,7 @@ import errorHandler from "../../errorHandler/errorHandler"
 import axiosInstance from "../../config/axiosInstance"
 import { toast } from "react-toastify"
 import { UserType } from "../../constants/types"
-import { RootState } from "../../app/store"
+import { resetStore, RootState } from "../../app/store"
 import SocketIoClient from "../../config/SocketIoClient"
 
 export const googleOauthLogin = createAsyncThunk('/google-oauth-login', async (token: string) => {
@@ -117,11 +117,13 @@ export const refresh = createAsyncThunk('/auth/refresh', async () => {
 
 export const logout = createAsyncThunk('/auth/logout', async (_, { dispatch }) => {
   try {
-    const socket = SocketIoClient.getInstance()
-    socket?.disconnect()
+
+    SocketIoClient.disconnect()
+    SocketIoClient.disconnectNotification()
     const res = await axiosInstance.get('/auth/logout', {
       withCredentials: true
     })
+    // dispatch(resetStore())
     sessionStorage.clear()
     localStorage.clear()
     return res.data

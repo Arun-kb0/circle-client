@@ -62,6 +62,20 @@ export type NotificationType<T = any> = {
   data?: T
 }
 
+export type NotificationDataType = {
+  _id: string
+  authorId: string
+  receiverId: string
+  type: 'call' | 'message' | 'follow' | 'like' | 'comment' | 'replay'
+  message: string
+  read: boolean
+  createdAt: string
+  updatedAt: string,
+  authorName: string
+  authorImage?: string
+}
+
+
 
 export type DropDownElementsType = {
   handler: () => void
@@ -172,4 +186,10 @@ export type UsersCountTypes = {
 export type CountByDataType = {
   date: string
   count: number
+}
+
+export type PaginationNotification = {
+  numberOfPages: number,
+  currentPage: number,
+  notifications: NotificationDataType[],
 }

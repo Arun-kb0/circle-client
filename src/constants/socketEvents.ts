@@ -43,7 +43,11 @@ enum socketEvents {
   liveUserDisconnected = 'live-user-disconnected',
 
   liveSendMessage = 'live-send-message',
-  liveReceiveMessage = 'live-receive-message'
+  liveReceiveMessage = 'live-receive-message',
+
+  // * notification event
+  getNotificationSocketId = 'get-notification-socket-id',
+  newNotification = 'new-notification'
 
 }
 
