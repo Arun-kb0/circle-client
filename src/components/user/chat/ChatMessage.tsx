@@ -5,38 +5,44 @@ import { FaUserCircle } from 'react-icons/fa'
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
 import DropDown from '../../basic/DropDown';
-import { DropDownElementsType } from '../../../constants/types';
+import { DropDownElementsType, MessageType } from '../../../constants/types';
 import { deleteMessage } from '../../../features/chat/chatApi';
+import SocketIoClient from '../../../config/SocketIoClient';
+import socketEvents from '../../../constants/socketEvents';
 
 
 type Props = {
-  id: string
-  name: string
-  userImage: string | undefined
-  time: Date
-  status: string
-  message: string
+  message: MessageType
 }
 
-const ChatMessage = ({ id, name, time, status, message, userImage }: Props) => {
+const ChatMessage = ({ message }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const [open, setOpen] = useState(false)
+  const socket = SocketIoClient.getInstance()
 
   const dropDownElements: DropDownElementsType[] = [
     {
       handler: () => {
-        navigator.clipboard.writeText(message)
+        navigator.clipboard.writeText(message.message)
         setOpen(false)
       },
       name: 'Copy'
     },
     {
       handler: () => {
-        dispatch(deleteMessage(id))
+        socket?.emit(socketEvents.messageDeleted, message)
+        dispatch(deleteMessage(message.id))
         setOpen(false)
       },
       name: 'Delete'
     },
+    // ! complete this
+    // {
+    //   handler: () => {
+    //     socket?.emit(socketEvents.editMessage, message)
+    //   },
+    //   name: 'Edit'
+    // }
     {
       handler: () => { },
       name: 'Replay'
@@ -53,18 +59,18 @@ const ChatMessage = ({ id, name, time, status, message, userImage }: Props) => {
   return (
 
     <article className="flex items-start gap-2.5 justify-start relative">
-      {userImage
-        ? <img className="w-8 h-8 rounded-full object-cover" src={userImage} alt={name} />
+      {message.authorImage
+        ? <img className="w-8 h-8 rounded-full object-cover" src={message.authorImage} alt={message.authorName} />
         : <FaUserCircle />
       }
 
       <div className="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700">
         <div className="flex items-center space-x-2 rtl:space-x-reverse">
-          <span className="text-sm font-semibold text-gray-900 dark:text-white">{name}</span>
-          <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{moment(time).fromNow()}</span>
+          <span className="text-sm font-semibold text-gray-900 dark:text-white">{message.authorName}</span>
+          <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{moment(message.createdAt).fromNow()}</span>
         </div>
-        <p className="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{message}</p>
-        <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{status}</span>
+        <p className="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{message.message}</p>
+        <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{message.status}</span>
       </div>
       <button onClick={() => setOpen(prev => !prev)} className="inline-flex self-center items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800 dark:focus:ring-gray-600" >
         <IoMdMore size={25} />

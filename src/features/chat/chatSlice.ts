@@ -124,6 +124,16 @@ const chatSlice = createSlice({
       state.callModelType = callModelType
     },
 
+    removeDeletedMessage: (state, action: PayloadAction<{ message: MessageType }>) => {
+      if (state.roomId && state.messages) {
+        const { message } = action.payload
+        const updatedMessages = state.messages[state.roomId].filter(msg => msg.id !== message.id)
+        state.messages[state.roomId] = updatedMessages
+        localStorage.removeItem("messages")
+        localStorage.setItem("messages", JSON.stringify(state.messages))
+      }
+    },
+
     setAllChatRooms: (state, action) => { }
 
 
@@ -214,6 +224,8 @@ export const {
   setRoomId,
   addMessage,
   setIsInChat,
+  removeDeletedMessage,
+
   showMsgNotification,
   setAllAsReadMsgNotification,
   setCallRoomId,

@@ -5,6 +5,7 @@ import SendMessage from './SendMessage';
 import SocketIoClient from '../../../config/SocketIoClient';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  removeDeletedMessage,
   selectChatMessageCurrentPage, selectChatMessageNumberOfPages, selectChatMessages,
   selectChatMessageStatus,
   selectChatRoomId, selectChatUser,
@@ -22,13 +23,14 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import ChatSkeltonLoader from '../../basic/ChatSkeltonLoader';
 import EmojiPicker, { EmojiClickData, EmojiStyle, Theme } from 'emoji-picker-react';
 import { MdCall } from 'react-icons/md';
+import socketEvents from '../../../constants/socketEvents';
 
 
 type Props = {
   handleCallModelOpen: (type: 'audio' | 'video') => void
 }
 
-const ChatSection = ({handleCallModelOpen}: Props) => {
+const ChatSection = ({ handleCallModelOpen }: Props) => {
   const socket = SocketIoClient.getInstance()
   const dispatch = useDispatch<AppDispatch>()
 
@@ -85,6 +87,14 @@ const ChatSection = ({handleCallModelOpen}: Props) => {
     handleScrollToMessage()
   }, [socket])
 
+  useEffect(() => {
+    socket?.on(socketEvents.messageDeleted, (msg) => {
+      console.log(socketEvents.messageDeleted)
+      console.log(msg)
+      dispatch(removeDeletedMessage({ message: msg }))
+    })
+  }, [socket])
+
   const dropDownElements: DropDownElementsType[] = [
     {
       handler: () => {
@@ -106,7 +116,7 @@ const ChatSection = ({handleCallModelOpen}: Props) => {
         </Link>
         <h5 className='font-bold '>{chatUser?.name}</h5>
         <div className='w-full flex justify-end item-center gap-4'>
-          <button onClick={()=> handleCallModelOpen('video') }>
+          <button onClick={() => handleCallModelOpen('video')}>
             <FaVideo size={20} />
           </button>
           <button onClick={() => handleCallModelOpen('audio')}>
@@ -155,13 +165,7 @@ const ChatSection = ({handleCallModelOpen}: Props) => {
               message={message.message}
             />
             : <ChatMessage
-              key={message.authorId}
-              id={message.id}
-              name={message.authorName}
-              userImage={message.authorImage}
-              time={message.updatedAt}
-              status={message.status}
-              message={message.message}
+              message={message}
             />
         ))}
         <div ref={ref} className='w-full h-24'></div>

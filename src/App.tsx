@@ -165,7 +165,6 @@ function App() {
       console.log(socketEvents.newNotification)
       console.log(data)
       if (data.type === 'call') {
-        toast('Incoming call')
         console.log('call notification handling')
         const { data: extraData } = data
         if (!extraData.chatUser) throw new Error('chat user not found in incoming call')
