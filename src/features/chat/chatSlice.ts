@@ -134,6 +134,16 @@ const chatSlice = createSlice({
       }
     },
 
+    updateChatMessage: (state, action: PayloadAction<{ message: MessageType }>) => {
+      if (state.messages) {
+        const { message } = action.payload
+        const updatedMessages = state.messages[message.roomId].map(msg => {
+          return msg.id === message.id ? message : msg
+        })
+        state.messages[message.roomId] = updatedMessages
+      }
+    },
+
     setAllChatRooms: (state, action) => { }
 
 
@@ -225,6 +235,7 @@ export const {
   addMessage,
   setIsInChat,
   removeDeletedMessage,
+  updateChatMessage,
 
   showMsgNotification,
   setAllAsReadMsgNotification,

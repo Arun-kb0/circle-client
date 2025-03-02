@@ -10,6 +10,7 @@ import {
   selectChatMessageStatus,
   selectChatRoomId, selectChatUser,
   setAllAsReadMsgNotification,
+  updateChatMessage,
 } from '../../../features/chat/chatSlice';
 import { AppDispatch } from '../../../app/store';
 import { selectAuthUser } from '../../../features/auth/authSlice';
@@ -88,11 +89,22 @@ const ChatSection = ({ handleCallModelOpen }: Props) => {
   }, [socket])
 
   useEffect(() => {
-    socket?.on(socketEvents.messageDeleted, (msg) => {
+    const handleDeleteMessage = (msg: any) => {
       console.log(socketEvents.messageDeleted)
-      console.log(msg)
       dispatch(removeDeletedMessage({ message: msg }))
-    })
+    }
+    const handleEditMessage = (msg: any) => {
+      console.log(socketEvents.editMessage)
+      console.log(msg)
+      dispatch(updateChatMessage({ message: msg }))
+    }
+    socket?.on(socketEvents.messageDeleted, handleDeleteMessage)
+    socket?.on(socketEvents.editMessage, handleEditMessage)
+
+    return () => {
+      socket?.off(socketEvents.messageDeleted, handleDeleteMessage)
+      socket?.off(socketEvents.editMessage, handleEditMessage)
+    }
   }, [socket])
 
   const dropDownElements: DropDownElementsType[] = [
@@ -154,19 +166,11 @@ const ChatSection = ({ handleCallModelOpen }: Props) => {
         {!chatUser && <div className='w-full h-full flex justify-center items-center'> <h5 className='font-semibold text-lg'>select a user to chat</h5> </div>}
         {chatUser && !hasMore && messages.length === 0 && <div className="text-center">No messages</div>}
         {messages.map((message) => (
-          user?._id === message.authorId
-            ? <SendMessage
-              key={message.authorId}
-              id={message.id}
-              name={message.authorName}
-              userImage={message.authorImage}
-              time={message.updatedAt}
-              status={message.status}
-              message={message.message}
-            />
-            : <ChatMessage
-              message={message}
-            />
+          <ChatMessage
+            key={message.updatedAt as unknown as string}
+            message={message}
+            isUserSendMessage={user?._id === message.authorId}
+          />
         ))}
         <div ref={ref} className='w-full h-24'></div>
 
