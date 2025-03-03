@@ -39,10 +39,10 @@ export type MessageType = {
   authorName: string
   authorImage?: string
   receiverId: string
-  mediaType: 'text' | 'audio' | 'photo'
+  mediaType: 'text' | 'audio' | 'photo' | 'gif'
   message: string
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
   status: 'sent' | 'received' | 'seen'
 }
 

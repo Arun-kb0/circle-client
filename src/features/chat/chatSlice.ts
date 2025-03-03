@@ -93,7 +93,7 @@ const chatSlice = createSlice({
         id: uuid(),
         authorName: message.authorName,
         message: message.message,
-        time: message.createdAt,
+        time: new Date(message.createdAt),
         status: 'unread'
       }
       if (!isExits) state.messageNotification.push(newNotification)

@@ -86,8 +86,8 @@ export const joinRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsType) =
   }
 }
 
-type SendMessageArgs = { currentMessage: string, user: UserType, roomId: string }
-export const sendMessage = ({ currentMessage, user, roomId }: SendMessageArgs) => (dispatch: AppDispatch, getState: () => RootState) => {
+type SendMessageArgs = { currentMessage: string, user: UserType, roomId: string, mediaType: MessageType['mediaType'] }
+export const sendMessage = ({ currentMessage, user, roomId, mediaType }: SendMessageArgs) => (dispatch: AppDispatch, getState: () => RootState) => {
   try {
     const socket = SocketIoClient.getInstance()
     const chatUser = getState().chat.chatUser
@@ -100,7 +100,7 @@ export const sendMessage = ({ currentMessage, user, roomId }: SendMessageArgs) =
       authorName: user?.name,
       authorImage: user?.image?.url,
       receiverId: chatUser.userId,
-      mediaType: "text" as MessageType['mediaType'],
+      mediaType: mediaType,
       message: currentMessage,
       status: 'sent' as MessageType['status'],
       updatedAt: new Date().toISOString(),
@@ -114,8 +114,8 @@ export const sendMessage = ({ currentMessage, user, roomId }: SendMessageArgs) =
     const { createdAt, updatedAt, ...msgRest } = messageData
     const chatMsg: MessageType = {
       ...msgRest,
-      createdAt: new Date(createdAt),
-      updatedAt: new Date(updatedAt)
+      createdAt: createdAt,
+      updatedAt: updatedAt
     }
     dispatch(addMessage(chatMsg))
   } catch (error) {

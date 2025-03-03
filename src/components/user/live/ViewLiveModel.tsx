@@ -9,8 +9,7 @@ import { dropIn } from '../../../constants/animationDropins';
 import { IoMdCloseCircleOutline } from 'react-icons/io';
 import { IoClose } from 'react-icons/io5';
 import { selectAuthUser } from '../../../features/auth/authSlice';
-import { LiveMessageType } from '../../../constants/types';
-import LiveStreamChat from './liveStreamChat';
+import LiveStreamChat from './LiveStreamChat';
 
 type Props = {
   streamerId: string,

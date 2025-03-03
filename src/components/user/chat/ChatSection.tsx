@@ -19,7 +19,7 @@ import { Link } from 'react-router-dom';
 import { IoMdMore } from 'react-icons/io';
 import { clearChat, getRoomMessages, receiveMessage } from '../../../features/chat/chatApi';
 import DropDown from '../../basic/DropDown';
-import { DropDownElementsType } from '../../../constants/types';
+import { DropDownElementsType, MessageType } from '../../../constants/types';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ChatSkeltonLoader from '../../basic/ChatSkeltonLoader';
 import EmojiPicker, { EmojiClickData, EmojiStyle, Theme } from 'emoji-picker-react';
@@ -50,7 +50,7 @@ const ChatSection = ({ handleCallModelOpen }: Props) => {
       return messageObj[roomId];
     }
     return [];
-  }, [roomId, messageObj])
+  }, [roomId, messageObj]) as MessageType[]
 
   const page = useSelector(selectChatMessageCurrentPage)
   const numberOfPages = useSelector(selectChatMessageNumberOfPages)
@@ -116,6 +116,8 @@ const ChatSection = ({ handleCallModelOpen }: Props) => {
       name: 'clear Chat'
     }
   ]
+
+
 
   return (
     <section >
