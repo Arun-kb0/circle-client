@@ -68,7 +68,8 @@ const LineChart = ({ data }: Props) => (
       stacked: false,
       reverse: false
     }}
-    xFormat="time:%b"
+    // xFormat="time:%b"
+    xFormat="time:%d-%m-%Y"
     yFormat=" >-.2f"
     axisTop={null}
     axisRight={null}
