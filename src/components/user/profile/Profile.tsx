@@ -5,17 +5,41 @@ import ProfileAbout from './ProfileAbout'
 import { UserType } from '../../../constants/types'
 import FollowingPage from '../../../pages/user/FollowingPage'
 import Followers from './Followers'
+import SpringButton from '../../basic/SpringButton'
+import { LuCrown } from 'react-icons/lu'
+import { createOrder } from '../../../features/payment/paymentApi'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch } from '../../../app/store'
+import { selectAuthUser } from '../../../features/auth/authSlice'
 
 type Props = {
   user: UserType
 }
 
 const Profile = ({ user }: Props) => {
+  const dispatch = useDispatch<AppDispatch>()
+  const currentUser = useSelector(selectAuthUser)
   const [activeSection, setActiveSection] = useState<"posts" | "about" | "following" | "followers" | null>('posts')
 
   const handleSectionClick = (section: "posts" | "about" | "following" | "followers") => {
     if (activeSection === section) return
     setActiveSection((prev) => (prev === section ? null : section))
+  }
+
+
+  const handlePayment = () => {
+    if (!currentUser) return
+    const data = {
+      subscriberUserId: currentUser._id,
+      subscriberName: currentUser.name,
+      subscriberEmail: currentUser.email,
+      orderType: 'user-subscription',
+      subscribedToUserId: user._id,
+      subscribedToUserName: user.name,
+      amount: 1000
+      // mobileNumber: ,
+    }
+    dispatch(createOrder({ data }))
   }
 
 
@@ -34,9 +58,17 @@ const Profile = ({ user }: Props) => {
         <div className='px-10 flex justify-center items-center capitalize text-2xl font-semibold'>
           <div className='space-y-4'>
             <h5 className=''>{user?.name}</h5>
-            <div className='flex gap-3 justify-center items-center'>
+            <div className='flex flex-wrap gap-3 justify-center items-center'>
               <p>Following {user?.followerCount}</p>
               <p>Followers {user?.followeeCount}</p>
+              <button className='text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2' onClick={handlePayment}>
+                <SpringButton>
+                  <div className='flex gap-1 items-center justify-center'>
+                    <LuCrown size={20} />
+                    subscribe
+                  </div>
+                </SpringButton>
+              </button>
             </div>
           </div>
         </div>

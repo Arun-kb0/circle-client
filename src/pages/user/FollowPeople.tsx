@@ -7,6 +7,7 @@ import {
 import { AppDispatch } from '../../app/store';
 import { getSuggestedPeople } from '../../features/user/userApi';
 import UsersList from '../../components/user/follow/UsersList';
+import PageTitle from '../../components/basic/PageTitle';
 
 
 type Props = {}
@@ -35,13 +36,17 @@ const FollowPeople = (props: Props) => {
   return (
     <main className='main-section justify-center relative overflow-y-auto' >
       <div className="p-4 sm:ml-64" >
-        <div className="p-4 mt-14 flex flex-wrap justify-start gap-8 lg:w-[160vh] md:w-[100vh]">
+        <div className="p-4 mt-14">
 
-          <UsersList
-            users={users}
-            loadMorePosts={loadMorePosts}
-            hasMore={hasMore}
-          />
+          <PageTitle firstWord='Follow' secondWord='Users' />
+
+          <div className='p-4 flex flex-wrap justify-start gap-8 lg:w-[160vh] md:w-[100vh]'>
+            <UsersList
+              users={users}
+              loadMorePosts={loadMorePosts}
+              hasMore={hasMore}
+            />
+          </div>
 
         </div>
       </div>

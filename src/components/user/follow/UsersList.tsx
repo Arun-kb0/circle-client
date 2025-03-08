@@ -16,7 +16,7 @@ const UsersList = ({ users, loadMorePosts, hasMore }: Props) => {
 
   return (
     <InfiniteScroll
-      className='p-4 mt-14 flex flex-wrap justify-start gap-3'
+      className='p-4 flex flex-wrap justify-start gap-3'
       scrollableTarget='home'
       dataLength={users.length}
       next={loadMorePosts}

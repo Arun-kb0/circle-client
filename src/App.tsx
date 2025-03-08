@@ -42,6 +42,9 @@ import ReportManagement from './pages/admin/ReportManagement'
 import GoLivePage from './pages/user/GoLivePage'
 import ViewLivePage from './pages/user/ViewLivePage'
 import AdminHome from './pages/admin/AdminHome'
+import PaymentSuccess from './pages/user/PaymentSuccess'
+import PaymentFailed from './pages/user/PaymentFailed'
+import WalletPage from './pages/user/WalletPage'
 
 function App() {
   const navigate = useNavigate()
@@ -206,6 +209,8 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/verify' element={<OtpModel />} />
         <Route path='/resetPwd' element={<ResetPassword />} />
+        <Route path='/payment-success' element={<PaymentSuccess />} />
+        <Route path='/payment-failed' element={<PaymentFailed />} />
 
 
         <Route path='/admin/login' element={<AdminLogin />} />
@@ -226,6 +231,10 @@ function App() {
           <Route path='/crop' element={<CropperPage />} />
           <Route path='/go-live' element={<GoLivePage />} />
           <Route path='/view-live' element={<ViewLivePage />} />
+          <Route path='/wallet' element={<WalletPage />} />
+          {/* 
+          <Route path='/payment-success' element={<PaymentSuccess />} />
+          <Route path='/payment-failed' element={<PaymentFailed />} /> */}
 
         </Route>
 

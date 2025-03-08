@@ -193,3 +193,16 @@ export type PaginationNotification = {
   currentPage: number,
   notifications: NotificationDataType[],
 }
+
+export type TransactionType = {
+  _id: string;
+  userId: string;
+  type: 'credit' | 'debit'
+  amount: number;
+  currency: string;
+  status: 'pending' | 'completed' | 'failed';
+  createdAt: string
+  updatedAt: string
+  userName: string
+  userImage?: string
+}

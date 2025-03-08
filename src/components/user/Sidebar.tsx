@@ -5,7 +5,7 @@ import { HiOutlineUsers } from "react-icons/hi2";
 import { LuUserRoundPlus } from "react-icons/lu";
 import { CgMediaLive } from "react-icons/cg";
 import { HiOutlineGift } from "react-icons/hi2";
-import { IoBookmarkOutline } from "react-icons/io5";
+import { IoBookmarkOutline, IoWalletOutline } from "react-icons/io5";
 import { PiArticleBold } from "react-icons/pi";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import SpringButton from '../basic/SpringButton';
@@ -83,10 +83,10 @@ const Sidebar = (props: Props) => {
           </li>
           <li>
             <SpringButton>
-              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                <HiOutlineCalendarDateRange size={22} />
-                <span className="ms-3">Memories</span>
-              </a>
+              <Link to='/wallet' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <IoWalletOutline size={22} />
+                <span className="ms-3">Wallet</span>
+              </Link>
             </SpringButton>
           </li>
           <li>
@@ -107,7 +107,7 @@ const Sidebar = (props: Props) => {
           </li>
           <li>
             <SpringButton>
-              <button onClick={handleNavigateToChat}  className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <button onClick={handleNavigateToChat} className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <TbMessageCircle size={22} />
                 <span className="ms-3">Messaging</span>
               </button>

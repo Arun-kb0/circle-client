@@ -12,6 +12,7 @@ import { updatePost, uploadFiles } from '../../features/post/postApi';
 import PostForm from '../../components/user/createPost/PostForm';
 import { AnimatePresence } from 'framer-motion';
 import OrbAnimation from '../../components/basic/OrbAnimation';
+import PageTitle from '../../components/basic/PageTitle';
 
 type Props = {}
 
@@ -157,6 +158,8 @@ const EditPostPage = (props: Props) => {
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
       <div className="p-4 sm:ml-64" >
         <div className="p-4 mt-14">
+
+          <PageTitle firstWord='Edit' secondWord='Post' />
 
           <AnimatePresence
             initial={false}

@@ -9,6 +9,9 @@ import { selectUserLiveUsers } from '../../features/user/userSlice';
 import { getLiveUsers } from '../../features/user/userApi';
 import { AppDispatch } from '../../app/store';
 import { selectAuthUser } from '../../features/auth/authSlice';
+import { createOrder } from '../../features/payment/paymentApi';
+import { Link } from 'react-router-dom';
+import PageTitle from '../../components/basic/PageTitle';
 
 type Props = {}
 
@@ -36,6 +39,7 @@ const ViewLivePage = (props: Props) => {
     // setHasMore(newPage < numberOfPages)
   }
 
+  // ! navigate to profile if not subscribed
   const handleViewLive = (userId: string) => {
     if (!userId) {
       console.error('invalid user id')
@@ -45,14 +49,23 @@ const ViewLivePage = (props: Props) => {
     handleOpen()
   }
 
+
+  const handlePayment = () => {
+    const data = {
+      name: "Doe",
+      mobileNumber: 1231231231,
+      amount: 100
+    }
+    dispatch(createOrder({ data }))
+  }
+
+
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
       <div className="p-4 sm:ml-64" >
         <div className="p-4 mt-14 w-[70vw]">
 
-          <div className='py-3 flex justify-center items-center'>
-            <h5 className='capitalize text-center text-xl font-semibold tracking-wider '>live stream</h5>
-          </div>
+          <PageTitle  firstWord='Watch' secondWord='Live'/>
 
           <AnimatePresence
             initial={false}
@@ -80,6 +93,13 @@ const ViewLivePage = (props: Props) => {
               </div>
             }
           >
+
+            <button onClick={handlePayment} className="px-4 py-2 bg-blue-500 text-white rounded-lg">
+              Pay Now
+            </button>
+            <Link to='/payment-success' > success</Link>
+            <Link to='/payment-failed' > failed</Link>
+
             {users.map(user => (
               currentUser?._id !== user._id &&
               <LiveUserCard
@@ -90,6 +110,7 @@ const ViewLivePage = (props: Props) => {
                 handleViewLive={handleViewLive}
               />
             ))}
+
           </InfiniteScroll>
 
         </div>
