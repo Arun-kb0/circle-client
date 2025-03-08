@@ -197,6 +197,8 @@ export type PaginationNotification = {
 export type TransactionType = {
   _id: string;
   userId: string;
+  senderId: string
+  receiverId:string
   type: 'credit' | 'debit'
   amount: number;
   currency: string;
@@ -205,4 +207,36 @@ export type TransactionType = {
   updatedAt: string
   userName: string
   userImage?: string
+}
+
+export type SubscriptionsType = {
+  _id: string
+  merchantTransactionId: string
+  subscriberUserId: string
+  subscriberToUserId: string
+  plan: 'monthly' | 'yearly' | 'lifetime'
+  status: 'inactive' | 'active' | 'cancelled'
+  createdAt: string
+  updatedAt: string
+}
+
+export type WalletType = {
+  _id: string
+  userId: string,
+  balance: number
+  currency: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type TransactionPagination = {
+  transactions: TransactionType[];
+  numberOfPages: number;
+  currentPage: number;
+}
+
+export type SubscriptionPagination = {
+  subscriptions: SubscriptionsType[];
+  numberOfPages: number;
+  currentPage: number;
 }

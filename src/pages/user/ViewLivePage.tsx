@@ -94,12 +94,6 @@ const ViewLivePage = (props: Props) => {
             }
           >
 
-            <button onClick={handlePayment} className="px-4 py-2 bg-blue-500 text-white rounded-lg">
-              Pay Now
-            </button>
-            <Link to='/payment-success' > success</Link>
-            <Link to='/payment-failed' > failed</Link>
-
             {users.map(user => (
               currentUser?._id !== user._id &&
               <LiveUserCard

@@ -5,13 +5,17 @@ import userReducer from '../features/user/userSlice'
 import postReducer from '../features/post/postSlice'
 import chatReducer from '../features/chat/chatSlice'
 import notificationReducer from '../features/notification/notificationSlice'
+import paymentReducer from '../features/payment/paymentSlice'
 
 const appReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
   post: postReducer,
   chat: chatReducer,
-  notification: notificationReducer
+  payment: paymentReducer,
+
+  notification: notificationReducer,
+
 })
 
 

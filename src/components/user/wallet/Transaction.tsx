@@ -14,7 +14,7 @@ const Transaction = ({ transaction }: Props) => {
       <Avatar
         image={transaction.userImage}
         alt={transaction.userName}
-        userId={transaction.userId}
+        userId={transaction.senderId}
       />
       <div className="flex flex-col w-full leading-1.5">
         <div className="flex items-center space-x-2 rtl:space-x-reverse">

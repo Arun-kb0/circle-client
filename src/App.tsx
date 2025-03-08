@@ -45,6 +45,7 @@ import AdminHome from './pages/admin/AdminHome'
 import PaymentSuccess from './pages/user/PaymentSuccess'
 import PaymentFailed from './pages/user/PaymentFailed'
 import WalletPage from './pages/user/WalletPage'
+import { getSubscriptions } from './features/payment/paymentApi'
 
 function App() {
   const navigate = useNavigate()
@@ -61,8 +62,10 @@ function App() {
     dispatch(refresh())
   }, [])
 
+
   useEffect(() => {
     if (!user) return
+    dispatch(getSubscriptions(1))
     const newSocket = SocketIoClient.getInstance(user._id)
     setSocket(newSocket)
     const newNotificationSocket = SocketIoClient.getNotificationInstance(user._id)

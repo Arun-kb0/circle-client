@@ -49,7 +49,6 @@ const Feed = () => {
   }, [page, numberOfPages])
 
   const loadMorePosts = () => {
-    console.log('waypoint triggered !!')
     if (status === 'loading' || page > numberOfPages) return
     dispatch(getPosts(page + 1))
   }
