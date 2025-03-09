@@ -7,12 +7,17 @@ import FollowingPage from '../../../pages/user/FollowingPage'
 import Followers from './Followers'
 import SpringButton from '../../basic/SpringButton'
 import { LuCrown } from 'react-icons/lu'
-import { createOrder } from '../../../features/payment/paymentApi'
+import { createOrder, subscribeWithWallet } from '../../../features/payment/paymentApi'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../../../app/store'
 import { selectAuthUser } from '../../../features/auth/authSlice'
-import { selectPaymentSubscriptions } from '../../../features/payment/paymentSlice'
+import { resetPaymentStatus, selectPaymentStatus, selectPaymentSubscriptions } from '../../../features/payment/paymentSlice'
 import { PiCrownSimpleFill } from 'react-icons/pi'
+import { IoWallet } from 'react-icons/io5'
+import phonePaySvg from '../../../assets/phonePay.svg'
+import { toast } from 'react-toastify'
+import PaymentSuccess from '../../basic/PaymentSuccess'
+import PaymentFailed from '../../basic/PaymentFailed'
 
 type Props = {
   user: UserType
@@ -20,12 +25,14 @@ type Props = {
 
 const Profile = ({ user }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
+  const paymentStatus = useSelector(selectPaymentStatus)
   const currentUser = useSelector(selectAuthUser)
   const subscriptions = useSelector(selectPaymentSubscriptions)
   const [activeSection, setActiveSection] = useState<"posts" | "about" | "following" | "followers" | null>('posts')
   const [isSubscribed, setIsSubscribed] = useState<boolean>(() => {
     return Boolean(subscriptions.find(item => item.subscriberToUserId === user._id))
   })
+  const [showPayBtns, setShowPayBtns] = useState<boolean>(false)
 
   const handleSectionClick = (section: "posts" | "about" | "following" | "followers") => {
     if (activeSection === section) return
@@ -33,7 +40,7 @@ const Profile = ({ user }: Props) => {
   }
 
 
-  const handlePayment = () => {
+  const handlePayment = (type: "phone-pay" | "wallet") => {
     if (!currentUser) return
     const data = {
       subscriberUserId: currentUser._id,
@@ -43,12 +50,25 @@ const Profile = ({ user }: Props) => {
       subscribedToUserId: user._id,
       subscribedToUserName: user.name,
       amount: 1000
-      // mobileNumber: ,
     }
-    dispatch(createOrder({ data }))
+    if (type === 'phone-pay') {
+      dispatch(createOrder({ data }))
+    } else if (type === 'wallet') {
+      dispatch(subscribeWithWallet({ data }))
+    }
   }
 
-  
+  useEffect(() => {
+    dispatch(resetPaymentStatus())
+  }, [])
+
+  useEffect(() => {
+    if (paymentStatus === 'success') {
+      toast(<PaymentSuccess />)
+    } else if (paymentStatus === 'failed') {
+      toast(<PaymentFailed />)
+    }
+  }, [paymentStatus])
 
 
   return (
@@ -69,31 +89,51 @@ const Profile = ({ user }: Props) => {
             <div className='flex flex-wrap gap-3 justify-center items-center'>
               <p>Following {user?.followerCount}</p>
               <p>Followers {user?.followeeCount}</p>
-              {user._id !== currentUser?._id &&
-                isSubscribed
-                ? (
-                  <div className=' text-yellow-400 text-lg flex gap-1 items-center justify-center'>
-                    <PiCrownSimpleFill size={20} />
-                    subscribed
-                  </div>
-                )
-                : (
-                  <button className="text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" onClick={handlePayment}>
-                    <SpringButton>
-                      <div className='flex gap-1 items-center justify-center'>
-                        <LuCrown size={20} />
-                        subscribe
-                      </div>
-                    </SpringButton>
-                  </button>
-                )
 
+              {currentUser?._id !== user._id &&
+                <div>
+                  {isSubscribed
+                    ? (
+                      <div className=' text-yellow-400 text-lg flex gap-1 items-center justify-center'>
+                        <PiCrownSimpleFill size={20} />
+                        subscribed
+                      </div>
+                    )
+                    : (
+                      <button className="text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" onClick={() => setShowPayBtns(prev => !prev)}>
+                        <SpringButton>
+                          <div className='flex gap-1 items-center justify-center'>
+                            <LuCrown size={20} />
+                            subscribe
+                          </div>
+                        </SpringButton>
+                      </button>
+                    )
+                  }
+                </div>
               }
             </div>
+
+            {showPayBtns &&
+              <div className='flex gap-1 justify-end mr-2'>
+                <button className='cursor-pointer' onClick={() => handlePayment('phone-pay')}>
+                  <SpringButton>
+                    <img src={phonePaySvg} alt='phonePay icon' />
+                  </SpringButton>
+                </button>
+                <button onClick={() => handlePayment('wallet')} className='text-green-500 cursor-pointer'>
+                  <SpringButton>
+                    <IoWallet size={38} />
+                  </SpringButton>
+                </button>
+              </div>
+            }
+
           </div>
         </div>
 
       </section>
+
 
       {/* profile buttons */}
       <section className="inline-flex rounded-md shadow-sm" role="group">

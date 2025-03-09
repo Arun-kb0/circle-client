@@ -21,11 +21,11 @@ const Transaction = ({ transaction }: Props) => {
           <span className="text-sm font-semibold text-gray-900 dark:text-white">{transaction.userName}</span>
           <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{moment(transaction.createdAt).fromNow()}</span>
         </div>
-        <div className={`text-lg font-normal py-2 flex justify-between ${transaction.status === 'completed' ? 'text-green-400' : 'text-red-400'}`}>
-          <span>
+        <div className="text-lg font-normal py-2 flex justify-between ">
+          <span className={transaction.type === 'credit' ? 'text-green-400' : 'text-red-400'} >
             {transaction.type === 'credit' ? `+ ${transaction.amount}` : `- ${transaction.amount}`}
           </span>
-          <span>{transaction.status}</span>
+          <span className={transaction.status === 'completed' ? 'text-green-400 text-sm' : 'text-red-400 text-sm'}>{transaction.status}</span>
         </div>
 
       </div>

@@ -4,8 +4,11 @@ import success from '../../assets/lottyfiles/success.json'
 
 const SuccessAnimation = () => {
   return (
-    <div className='w-32 h-auto p-0'>
-      <Lottie animationData={success} />
+    <div className='w-20 h-auto p-0'>
+      <Lottie
+        animationData={success}
+        loop={false}
+      />
     </div>
   )
 }

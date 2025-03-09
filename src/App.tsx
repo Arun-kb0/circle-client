@@ -22,7 +22,10 @@ import GlobalFeed from './pages/user/GlobalFeed'
 import CreatePost from './pages/user/CreatePost'
 import ChatPage from './pages/user/ChatPage'
 import FollowPeople from './pages/user/FollowPeople'
-import { selectChatUser, setAllChatRooms, setCallRoomId, setIncomingCallAndSignal, setIsInChat, setRoomId } from './features/chat/chatSlice'
+import {
+  selectChatUser, setAllChatRooms, setCallRoomId,
+  setIncomingCallAndSignal, setIsInChat, setRoomId
+} from './features/chat/chatSlice'
 import { callUserConnection, receiveMessage } from './features/chat/chatApi'
 import ProfilePage from './pages/user/ProfilePage'
 import EditPostPage from './pages/user/EditPostPage'
@@ -42,10 +45,10 @@ import ReportManagement from './pages/admin/ReportManagement'
 import GoLivePage from './pages/user/GoLivePage'
 import ViewLivePage from './pages/user/ViewLivePage'
 import AdminHome from './pages/admin/AdminHome'
-import PaymentSuccess from './pages/user/PaymentSuccess'
-import PaymentFailed from './pages/user/PaymentFailed'
 import WalletPage from './pages/user/WalletPage'
 import { getSubscriptions } from './features/payment/paymentApi'
+import PaymentSuccessPage from './pages/user/PaymentSuccessPage'
+import PaymentFailedPage from './pages/user/PaymentFailedPage'
 
 function App() {
   const navigate = useNavigate()
@@ -212,8 +215,8 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/verify' element={<OtpModel />} />
         <Route path='/resetPwd' element={<ResetPassword />} />
-        <Route path='/payment-success' element={<PaymentSuccess />} />
-        <Route path='/payment-failed' element={<PaymentFailed />} />
+        <Route path='/payment-success' element={<PaymentSuccessPage />} />
+        <Route path='/payment-failed' element={<PaymentFailedPage />} />
 
 
         <Route path='/admin/login' element={<AdminLogin />} />
@@ -235,10 +238,7 @@ function App() {
           <Route path='/go-live' element={<GoLivePage />} />
           <Route path='/view-live' element={<ViewLivePage />} />
           <Route path='/wallet' element={<WalletPage />} />
-          {/* 
-          <Route path='/payment-success' element={<PaymentSuccess />} />
-          <Route path='/payment-failed' element={<PaymentFailed />} /> */}
-
+          
         </Route>
 
         {/* * protected admin routes */}

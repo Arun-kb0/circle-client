@@ -3,7 +3,7 @@ import {
   StateType, SubscriptionPagination, SubscriptionsType,
   TransactionPagination, TransactionType, WalletType
 } from "../../constants/types"
-import { getSubscriptions, getTransactions, getUserWallet } from "./paymentApi"
+import { createOrder, getSubscriptions, getTransactions, getUserWallet, subscribeWithWallet } from "./paymentApi"
 import { RootState } from "../../app/store"
 
 
@@ -18,6 +18,7 @@ type PaymentState = {
   transactionsStatus: StateType
   wallet: WalletType | null
   walletStatus: StateType
+  paymentStatus: StateType
   error: undefined | string
 }
 
@@ -32,6 +33,7 @@ const initialState: PaymentState = {
   transactionsStatus: "idle",
   wallet: null,
   walletStatus: 'idle',
+  paymentStatus: 'idle',
   error: undefined
 }
 
@@ -39,6 +41,10 @@ const paymentSlice = createSlice({
   name: 'payment',
   initialState,
   reducers: {
+
+    resetPaymentStatus: (state) => {
+      state.paymentStatus = 'idle'
+    }
 
   },
 
@@ -88,6 +94,29 @@ const paymentSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(subscribeWithWallet.pending, (state) => {
+        state.paymentStatus = 'loading'
+      })
+      .addCase(subscribeWithWallet.fulfilled, (state, action) => {
+        state.paymentStatus = 'success'
+      })
+      .addCase(subscribeWithWallet.rejected, (state, action) => {
+        state.paymentStatus = 'failed'
+        state.error = action.error.message
+      })
+    
+
+    // .addCase(createOrder.pending, (state) => {
+    //   state.paymentStatus = 'loading'
+    // })
+    // .addCase(createOrder.fulfilled, (state, action) => {
+    //   state.paymentStatus = 'success'
+    // })
+    // .addCase(createOrder.rejected, (state, action) => {
+    //   state.paymentStatus = 'failed'
+    //   state.error = action.error.message
+    // })
+
 
   }
 
@@ -103,10 +132,11 @@ export const selectPaymentTransactionsCurrentPage = (state: RootState) => state.
 export const selectPaymentSubscriptionsCurrentPage = (state: RootState) => state.payment.subscriptionsCurrentPage
 export const selectPaymentTransactionsNumberOfPages = (state: RootState) => state.payment.transactionsNumberOfPages
 export const selectPaymentSubscriptionsNumberOfPage = (state: RootState) => state.payment.subscriptionsNumberOfPage
+export const selectPaymentStatus = (state: RootState) => state.payment.paymentStatus
 
 
 export const {
-
+  resetPaymentStatus
 } = paymentSlice.actions
 
 

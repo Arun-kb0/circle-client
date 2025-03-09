@@ -44,12 +44,12 @@ const FollowingPage = ({ userId }: Props) => {
 
 
   return (
-    <main className='main-section justify-center relative overflow-y-auto ' >
-      <div className="p-4" >
+    <main className='main-section justify-center relative overflow-y-auto' >
+      <div className="p-4 sm:ml-64" >
         <div className="p-4 mt-14">
 
           {!isUserProfile && <PageTitle firstWord='' secondWord='Following' />}
-          
+
           <UsersList
             users={followingUsers}
             loadMorePosts={loadMorePosts}

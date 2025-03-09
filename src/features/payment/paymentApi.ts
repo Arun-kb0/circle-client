@@ -15,13 +15,30 @@ export const createOrder = createAsyncThunk('/payment/create-order', async ({ da
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.post('/payment/create-order', data)
     removeInterceptors()
-    console.log("create order ")
-    console.log(res.data)
     window.location.href = res.data.url
     return res.data
   } catch (error) {
     console.log(error)
-    return errorHandler(error)
+    throw errorHandler(error)
+  }
+})
+
+export const subscribeWithWallet = createAsyncThunk('/payment/subscribe-wallet', async ({ data }: CreateOrderArgs, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const res = await axiosPrivate.post('/payment/subscribe-wallet', data)
+    removeInterceptors()
+    if (res.status !== 200) {
+      throw new Error(res.data.message)
+    }
+    console.log('subscribe with wallet', res.status)
+    return res.data
+  } catch (error) {
+    throw errorHandler(error)
   }
 })
 

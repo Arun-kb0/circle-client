@@ -4,8 +4,11 @@ import failed from '../../assets/lottyfiles/failed.json'
 
 const FailedAnimation = () => {
   return (
-    <div className='w-32 h-auto p-0'>
-      <Lottie animationData={failed} />
+    <div className='w-20 h-auto p-0'>
+      <Lottie
+        animationData={failed}
+        loop={false}
+      />
     </div>
   )
 }
