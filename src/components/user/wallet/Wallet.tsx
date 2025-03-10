@@ -44,9 +44,9 @@ const Wallet = () => {
 
       <section className="space-y-4 p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
         <IoWalletOutline size={32} />
-        <h5 className="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Balance : {wallet?.balance}</h5>
+        <h5 className="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Balance : {wallet?.balance ? wallet.balance : 0}</h5>
       </section>
-     
+
       <InfiniteScroll
         className='space-y-4 h-64 overflow-y-auto'
         scrollableTarget='home'
@@ -58,6 +58,7 @@ const Wallet = () => {
         }
         height={window.innerHeight - 240}
       >
+        {transactions.length === 0 && <h5 className='text-center text-lg font-semibold capitalize'>No transactions to show</h5>}
         {status === 'success' && transactions.map((transaction) => (
           <Transaction
             key={transaction._id}

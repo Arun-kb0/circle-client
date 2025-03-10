@@ -3,7 +3,10 @@ import {
   StateType, SubscriptionPagination, SubscriptionsType,
   TransactionPagination, TransactionType, WalletType
 } from "../../constants/types"
-import { createOrder, getSubscriptions, getTransactions, getUserWallet, subscribeWithWallet } from "./paymentApi"
+import {
+  createOrder, getSubscriptions, getTransactions,
+  getUserWallet, subscribeWithWallet
+} from "./paymentApi"
 import { RootState } from "../../app/store"
 
 

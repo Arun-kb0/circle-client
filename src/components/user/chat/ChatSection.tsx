@@ -25,6 +25,7 @@ import ChatSkeltonLoader from '../../basic/ChatSkeltonLoader';
 import EmojiPicker, { EmojiClickData, EmojiStyle, Theme } from 'emoji-picker-react';
 import { MdCall } from 'react-icons/md';
 import socketEvents from '../../../constants/socketEvents';
+import Avatar from '../../basic/Avatar';
 
 
 type Props = {
@@ -122,12 +123,12 @@ const ChatSection = ({ handleCallModelOpen }: Props) => {
   return (
     <section >
       <div className='relative flex justify-start bg-gray-800 px-3 gap-4 items-center py-3 rounded-lg shadow-lg '>
-        <Link to='/user-profile'>
-          {chatUser?.image
-            ? <img className="w-8 h-8 rounded-full object-cover mx-2" src={chatUser?.image} alt={chatUser.name} />
-            : <FaUserCircle size={35} />
-          }
-        </Link>
+        <Avatar
+          image={chatUser?.image}
+          alt={chatUser?.name}
+          userId={chatUser?.userId as string}
+          size={8}
+        />
         <h5 className='font-bold '>{chatUser?.name}</h5>
         <div className='w-full flex justify-end item-center gap-4'>
           <button onClick={() => handleCallModelOpen('video')}>

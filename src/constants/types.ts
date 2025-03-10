@@ -1,3 +1,4 @@
+import { PostType } from "./FeedTypes"
 
 export type CallStatusType = 'idle' | 'incoming-call' | 'call-end' | 'call-active'
 export type StateType = 'loading' | 'success' | 'failed' | 'idle'
@@ -25,7 +26,6 @@ export type UserType = {
   updatedAt: Date
 }
 
-
 export type PaginationUsers = {
   users: UserType[];
   numberOfPages: number;
@@ -52,7 +52,6 @@ export type ChatUserType = {
   image?: string
 }
 
-
 export type NotificationType<T = any> = {
   id: string
   status: 'read' | 'unread'
@@ -74,8 +73,6 @@ export type NotificationDataType = {
   authorName: string
   authorImage?: string
 }
-
-
 
 export type DropDownElementsType = {
   handler: () => void
@@ -107,7 +104,6 @@ export type SignalDataType = {
   candidate?: RTCIceCandidate;
 }
 
-
 export type UserRoomNotificationType = {
   type: 'incoming-call'
   roomId: string
@@ -120,7 +116,6 @@ export type AuthenticationResponseType = {
   accessToken: string
   friendsRoomId: string
 }
-
 
 export type CallUserEventDataType = {
   signal: any
@@ -151,7 +146,6 @@ export type LiveMessageType = {
   createdAt: Date
   updatedAt: Date
 }
-
 
 export type LineChartDatum = {
   x: string; // ISO date string (e.g., "2020-01-01")
@@ -237,6 +231,30 @@ export type TransactionPagination = {
 
 export type SubscriptionPagination = {
   subscriptions: SubscriptionsType[];
+  numberOfPages: number;
+  currentPage: number;
+}
+
+export type SavedType = {
+  _id: string;
+  userId: string;
+  postId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ReportType = {
+  _id: string;
+  userId: string;
+  contentId: string;
+  contentType: 'post' | 'story' | 'user' | 'comment';
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type PaginationSavedPost = {
+  savedPosts: PostType[];
   numberOfPages: number;
   currentPage: number;
 }

@@ -7,6 +7,7 @@ import { followUser, getUser, unFollow } from '../../../features/user/userApi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { clearFollowers, clearFollowing, selectUserFollowing } from '../../../features/user/userSlice';
 import { clearUserCreatedPosts } from '../../../features/post/postSlice';
+import Avatar from '../../basic/Avatar';
 
 type Props = {
   userId: string
@@ -66,12 +67,15 @@ const UserCard = ({ userId, name, image }: Props) => {
       </div>
 
       <div className="flex flex-col items-center pb-10">
-        <button onClick={handleProfileNav} >
-          {image
-            ? <img className="w-24 h-24 mb-3 rounded-full object-cover shadow-lg" src={image} alt={name} />
-            : <FaUserCircle className='w-24 h-24 mb-3 shadow-lg' />
-          }
-        </button>
+        <div className='mb-3'>
+          <Avatar
+            image={image}
+            alt={name}
+            userId={userId}
+            size={24}
+          />
+        </div>
+
         <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">{name}</h5>
         {isFollowing
           ? <div className="flex mt-4 md:mt-6">

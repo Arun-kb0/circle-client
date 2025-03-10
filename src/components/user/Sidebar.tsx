@@ -75,10 +75,10 @@ const Sidebar = (props: Props) => {
           </li>
           <li>
             <SpringButton>
-              <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link to='/saved'  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <IoBookmarkOutline size={22} />
                 <span className="ms-3">Saved</span>
-              </a>
+              </Link>
             </SpringButton>
           </li>
           <li>
@@ -89,7 +89,8 @@ const Sidebar = (props: Props) => {
               </Link>
             </SpringButton>
           </li>
-          <li>
+          {/* ! add this routes if have time */}
+          {/* <li>
             <SpringButton>
               <a className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <HiOutlineGift size={22} />
@@ -104,7 +105,7 @@ const Sidebar = (props: Props) => {
                 <span className="ms-3">Global Feed</span>
               </a>
             </SpringButton>
-          </li>
+          </li> */}
           <li>
             <SpringButton>
               <button onClick={handleNavigateToChat} className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">

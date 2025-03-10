@@ -7,13 +7,14 @@ import {
   createComment, createPost, deleteComment,
   deletePost, feedCounts, getComments, getPopularPosts, getPosts,
   getPostsCountByDate,
-  getUserCreatedPosts, like, unlike,
+  getSavedPosts,
+  getUserCreatedPosts, like, report, savePost, unlike,
   updateComment, updatePost, uploadFiles
 } from './postApi'
 import { RootState } from '../../app/store'
 import {
   CountByDataType, FeedCountsType,
-  LineChartDataType, StateType
+  LineChartDataType, PaginationSavedPost, ReportType, SavedType, StateType
 } from '../../constants/types'
 
 type PostStateType = {
@@ -65,6 +66,13 @@ type PostStateType = {
 
   sharePostId: string | null
   sharePostModelOpen: boolean
+
+  reports: ReportType[]
+
+  savedPosts: PostType[]
+  savedPostsNumberOfPages: number
+  savedPostsCurrentPage: number
+  savedPostsState: StateType
 }
 
 const initialState: PostStateType = {
@@ -112,7 +120,13 @@ const initialState: PostStateType = {
   postLineChartData: null,
 
   sharePostId: null,
-  sharePostModelOpen: false
+  sharePostModelOpen: false,
+  reports: [],
+
+  savedPosts: [],
+  savedPostsNumberOfPages: 0,
+  savedPostsCurrentPage: 0,
+  savedPostsState: 'idle'
 }
 
 const postSlice = createSlice({
@@ -419,6 +433,47 @@ const postSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(savePost.fulfilled, (state, action: PayloadAction<{ savedData: SavedType, savedPost: PostType }>) => {
+        if (!action.payload) return
+        const { savedData, savedPost } = action.payload
+        const existsIndex = state.savedPosts.findIndex(item => item._id === savedPost._id)
+        if (existsIndex !== -1) {
+          state.savedPosts.splice(existsIndex, 1)
+          return
+        }
+        state.savedPosts.push(savedPost)
+      })
+      .addCase(savePost.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
+      .addCase(report.fulfilled, (state, action: PayloadAction<ReportType>) => {
+        if (!action.payload) return
+        // const { contentType, contentId } = action.payload
+        state.reports.push(action.payload)
+      })
+      .addCase(report.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
+      .addCase(getSavedPosts.pending, (state) => {
+        state.savedPostsState = 'loading'
+      })
+      .addCase(getSavedPosts.fulfilled, (state, action: PayloadAction<PaginationSavedPost>) => {
+        state.savedPostsState = 'success'
+        const { savedPosts, numberOfPages, currentPage } = action.payload
+        const existingPostIds = new Set(state.savedPosts.map(post => post._id));
+        const newPosts = savedPosts.filter(post => !existingPostIds.has(post._id));
+        state.savedPosts = [...state.savedPosts, ...newPosts]
+        state.savedPostsCurrentPage = currentPage
+        state.savedPostsNumberOfPages = numberOfPages
+      })
+      .addCase(getSavedPosts.rejected, (state, action) => {
+        state.savedPostsState = 'failed'
+        state.error = action.error.message
+      })
+
+
   }
 })
 
@@ -465,6 +520,12 @@ export const selectPostLineChartData = (state: RootState) => state.post.postLine
 
 export const selectPostSharePostModelOpen = (state: RootState) => state.post.sharePostModelOpen
 export const selectPostSharePostId = (state: RootState) => state.post.sharePostId
+
+export const selectPostReports = (state: RootState) => state.post.reports
+export const selectPostSavedPosts = (state: RootState) => state.post.savedPosts
+export const selectPostSavedPostsNumberOfPages = (state: RootState) => state.post.savedPostsNumberOfPages
+export const selectPostSavedPostsCurrentPage = (state: RootState) => state.post.savedPostsCurrentPage
+export const selectPostSavedPostsState = (state: RootState) => state.post.savedPostsState
 
 export const {
   selectPost,

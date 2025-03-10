@@ -30,7 +30,7 @@ const Profile = ({ user }: Props) => {
   const subscriptions = useSelector(selectPaymentSubscriptions)
   const [activeSection, setActiveSection] = useState<"posts" | "about" | "following" | "followers" | null>('posts')
   const [isSubscribed, setIsSubscribed] = useState<boolean>(() => {
-    return Boolean(subscriptions.find(item => item.subscriberToUserId === user._id))
+    return Boolean(subscriptions.find(item => item.status === 'active' && item.subscriberToUserId === user._id))
   })
   const [showPayBtns, setShowPayBtns] = useState<boolean>(false)
 
@@ -56,6 +56,7 @@ const Profile = ({ user }: Props) => {
     } else if (type === 'wallet') {
       dispatch(subscribeWithWallet({ data }))
     }
+    setShowPayBtns(false)
   }
 
   useEffect(() => {
@@ -65,6 +66,7 @@ const Profile = ({ user }: Props) => {
   useEffect(() => {
     if (paymentStatus === 'success') {
       toast(<PaymentSuccess />)
+      setIsSubscribed(true)
     } else if (paymentStatus === 'failed') {
       toast(<PaymentFailed />)
     }

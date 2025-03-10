@@ -49,6 +49,7 @@ import WalletPage from './pages/user/WalletPage'
 import { getSubscriptions } from './features/payment/paymentApi'
 import PaymentSuccessPage from './pages/user/PaymentSuccessPage'
 import PaymentFailedPage from './pages/user/PaymentFailedPage'
+import SavedPostsPage from './pages/user/SavedPostsPage'
 
 function App() {
   const navigate = useNavigate()
@@ -238,7 +239,8 @@ function App() {
           <Route path='/go-live' element={<GoLivePage />} />
           <Route path='/view-live' element={<ViewLivePage />} />
           <Route path='/wallet' element={<WalletPage />} />
-          
+          <Route path='/saved' element={<SavedPostsPage />} />
+
         </Route>
 
         {/* * protected admin routes */}
