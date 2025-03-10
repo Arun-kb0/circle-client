@@ -14,107 +14,39 @@ import Search from '../../components/Search';
 import { getPosts, searchPost, updatePost } from '../../features/post/postApi';
 import Pagination from '../../components/basic/Pagination';
 import { toast } from 'react-toastify';
-
-export const posts: PostType[] = [
-  {
-    _id: '1',
-    desc: 'This is a sample post 1',
-    tags: ['sample', 'post'],
-    mediaType: 'image',
-    media: ['https://example.com/image1.jpg'],
-    authorId: 'user1',
-    authorName: 'John Doe',
-    authorImage: 'https://example.com/user1.jpg',
-    status: 'active',
-    likesCount: 10,
-    reportsCount: 0,
-    commentCount: 5,
-    shareCount: 2,
-    updatedAt: new Date(),
-    createdAt: new Date(),
-  },
-  {
-    _id: '2',
-    desc: 'This is a sample post 2',
-    tags: ['example', 'post'],
-    mediaType: 'video',
-    media: ['https://example.com/video1.mp4'],
-    authorId: 'user2',
-    authorName: 'Jane Smith',
-    authorImage: 'https://example.com/user2.jpg',
-    status: 'active',
-    likesCount: 20,
-    reportsCount: 1,
-    commentCount: 8,
-    shareCount: 3,
-    updatedAt: new Date(),
-    createdAt: new Date(),
-  },
-  {
-    _id: '3',
-    desc: 'This is a sample post 3',
-    tags: ['fun', 'post'],
-    mediaType: 'text',
-    // For text posts, the media property can be omitted or left empty
-    authorId: 'user3',
-    authorName: 'Alice Johnson',
-    authorImage: 'https://example.com/user3.jpg',
-    status: 'active',
-    likesCount: 5,
-    reportsCount: 0,
-    commentCount: 2,
-    shareCount: 1,
-    updatedAt: new Date(),
-    createdAt: new Date(),
-  },
-  {
-    _id: '4',
-    desc: 'This is a sample post 4',
-    tags: ['news', 'post'],
-    mediaType: 'image',
-    media: ['https://example.com/image2.jpg'],
-    authorId: 'user4',
-    authorName: 'Bob Brown',
-    authorImage: 'https://example.com/user4.jpg',
-    status: 'active',
-    likesCount: 15,
-    reportsCount: 2,
-    commentCount: 4,
-    shareCount: 0,
-    updatedAt: new Date(),
-    createdAt: new Date(),
-  },
-  {
-    _id: '5',
-    desc: 'This is a sample post 5',
-    tags: ['random', 'post'],
-    mediaType: 'video',
-    media: ['https://example.com/video2.mp4'],
-    authorId: 'user5',
-    authorName: 'Charlie Davis',
-    authorImage: 'https://example.com/user5.jpg',
-    status: 'active',
-    likesCount: 30,
-    reportsCount: 0,
-    commentCount: 10,
-    shareCount: 5,
-    updatedAt: new Date(),
-    createdAt: new Date(),
-  },
-];
+import CsvDownload from '../../components/admin/CsvDownload';
+import PdfDownload from '../../components/admin/PdfDownload';
 
 
 type Props = {}
+
+const csvHeaders = [
+  { label: 'Media', key: 'media' },
+  { label: 'Author', key: 'authorName' },
+  { label: 'Tags', key: 'tags' },
+  { label: 'Description', key: 'desc' },
+  { label: 'Likes', key: 'likesCount' },
+  { label: 'Comments', key: 'commentCount' },
+  { label: 'Reports', key: 'reportsCount' },
+  { label: 'Created at', key: 'updatedAt' },
+  { label: 'Status', key: 'status' },
+]
+
+const pdfHeaders = [[
+  'media', 'authorName', 'tags',
+  'desc', 'likesCount', 'commentCount',
+  'reportsCount', 'updatedAt', 'status'
+]]
+
 
 const PostManagement = (props: Props) => {
 
   const dispatch = useDispatch<AppDispatch>()
 
   const [startDate, setStartDate] = useState<Date>(() => {
-    const currentDate = new Date()
-    const oneYearBefore = new Date()
-    oneYearBefore.setMonth(currentDate.getMonth() - 1)
-    return oneYearBefore
+    const newStartDate = new Date()
+    newStartDate.setFullYear(1970)
+    return newStartDate
   })
   const [endDate, setEndDate] = useState<Date>(new Date())
   const [searchText, setSearchText] = useState('')
@@ -179,6 +111,16 @@ const PostManagement = (props: Props) => {
               <Search
                 handleSearch={handleFilter}
               />
+
+              <CsvDownload
+                headers={csvHeaders}
+                data={posts}
+              />
+              <PdfDownload
+                headers={pdfHeaders}
+                data={posts}
+              />
+
             </div>
 
             <AdminPostTable

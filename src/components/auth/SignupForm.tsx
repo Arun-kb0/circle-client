@@ -149,7 +149,7 @@ const SignupForm = ({ role, name, homePath, loginPath, openModel }: Props) => {
 
 
       <div className='flex space-x-2 text-gray-900'>
-        <p>already have an account </p>
+        <p>Already have an account </p>
         <Link to={loginPath} className='text-blue-400'> login </Link>
       </div>
 

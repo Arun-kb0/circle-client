@@ -44,10 +44,9 @@ const ReportManagement = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const [startDate, setStartDate] = useState<Date>(() => {
-    const currentDate = new Date()
-    const oneYearBefore = new Date()
-    oneYearBefore.setMonth(currentDate.getMonth() - 1)
-    return oneYearBefore
+    const newStartDate = new Date()
+    newStartDate.setFullYear(1970)
+    return newStartDate
   })
   const [endDate, setEndDate] = useState<Date>(new Date())
   const [searchText, setSearchText] = useState('')
@@ -91,6 +90,11 @@ const ReportManagement = (props: Props) => {
       isAdmin: true
     }))
   }
+
+  useEffect(() => {
+    console.log('start date')
+    console.log(startDate.toDateString())
+  },[startDate])
 
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >

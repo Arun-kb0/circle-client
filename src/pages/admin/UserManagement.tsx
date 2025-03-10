@@ -16,10 +16,9 @@ const UserManagement = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const [startDate, setStartDate] = useState<Date>(() => {
-    const currentDate = new Date()
-    const oneYearBefore = new Date()
-    oneYearBefore.setMonth(currentDate.getMonth() - 1)
-    return oneYearBefore
+    const newStartDate = new Date()
+    newStartDate.setFullYear(1970)
+    return newStartDate
   })
   const [endDate, setEndDate] = useState<Date>(new Date())
   const [searchText, setSearchText] = useState('')

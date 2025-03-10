@@ -109,13 +109,13 @@ const LoginFrom = ({ role, name, homePath, signupPath, loginMsg, loginPath }: Pr
 
       <div className='space-y-1 text-black'>
         <div className='flex space-x-2'>
-          <p>don't have an account </p>
+          <p>Don't have an account </p>
           <Link to={signupPath} className='text-blue-400'> Sign up </Link>
         </div>
         {role === roles.user &&
           <div className='flex space-x-2'>
-            <p>forgot password?</p>
-            <Link to='/resetPwd' className='text-blue-400'> reset </Link>
+            <p>Forgot password?</p>
+            <Link to='/resetPwd' className='text-blue-400'> Reset </Link>
           </div>
         }
         <div className='flex space-x-2 '>
