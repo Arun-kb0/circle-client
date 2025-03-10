@@ -366,14 +366,14 @@ export const uploadFiles = createAsyncThunk('/cloudinary/upload', async (files: 
 
 
 type SearchPostArgs = { page: number, startDate?: string, endDate?: string, searchText?: string, isAdmin?: boolean }
-export const searchPost = createAsyncThunk('/posts/all', async ({ page, searchText, startDate, endDate, isAdmin = false }: SearchPostArgs, { dispatch, getState }) => {
+export const searchPost = createAsyncThunk('/posts/search', async ({ page, searchText, startDate, endDate, isAdmin = false }: SearchPostArgs, { dispatch, getState }) => {
   try {
     const state = getState() as RootState
     const accessToken = state.auth.accessToken
     const dispatchFunction = dispatch as AppDispatch
     if (!accessToken) throw new Error(' no accessToken found ')
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
-    const path = isAdmin ? '/admin/post/search-post' : '/post/search-post'
+    const path = isAdmin ? '/admin/post/search-post' : '/feed/search-post'
     const params = {
       page,
       searchText,

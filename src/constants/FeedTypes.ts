@@ -60,3 +60,11 @@ export type LikeType = {
   authorName?: string
   authorImage?: string
 }
+
+
+export type PaginationSearchPost = {
+  posts: PostType[],
+  numberOfPages: number
+  currentPage: number
+  // likes: LikeType[]
+}

@@ -21,6 +21,9 @@ import logo from '../../assets/vite.png'
 import Notifications from '../notification/Notifications';
 import IncomingCallAnimation from '../basic/IncomingCallAnimation';
 import { MdCallEnd } from 'react-icons/md';
+import Search from '../Search';
+import { FieldValues } from 'react-hook-form';
+import { searchPost } from '../../features/post/postApi';
 
 
 type Props = {
@@ -75,6 +78,14 @@ const UserNav = ({ handleLogout }: Props) => {
     }))
   }
 
+  const handleSearch = (data: FieldValues | undefined) => {
+    dispatch(searchPost({
+      page: 1,
+      searchText: data?.searchText ? data?.searchText : '',
+      isAdmin: false
+    }))
+  }
+
   useEffect(() => {
     setShowCallBtns(isIncomingCall)
     if (isIncomingCall) {
@@ -113,11 +124,12 @@ const UserNav = ({ handleLogout }: Props) => {
             </div>
             <div className="flex items-center ms-3">
               <div>
-                <Link to='/' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
+                {/* <Link to='/' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
                   <SpringButton>
                     <FiSearch className='text-gray-200 ' size={25} />
                   </SpringButton>
-                </Link>
+                </Link> */}
+                <Search handleSearch={handleSearch} />
               </div>
             </div>
           </div>

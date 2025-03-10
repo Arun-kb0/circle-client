@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import {
   CommentPaginationRes, CommentType, LikeType,
+  PaginationSearchPost,
   PostPaginationRes, PostType
 } from '../../constants/FeedTypes'
 import {
@@ -8,7 +9,7 @@ import {
   deletePost, feedCounts, getComments, getPopularPosts, getPosts,
   getPostsCountByDate,
   getSavedPosts,
-  getUserCreatedPosts, like, report, savePost, unlike,
+  getUserCreatedPosts, like, report, savePost, searchPost, unlike,
   updateComment, updatePost, uploadFiles
 } from './postApi'
 import { RootState } from '../../app/store'
@@ -473,6 +474,25 @@ const postSlice = createSlice({
         state.error = action.error.message
       })
 
+
+      .addCase(searchPost.pending, (state) => {
+        state.postStatus = 'loading'
+      })
+      .addCase(searchPost.fulfilled, (state, action: PayloadAction<PaginationSearchPost>) => {
+        state.postStatus = 'success'
+        const { posts, numberOfPages, currentPage } = action.payload
+        // const existingPostIds = new Set(state.posts.map(post => post._id));
+        // const newPosts = posts.filter(post => !existingPostIds.has(post._id));
+        state.posts = posts
+        state.postNumberOfPages = currentPage
+        state.postPage = numberOfPages
+      })
+      .addCase(searchPost.rejected, (state, action) => {
+        state.postStatus = 'failed'
+        state.error = action.error.message
+      })
+
+    
 
   }
 })
