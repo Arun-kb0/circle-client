@@ -6,7 +6,7 @@ import {
 } from '../../constants/FeedTypes'
 import {
   createComment, createPost, deleteComment,
-  deletePost, feedCounts, getComments, getPopularPosts, getPosts,
+  deletePost, feedCounts, getComments, getFilteredReports, getPopularPosts, getPosts,
   getPostsCountByDate,
   getSavedPosts,
   getUserCreatedPosts, like, report, savePost, searchPost, unlike,
@@ -15,7 +15,7 @@ import {
 import { RootState } from '../../app/store'
 import {
   CountByDataType, FeedCountsType,
-  LineChartDataType, PaginationSavedPost, ReportType, SavedType, StateType
+  LineChartDataType, PaginationReportFiltered, PaginationSavedPost, ReportAdminType, ReportType, SavedType, StateType
 } from '../../constants/types'
 
 type PostStateType = {
@@ -74,6 +74,11 @@ type PostStateType = {
   savedPostsNumberOfPages: number
   savedPostsCurrentPage: number
   savedPostsState: StateType
+
+  reportFiltered: ReportAdminType[]
+  reportFilteredNumberOfPages: number
+  reportFilteredCurrentPge: number
+  reportFilteredStatus: StateType
 }
 
 const initialState: PostStateType = {
@@ -127,7 +132,12 @@ const initialState: PostStateType = {
   savedPosts: [],
   savedPostsNumberOfPages: 0,
   savedPostsCurrentPage: 0,
-  savedPostsState: 'idle'
+  savedPostsState: 'idle',
+
+  reportFiltered: [],
+  reportFilteredNumberOfPages: 0,
+  reportFilteredCurrentPge: 0,
+  reportFilteredStatus: 'idle'
 }
 
 const postSlice = createSlice({
@@ -492,7 +502,25 @@ const postSlice = createSlice({
         state.error = action.error.message
       })
 
-    
+      .addCase(getFilteredReports.pending, (state) => {
+        state.reportFilteredStatus = 'loading'
+      })
+      .addCase(getFilteredReports.fulfilled, (state, action: PayloadAction<PaginationReportFiltered>) => {
+        if(!action.payload) return
+        state.reportFilteredStatus = 'success'
+        const { reports, numberOfPages, currentPage } = action.payload
+        // const existingPostIds = new Set(state.posts.map(post => post._id));
+        // const newPosts = posts.filter(post => !existingPostIds.has(post._id));
+        state.reportFiltered = reports
+        state.reportFilteredCurrentPge = currentPage
+        state.reportFilteredNumberOfPages = numberOfPages
+      })
+      .addCase(getFilteredReports.rejected, (state, action) => {
+        state.reportFilteredStatus = 'failed'
+        state.error = action.error.message
+      })
+
+
 
   }
 })
@@ -546,6 +574,11 @@ export const selectPostSavedPosts = (state: RootState) => state.post.savedPosts
 export const selectPostSavedPostsNumberOfPages = (state: RootState) => state.post.savedPostsNumberOfPages
 export const selectPostSavedPostsCurrentPage = (state: RootState) => state.post.savedPostsCurrentPage
 export const selectPostSavedPostsState = (state: RootState) => state.post.savedPostsState
+
+export const selectPostReportFiltered = (state: RootState) => state.post.reportFiltered
+export const selectPostReportFilteredNumberOfPages = (state: RootState) => state.post.reportFilteredNumberOfPages
+export const selectPostReportFilteredCurrentPage = (state: RootState) => state.post.reportFilteredCurrentPge
+export const selectPostReportFilteredStatus = (state: RootState) => state.post.reportFilteredStatus
 
 export const {
   selectPost,

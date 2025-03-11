@@ -6,12 +6,16 @@ import { AppDispatch } from '../../app/store';
 import { selectUserUsers } from '../../features/user/userSlice';
 import {
   selectPostNumberOfPages, selectPostPage, selectPostPosts,
+  selectPostReportFiltered,
+  selectPostReportFilteredCurrentPage,
+  selectPostReportFilteredNumberOfPages,
+  selectPostReportFilteredStatus,
   selectPostSelectedPost, selectPostStatus
 } from '../../features/post/postSlice';
 import { FieldValues } from 'react-hook-form';
 import DatePicker from '../../components/DatePicker';
 import Search from '../../components/Search';
-import { getPosts, searchPost, updatePost } from '../../features/post/postApi';
+import { getFilteredReports, getPosts, searchPost, updatePost } from '../../features/post/postApi';
 import Pagination from '../../components/basic/Pagination';
 import { toast } from 'react-toastify';
 import AdminReportTable from '../../components/admin/AdminReportTable';
@@ -86,42 +90,28 @@ const ReportManagement = (props: Props) => {
   const [searchText, setSearchText] = useState('')
   const [page, setPage] = useState(1)
 
-  const posts = useSelector(selectPostPosts)
-  const status = useSelector(selectPostStatus)
-  const currentPage = useSelector(selectPostPage)
-  const numberOfPages = useSelector(selectPostNumberOfPages)
+  const reports = useSelector(selectPostReportFiltered)
+  const status = useSelector(selectPostReportFilteredStatus)
+  const currentPage = useSelector(selectPostReportFilteredCurrentPage)
+  const numberOfPages = useSelector(selectPostReportFilteredNumberOfPages)
 
 
   useEffect(() => {
-    dispatch(searchPost({
+    dispatch(getFilteredReports({
       page,
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
       searchText: searchText,
-      isAdmin: true
     }))
   }, [page])
 
 
-  const handleBlock = (post: PostType) => {
-    const updatedPost: Partial<PostType> = { ...post, status: 'blocked' }
-    dispatch(updatePost({ post: updatedPost, isAdmin: true }))
-    toast('Post blocked')
-  }
-
-  const handleUnblock = (post: PostType) => {
-    const updatedPost: Partial<PostType> = { ...post, status: 'active' }
-    dispatch(updatePost({ post: updatedPost, isAdmin: true }))
-    toast('Post unblocked')
-  }
-
   const handleFilter = (data: FieldValues | undefined) => {
-    dispatch(searchPost({
+    dispatch(getFilteredReports({
       page: page,
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
       searchText: data?.searchText ? data?.searchText : '',
-      isAdmin: true
     }))
   }
 
@@ -152,19 +142,19 @@ const ReportManagement = (props: Props) => {
                 handleSearch={handleFilter}
               />
 
-              <CsvDownload
+              {/* <CsvDownload
                 headers={csvHeaders}
-                data={posts}
-              />
-              <PdfDownload
+                data={reports}
+              /> */}
+              {/* <PdfDownload
                 headers={pdfHeaders}
-                data={posts}
-              />
+                data={reports}
+              /> */}
 
             </div>
 
             <AdminReportTable
-              reportData={reportAdminExamples}
+              reportData={reports}
             />
 
             <Pagination

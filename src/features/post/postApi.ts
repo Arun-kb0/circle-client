@@ -504,3 +504,30 @@ export const getSavedPosts = createAsyncThunk('/post/saved', async (page: number
   }
 })
 
+
+// * admin
+// * get filtered reports
+
+type GetFilteredReportsArgs = { page: number, startDate?: string, endDate?: string, searchText?: string }
+export const getFilteredReports = createAsyncThunk('/admin/report/filtered', async ({ page, searchText, startDate, endDate}: GetFilteredReportsArgs, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+   
+    const params = {
+      page,
+      searchText,
+      startDate,
+      endDate,
+    }
+    const res = await axiosPrivate.get('/admin/report/filtered', { params })
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})

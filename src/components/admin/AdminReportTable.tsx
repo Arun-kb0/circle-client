@@ -26,7 +26,7 @@ const AdminReportTable = ({ reportData }: Props) => {
         </thead>
 
         <tbody>
-          {reportData.map((item) => (
+          {reportData?.map((item) => (
             <tr key={item._id} className='bg-white border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 dark:bg-gray-800'>
               <td className="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
                 <div className="flex flex-wrap justify-start gap-1">
@@ -46,7 +46,7 @@ const AdminReportTable = ({ reportData }: Props) => {
                   )}
                 </div>
               </td>
-              
+
               <td className="px-6 py-4 w-auto flex justify-center items-center space-y-1">
                 <div className="">
                   <Avatar

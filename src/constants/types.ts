@@ -268,7 +268,7 @@ export type ReportAdminType = {
   createdAt: string
   updatedAt: string
   userName: string
-  userImage?:string
+  userImage?: string
   post: PostType
 }
 
@@ -304,4 +304,11 @@ export type TransactionWithUsersType = {
   senderImage?: string
   receiverName: string
   receiverImage?: string
+}
+
+
+export type PaginationReportFiltered = {
+  reports: ReportAdminType[]
+  numberOfPages: number
+  currentPage:number
 }
