@@ -192,7 +192,7 @@ export type TransactionType = {
   _id: string;
   userId: string;
   senderId: string
-  receiverId:string
+  receiverId: string
   type: 'credit' | 'debit'
   amount: number;
   currency: string;
@@ -257,4 +257,51 @@ export type PaginationSavedPost = {
   savedPosts: PostType[];
   numberOfPages: number;
   currentPage: number;
+}
+
+export type ReportAdminType = {
+  _id: string
+  userId: string
+  contentId: string
+  contentType: 'post' | 'story' | 'user' | 'comment'
+  description?: string
+  createdAt: string
+  updatedAt: string
+  userName: string
+  userImage?:string
+  post: PostType
+}
+
+
+export type SubscriptionWithUserType = {
+  _id: string
+  merchantTransactionId: string
+  subscriberUserId: string
+  subscriberToUserId: string
+  plan: 'monthly' | 'yearly' | 'lifetime'
+  status: 'inactive' | 'active' | 'cancelled'
+  createdAt: string
+  updatedAt: string
+  subscriberUserName: string
+  subscriberUserImage: string
+  subscriberToUserName: string
+  subscriberToUserImage: string
+}
+
+
+export type TransactionWithUsersType = {
+  _id: string;
+  userId: string;
+  senderId: string
+  receiverId: string
+  type: 'credit' | 'debit'
+  amount: number;
+  currency: string;
+  status: 'pending' | 'completed' | 'failed';
+  createdAt: string
+  updatedAt: string
+  senderName: string
+  senderImage?: string
+  receiverName: string
+  receiverImage?: string
 }

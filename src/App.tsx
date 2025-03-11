@@ -50,6 +50,8 @@ import { getSubscriptions } from './features/payment/paymentApi'
 import PaymentSuccessPage from './pages/user/PaymentSuccessPage'
 import PaymentFailedPage from './pages/user/PaymentFailedPage'
 import SavedPostsPage from './pages/user/SavedPostsPage'
+import SubscriptionManagement from './pages/admin/SubscriptionManagement'
+import WalletTransactionsManagement from './pages/admin/WalletTransactionsManagement'
 
 function App() {
   const navigate = useNavigate()
@@ -250,6 +252,8 @@ function App() {
             <Route path='user' element={<UserManagement />} />
             <Route path='post' element={<PostManagement />} />
             <Route path='report' element={<ReportManagement />} />
+            <Route path='subscription' element={<SubscriptionManagement />} />
+            <Route path='transaction-wallet' element={<WalletTransactionsManagement />} />
           </Route>
         </Route>
 

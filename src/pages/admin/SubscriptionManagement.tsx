@@ -9,29 +9,86 @@ import Pagination from '../../components/basic/Pagination';
 import Search from '../../components/Search';
 import { FieldValues } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import CsvDownload from '../../components/admin/CsvDownload';
-import PdfDownload from '../../components/admin/PdfDownload';
+import SubscriptionTable from '../../components/admin/SubscriptionTable';
+import { SubscriptionWithUserType } from '../../constants/types';
 
 type Props = {}
 
+const subscriptions: SubscriptionWithUserType[] = [
+  {
+    _id: 'sub1',
+    merchantTransactionId: 'txn1001',
+    subscriberUserId: 'userA',
+    subscriberToUserId: 'userB',
+    plan: 'monthly',
+    status: 'active',
+    createdAt: '2025-01-15T10:00:00Z',
+    updatedAt: '2025-01-15T10:00:00Z',
+    subscriberUserName: 'AliceWonder',
+    subscriberUserImage: 'http://example.com/images/alice.png',
+    subscriberToUserName: 'BobBuilder',
+    subscriberToUserImage: 'http://example.com/images/bob.png'
+  },
+  {
+    _id: 'sub2',
+    merchantTransactionId: 'txn1002',
+    subscriberUserId: 'userC',
+    subscriberToUserId: 'userD',
+    plan: 'yearly',
+    status: 'active',
+    createdAt: '2025-02-20T14:30:00Z',
+    updatedAt: '2025-02-20T14:30:00Z',
+    subscriberUserName: 'CharlieChaplin',
+    subscriberUserImage: 'http://example.com/images/charlie.png',
+    subscriberToUserName: 'DaisyDuck',
+    subscriberToUserImage: 'http://example.com/images/daisy.png'
+  },
+  {
+    _id: 'sub3',
+    merchantTransactionId: 'txn1003',
+    subscriberUserId: 'userE',
+    subscriberToUserId: 'userF',
+    plan: 'lifetime',
+    status: 'cancelled',
+    createdAt: '2025-03-05T08:15:00Z',
+    updatedAt: '2025-03-10T09:00:00Z',
+    subscriberUserName: 'EveOnline',
+    subscriberUserImage: 'http://example.com/images/eve.png',
+    subscriberToUserName: 'FrankSinatra',
+    subscriberToUserImage: 'http://example.com/images/frank.png'
+  },
+  {
+    _id: 'sub4',
+    merchantTransactionId: 'txn1004',
+    subscriberUserId: 'userG',
+    subscriberToUserId: 'userH',
+    plan: 'monthly',
+    status: 'inactive',
+    createdAt: '2025-04-12T12:45:00Z',
+    updatedAt: '2025-04-12T12:45:00Z',
+    subscriberUserName: 'GraceHopper',
+    subscriberUserImage: 'http://example.com/images/grace.png',
+    subscriberToUserName: 'HeidiKlum',
+    subscriberToUserImage: 'http://example.com/images/heidi.png'
+  },
+  {
+    _id: 'sub5',
+    merchantTransactionId: 'txn1005',
+    subscriberUserId: 'userI',
+    subscriberToUserId: 'userJ',
+    plan: 'yearly',
+    status: 'active',
+    createdAt: '2025-05-22T16:20:00Z',
+    updatedAt: '2025-05-22T16:20:00Z',
+    subscriberUserName: 'IvanIvanov',
+    subscriberUserImage: 'http://example.com/images/ivan.png',
+    subscriberToUserName: 'JuliaRoberts',
+    subscriberToUserImage: 'http://example.com/images/julia.png'
+  }
+];
 
-const csvHeaders = [
-  { label: 'Name', key: 'name' },
-  { label: 'Email', key: 'email' },
-  { label: 'Status', key: 'status' },
-  { label: 'Location', key: 'location' },
-  { label: 'Followee Count', key: 'followeeCount' },
-  { label: 'Follower Count', key: 'followerCount' },
-  { label: 'Created at', key: 'createdAt' },
-]
 
-const pdfHeaders = [[
-  'media', 'authorName', 'tags',
-  'desc', 'likesCount', 'commentCount',
-  'reportsCount', 'updatedAt', 'status'
-]]
-
-const UserManagement = (props: Props) => {
+const SubscriptionManagement = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const [startDate, setStartDate] = useState<Date>(() => {
@@ -84,8 +141,8 @@ const UserManagement = (props: Props) => {
         <div className="lg:p-4 sm:p-1 mt-14 flex justify-between gap-8 lg:w-[160vh] md:w-[100vh] sm:w-[80vh]">
 
           <div className='mt-10'>
-
-            <h5 className='text-2xl font-semibold text-center capitalize tracking-wider'>User Management</h5>
+            
+            <h5 className='text-2xl font-semibold text-center capitalize tracking-wider'>Subscription Management</h5>
 
             <div className='flex space-x-5 items-end'>
               <DatePicker
@@ -98,23 +155,10 @@ const UserManagement = (props: Props) => {
               <Search
                 handleSearch={handleFilter}
               />
-              <CsvDownload
-                headers={csvHeaders}
-                data={users}
-              />
-              {/* <PdfDownload
-                headers={pdfHeaders}
-                data={users}
-              /> */}
             </div>
 
-            <UserTable
-              users={users}
-              status={status}
-              handleBlock={handleBlock}
-              handleUnblock={handleUnblock}
-              currentPage={1}
-              numberOfPages={1}
+            <SubscriptionTable
+              subscriptions={subscriptions}
             />
 
             <Pagination
@@ -131,4 +175,4 @@ const UserManagement = (props: Props) => {
   )
 }
 
-export default UserManagement
+export default SubscriptionManagement

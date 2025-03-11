@@ -12,9 +12,10 @@ type Props = {
   image?: string
   alt?: string
   size?: number
+  disableNavigation?: boolean
 }
 
-const Avatar = ({ image, alt, userId, size = 6 }: Props) => {
+const Avatar = ({ image, alt, userId, size = 6, disableNavigation = false }: Props) => {
   const navigator = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
 
@@ -25,6 +26,7 @@ const Avatar = ({ image, alt, userId, size = 6 }: Props) => {
   }
 
   const handleProfileNav = async () => {
+    if(disableNavigation) return
     await handleClearProfile()
     await dispatch(getUser(userId))
     navigator('/user-profile')

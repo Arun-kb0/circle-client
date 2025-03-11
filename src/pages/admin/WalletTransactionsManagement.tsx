@@ -9,29 +9,100 @@ import Pagination from '../../components/basic/Pagination';
 import Search from '../../components/Search';
 import { FieldValues } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import CsvDownload from '../../components/admin/CsvDownload';
-import PdfDownload from '../../components/admin/PdfDownload';
+import { TransactionWithUsersType } from '../../constants/types';
+import TransactionsTable from '../../components/admin/TransactionsTable';
+
+
+
+const transactions: TransactionWithUsersType[] = [
+  {
+    _id: "txn1",
+    userId: "user1",
+    senderId: "user1",
+    receiverId: "user2",
+    type: "credit",
+    amount: 150.00,
+    currency: "USD",
+    status: "completed",
+    createdAt: "2025-03-01T09:00:00Z",
+    updatedAt: "2025-03-01T09:05:00Z",
+    senderName: "Alice Johnson",
+    senderImage: "http://example.com/images/alice.jpg",
+    receiverName: "Bob Smith",
+    receiverImage: "http://example.com/images/bob.jpg"
+  },
+  {
+    _id: "txn2",
+    userId: "user2",
+    senderId: "user3",
+    receiverId: "user2",
+    type: "debit",
+    amount: 75.50,
+    currency: "USD",
+    status: "pending",
+    createdAt: "2025-03-02T10:30:00Z",
+    updatedAt: "2025-03-02T10:35:00Z",
+    senderName: "Charlie Brown",
+    senderImage: "http://example.com/images/charlie.jpg",
+    receiverName: "Bob Smith",
+    receiverImage: "http://example.com/images/bob.jpg"
+  },
+  {
+    _id: "txn3",
+    userId: "user3",
+    senderId: "user3",
+    receiverId: "user4",
+    type: "credit",
+    amount: 200.00,
+    currency: "USD",
+    status: "failed",
+    createdAt: "2025-03-03T11:00:00Z",
+    updatedAt: "2025-03-03T11:10:00Z",
+    senderName: "Charlie Brown",
+    senderImage: "http://example.com/images/charlie.jpg",
+    receiverName: "Diana Prince",
+    receiverImage: "http://example.com/images/diana.jpg"
+  },
+  {
+    _id: "txn4",
+    userId: "user4",
+    senderId: "user4",
+    receiverId: "user5",
+    type: "debit",
+    amount: 50.75,
+    currency: "USD",
+    status: "completed",
+    createdAt: "2025-03-04T12:00:00Z",
+    updatedAt: "2025-03-04T12:05:00Z",
+    senderName: "Diana Prince",
+    senderImage: "http://example.com/images/diana.jpg",
+    receiverName: "Evan Lee",
+    receiverImage: "http://example.com/images/evan.jpg"
+  },
+  {
+    _id: "txn5",
+    userId: "user5",
+    senderId: "user6",
+    receiverId: "user5",
+    type: "credit",
+    amount: 300.00,
+    currency: "USD",
+    status: "completed",
+    createdAt: "2025-03-05T13:30:00Z",
+    updatedAt: "2025-03-05T13:35:00Z",
+    senderName: "Fiona Gallagher",
+    senderImage: "http://example.com/images/fiona.jpg",
+    receiverName: "Evan Lee",
+    receiverImage: "http://example.com/images/evan.jpg"
+  }
+];
+
+
+
 
 type Props = {}
 
-
-const csvHeaders = [
-  { label: 'Name', key: 'name' },
-  { label: 'Email', key: 'email' },
-  { label: 'Status', key: 'status' },
-  { label: 'Location', key: 'location' },
-  { label: 'Followee Count', key: 'followeeCount' },
-  { label: 'Follower Count', key: 'followerCount' },
-  { label: 'Created at', key: 'createdAt' },
-]
-
-const pdfHeaders = [[
-  'media', 'authorName', 'tags',
-  'desc', 'likesCount', 'commentCount',
-  'reportsCount', 'updatedAt', 'status'
-]]
-
-const UserManagement = (props: Props) => {
+const WalletTransactionsManagement = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const [startDate, setStartDate] = useState<Date>(() => {
@@ -85,7 +156,7 @@ const UserManagement = (props: Props) => {
 
           <div className='mt-10'>
 
-            <h5 className='text-2xl font-semibold text-center capitalize tracking-wider'>User Management</h5>
+            <h5 className='text-2xl font-semibold text-center capitalize tracking-wider'>Wallet Transaction Management</h5>
 
             <div className='flex space-x-5 items-end'>
               <DatePicker
@@ -98,23 +169,10 @@ const UserManagement = (props: Props) => {
               <Search
                 handleSearch={handleFilter}
               />
-              <CsvDownload
-                headers={csvHeaders}
-                data={users}
-              />
-              {/* <PdfDownload
-                headers={pdfHeaders}
-                data={users}
-              /> */}
             </div>
 
-            <UserTable
-              users={users}
-              status={status}
-              handleBlock={handleBlock}
-              handleUnblock={handleUnblock}
-              currentPage={1}
-              numberOfPages={1}
+            <TransactionsTable
+              transactions={transactions}
             />
 
             <Pagination
@@ -131,4 +189,4 @@ const UserManagement = (props: Props) => {
   )
 }
 
-export default UserManagement
+export default WalletTransactionsManagement
