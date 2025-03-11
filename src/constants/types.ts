@@ -312,3 +312,9 @@ export type PaginationReportFiltered = {
   numberOfPages: number
   currentPage:number
 }
+
+export type PaginationSubscriptionFiltered = {
+  subscriptions: SubscriptionWithUserType[]
+  numberOfPages: number
+  currentPage:number
+}

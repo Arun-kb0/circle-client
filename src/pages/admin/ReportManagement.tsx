@@ -23,38 +23,6 @@ import CsvDownload from '../../components/admin/CsvDownload';
 import PdfDownload from '../../components/admin/PdfDownload';
 import { ReportAdminType } from '../../constants/types';
 
-const reportAdminExamples: ReportAdminType[] = [
-  {
-    _id: "rep1",
-    userId: "user1",
-    contentId: "post1",
-    contentType: "post",
-    description: "Inappropriate content in the image",
-    createdAt: "2025-03-01T10:00:00Z",
-    updatedAt: "2025-03-01T10:05:00Z",
-    userName: 'sam',
-    userImage: undefined,
-    post: {
-      _id: "post1",
-      desc: "Check out my latest adventure!",
-      tags: ["travel", "adventure"],
-      mediaType: "image",
-      media: ["http://example.com/image1.jpg"],
-      authorId: "author1",
-      authorName: "John Doe",
-      authorImage: "http://example.com/johndoe.jpg",
-      status: "active",
-      likesCount: 150,
-      reportsCount: 2,
-      commentCount: 10,
-      shareCount: 5,
-      updatedAt: new Date("2025-03-01T10:00:00Z"),
-      // Assuming the missing field is "createdAt"
-      createdAt: new Date("2025-02-28T09:00:00Z")
-    }
-  },
-];
-
 
 
 const csvHeaders = [

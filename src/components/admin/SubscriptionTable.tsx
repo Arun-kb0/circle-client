@@ -26,7 +26,7 @@ const SubscriptionTable = ({ subscriptions }: Props) => {
           {subscriptions.map((item) => (
             <tr key={item._id} className='bg-white border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 dark:bg-gray-800'>
 
-              <td className="px-6 py-4 w-auto flex justify-center items-center space-y-1">
+              <td className="flex justify-center items-center">
                 <div className="">
                   <Avatar
                     image={item.subscriberUserImage}

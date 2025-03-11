@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import {
+  PaginationSubscriptionFiltered,
   StateType, SubscriptionPagination, SubscriptionsType,
+  SubscriptionWithUserType,
   TransactionPagination, TransactionType, WalletType
 } from "../../constants/types"
 import {
-  createOrder, getSubscriptions, getTransactions,
+  createOrder, getFilteredSubscriptions, getSubscriptions, getTransactions,
   getUserWallet, subscribeWithWallet
 } from "./paymentApi"
 import { RootState } from "../../app/store"
@@ -23,6 +25,10 @@ type PaymentState = {
   walletStatus: StateType
   paymentStatus: StateType
   error: undefined | string
+  subscriptionsFiltered: SubscriptionWithUserType[]
+  subscriptionsFilteredNumberOfPages: number
+  subscriptionsFilteredCurrentPge: number
+  subscriptionsFilteredStatus: StateType
 }
 
 const initialState: PaymentState = {
@@ -37,7 +43,11 @@ const initialState: PaymentState = {
   wallet: null,
   walletStatus: 'idle',
   paymentStatus: 'idle',
-  error: undefined
+  error: undefined,
+  subscriptionsFiltered: [],
+  subscriptionsFilteredNumberOfPages: 0,
+  subscriptionsFilteredCurrentPge: 0,
+  subscriptionsFilteredStatus: "loading"
 }
 
 const paymentSlice = createSlice({
@@ -107,18 +117,36 @@ const paymentSlice = createSlice({
         state.paymentStatus = 'failed'
         state.error = action.error.message
       })
-    
 
-    // .addCase(createOrder.pending, (state) => {
-    //   state.paymentStatus = 'loading'
-    // })
-    // .addCase(createOrder.fulfilled, (state, action) => {
-    //   state.paymentStatus = 'success'
-    // })
-    // .addCase(createOrder.rejected, (state, action) => {
-    //   state.paymentStatus = 'failed'
-    //   state.error = action.error.message
-    // })
+      // .addCase(createOrder.pending, (state) => {
+      //   state.paymentStatus = 'loading'
+      // })
+      // .addCase(createOrder.fulfilled, (state, action) => {
+      //   state.paymentStatus = 'success'
+      // })
+      // .addCase(createOrder.rejected, (state, action) => {
+      //   state.paymentStatus = 'failed'
+      //   state.error = action.error.message
+      // })
+
+      .addCase(getFilteredSubscriptions.pending, (state) => {
+        state.subscriptionsFilteredStatus = 'loading'
+      })
+      .addCase(getFilteredSubscriptions.fulfilled, (state, action: PayloadAction<PaginationSubscriptionFiltered>) => {
+        if (!action.payload) return
+        state.subscriptionsFilteredStatus = 'success'
+        const { subscriptions, numberOfPages, currentPage } = action.payload
+        // const existingPostIds = new Set(state.posts.map(post => post._id));
+        // const newPosts = posts.filter(post => !existingPostIds.has(post._id));
+        state.subscriptionsFiltered = subscriptions
+        state.subscriptionsFilteredCurrentPge = currentPage
+        state.subscriptionsNumberOfPage = numberOfPages
+      })
+      .addCase(getFilteredSubscriptions.rejected, (state, action) => {
+        state.subscriptionsFilteredStatus = 'failed'
+        state.error = action.error.message
+      })
+
 
 
   }
@@ -137,6 +165,10 @@ export const selectPaymentTransactionsNumberOfPages = (state: RootState) => stat
 export const selectPaymentSubscriptionsNumberOfPage = (state: RootState) => state.payment.subscriptionsNumberOfPage
 export const selectPaymentStatus = (state: RootState) => state.payment.paymentStatus
 
+export const selectPaymentFilteredSubscriptions = (state: RootState) => state.payment.subscriptionsFiltered
+export const selectPaymentFilteredSubscriptionsNumberOfPages = (state: RootState) => state.payment.subscriptionsFilteredNumberOfPages
+export const selectPaymentFilteredSubscriptionsCurrentPage = (state: RootState) => state.payment.subscriptionsFilteredCurrentPge
+export const selectPaymentFilteredSubscriptionsStatus = (state: RootState) => state.payment.subscriptionsFilteredStatus
 
 export const {
   resetPaymentStatus

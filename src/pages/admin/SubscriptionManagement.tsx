@@ -11,81 +11,13 @@ import { FieldValues } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import SubscriptionTable from '../../components/admin/SubscriptionTable';
 import { SubscriptionWithUserType } from '../../constants/types';
+import {
+  selectPaymentFilteredSubscriptions, selectPaymentFilteredSubscriptionsCurrentPage,
+  selectPaymentFilteredSubscriptionsNumberOfPages, selectPaymentFilteredSubscriptionsStatus
+} from '../../features/payment/paymentSlice';
+import { getFilteredSubscriptions } from '../../features/payment/paymentApi';
 
 type Props = {}
-
-const subscriptions: SubscriptionWithUserType[] = [
-  {
-    _id: 'sub1',
-    merchantTransactionId: 'txn1001',
-    subscriberUserId: 'userA',
-    subscriberToUserId: 'userB',
-    plan: 'monthly',
-    status: 'active',
-    createdAt: '2025-01-15T10:00:00Z',
-    updatedAt: '2025-01-15T10:00:00Z',
-    subscriberUserName: 'AliceWonder',
-    subscriberUserImage: 'http://example.com/images/alice.png',
-    subscriberToUserName: 'BobBuilder',
-    subscriberToUserImage: 'http://example.com/images/bob.png'
-  },
-  {
-    _id: 'sub2',
-    merchantTransactionId: 'txn1002',
-    subscriberUserId: 'userC',
-    subscriberToUserId: 'userD',
-    plan: 'yearly',
-    status: 'active',
-    createdAt: '2025-02-20T14:30:00Z',
-    updatedAt: '2025-02-20T14:30:00Z',
-    subscriberUserName: 'CharlieChaplin',
-    subscriberUserImage: 'http://example.com/images/charlie.png',
-    subscriberToUserName: 'DaisyDuck',
-    subscriberToUserImage: 'http://example.com/images/daisy.png'
-  },
-  {
-    _id: 'sub3',
-    merchantTransactionId: 'txn1003',
-    subscriberUserId: 'userE',
-    subscriberToUserId: 'userF',
-    plan: 'lifetime',
-    status: 'cancelled',
-    createdAt: '2025-03-05T08:15:00Z',
-    updatedAt: '2025-03-10T09:00:00Z',
-    subscriberUserName: 'EveOnline',
-    subscriberUserImage: 'http://example.com/images/eve.png',
-    subscriberToUserName: 'FrankSinatra',
-    subscriberToUserImage: 'http://example.com/images/frank.png'
-  },
-  {
-    _id: 'sub4',
-    merchantTransactionId: 'txn1004',
-    subscriberUserId: 'userG',
-    subscriberToUserId: 'userH',
-    plan: 'monthly',
-    status: 'inactive',
-    createdAt: '2025-04-12T12:45:00Z',
-    updatedAt: '2025-04-12T12:45:00Z',
-    subscriberUserName: 'GraceHopper',
-    subscriberUserImage: 'http://example.com/images/grace.png',
-    subscriberToUserName: 'HeidiKlum',
-    subscriberToUserImage: 'http://example.com/images/heidi.png'
-  },
-  {
-    _id: 'sub5',
-    merchantTransactionId: 'txn1005',
-    subscriberUserId: 'userI',
-    subscriberToUserId: 'userJ',
-    plan: 'yearly',
-    status: 'active',
-    createdAt: '2025-05-22T16:20:00Z',
-    updatedAt: '2025-05-22T16:20:00Z',
-    subscriberUserName: 'IvanIvanov',
-    subscriberUserImage: 'http://example.com/images/ivan.png',
-    subscriberToUserName: 'JuliaRoberts',
-    subscriberToUserImage: 'http://example.com/images/julia.png'
-  }
-];
 
 
 const SubscriptionManagement = (props: Props) => {
@@ -100,33 +32,24 @@ const SubscriptionManagement = (props: Props) => {
   const [searchText, setSearchText] = useState('')
   const [page, setPage] = useState(1)
 
-  const users = useSelector(selectUserUsers)
-  const status = useSelector(selectUserStatus)
-  const currentPage = useSelector(selectUserCurrentPage)
-  const numberOfPages = useSelector(selectUserNumberOfPages)
+  const subscriptions = useSelector(selectPaymentFilteredSubscriptions)
+  const status = useSelector(selectPaymentFilteredSubscriptionsStatus)
+  const currentPage = useSelector(selectPaymentFilteredSubscriptionsCurrentPage)
+  const numberOfPages = useSelector(selectPaymentFilteredSubscriptionsNumberOfPages)
 
 
   useEffect(() => {
-    dispatch(getAllUsers({
+    dispatch(getFilteredSubscriptions({
       page: page,
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
       searchText: searchText,
-      isAdmin: true
     }))
   }, [page])
 
 
-  const handleBlock = (userId: string) => {
-    dispatch(blockUser(userId))
-  }
-
-  const handleUnblock = (userId: string) => {
-    dispatch(unblockUser(userId))
-  }
-
   const handleFilter = (data: FieldValues | undefined) => {
-    dispatch(getAllUsers({
+    dispatch(getFilteredSubscriptions({
       page: page,
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
