@@ -302,8 +302,10 @@ export type TransactionWithUsersType = {
   updatedAt: string
   senderName: string
   senderImage?: string
+  senderEmail: string
   receiverName: string
   receiverImage?: string
+  receiverEmail: string
 }
 
 
@@ -315,6 +317,12 @@ export type PaginationReportFiltered = {
 
 export type PaginationSubscriptionFiltered = {
   subscriptions: SubscriptionWithUserType[]
+  numberOfPages: number
+  currentPage:number
+}
+
+export type PaginationTransactionsFiltered = {
+  transactions: TransactionWithUsersType[]
   numberOfPages: number
   currentPage:number
 }

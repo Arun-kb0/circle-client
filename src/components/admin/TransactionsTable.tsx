@@ -23,7 +23,7 @@ const TransactionsTable = ({ transactions }: Props) => {
         </thead>
 
         <tbody>
-          {transactions.map((item) => (
+          {transactions?.map((item) => (
             <tr key={item._id} className='bg-white border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 dark:bg-gray-800'>
               <td className="px-6 py-4 w-auto flex justify-center items-center space-y-1">
                 <div className="">

@@ -122,3 +122,25 @@ export const getFilteredSubscriptions = createAsyncThunk('/admin/subscriptions/f
     return errorHandler(error)
   }
 })
+
+export const getFilteredTransactions = createAsyncThunk('/admin/transactions/filtered', async ({ page, searchText, startDate, endDate}: GetFilteredSubsArgs, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const params = {
+      page,
+      searchText,
+      startDate,
+      endDate,
+    }
+    const res = await axiosPrivate.get('/admin/transactions/filtered', { params })
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
