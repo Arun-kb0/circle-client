@@ -13,6 +13,7 @@ import socketEvents from '../../constants/socketEvents'
 import { generateCallRoomId } from '../../util/generator'
 import { selectCallNotification } from '../../features/notification/notificationSlice'
 import PageTitle from '../../components/basic/PageTitle'
+import { selectUserNavOpen } from '../../features/user/userSlice'
 
 type Props = {}
 
@@ -26,6 +27,7 @@ const ChatPage = (props: Props) => {
   // const callNotification = useSelector(selectCallNotification)
   const isIncomingCall = useSelector(selectChatIsIncomingCall)
   const incomingCallModelType = useSelector(selectChatCallModelType)
+  const userNavOpen = useSelector(selectUserNavOpen)
 
   const handleCallModelOpen = (type: 'video' | 'audio') => {
     console.log('handleCallModelOpen')
@@ -55,7 +57,7 @@ const ChatPage = (props: Props) => {
 
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
-      <div className="p-4 sm:ml-64" >
+      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`}>
         <div className="p-4 mt-14">
 
           <PageTitle firstWord='' secondWord='Chat' />

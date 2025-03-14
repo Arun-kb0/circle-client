@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  selectUserNavOpen,
   selectUserSuggested, selectUserSuggestedCurrentPage,
   selectUserSuggestedNumberOfPages, selectUserSuggestedStatus
 } from '../../features/user/userSlice';
@@ -17,6 +18,7 @@ const FollowPeople = (props: Props) => {
   const users = useSelector(selectUserSuggested)
   const status = useSelector(selectUserSuggestedStatus)
   const page = useSelector(selectUserSuggestedCurrentPage)
+  const userNavOpen = useSelector(selectUserNavOpen)
   const numberOfPages = useSelector(selectUserSuggestedNumberOfPages)
   const [hasMore, setHasMore] = useState<boolean>(() => page < numberOfPages);
 
@@ -35,7 +37,7 @@ const FollowPeople = (props: Props) => {
 
   return (
     <main className='main-section justify-center relative overflow-y-auto' >
-      <div className="p-4 sm:ml-64" >
+      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`}>
         <div className="p-4 mt-14">
 
           <PageTitle firstWord='Follow' secondWord='Users' />

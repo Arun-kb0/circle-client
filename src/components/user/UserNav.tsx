@@ -16,7 +16,7 @@ import { logout } from '../../features/auth/authApi';
 import { selectAuthUser } from '../../features/auth/authSlice';
 import { FaUserCircle } from 'react-icons/fa';
 import { clearUserCreatedPosts } from '../../features/post/postSlice';
-import { clearFollowers, clearFollowing, selectUserNotifications, selectUserUnreadNotificationsCount } from '../../features/user/userSlice';
+import { clearFollowers, clearFollowing, selectUserNavOpen, selectUserNotifications, selectUserUnreadNotificationsCount, setUserNavOpen } from '../../features/user/userSlice';
 import logo from '../../assets/vite.png'
 import Notifications from '../notification/Notifications';
 import IncomingCallAnimation from '../basic/IncomingCallAnimation';
@@ -37,6 +37,7 @@ const UserNav = ({ handleLogout }: Props) => {
   const isIncomingCall = useSelector(selectChatIsIncomingCall)
   const unreadMsgNotificationCount = useSelector(selectChatUnreadMsgNotification)
   const unreadNotificationsCount = useSelector(selectUserUnreadNotificationsCount)
+  const navOpen = useSelector(selectUserNavOpen)
 
 
   const [userDropDown, setUserDropDown] = useState(false)
@@ -93,13 +94,17 @@ const UserNav = ({ handleLogout }: Props) => {
     }
   }, [isIncomingCall])
 
+  const handleUserNavOpen = () => {
+    dispatch(setUserNavOpen(!navOpen))
+  }
+
   return (
     <nav className="fixed top-0 z-50 w-full nav-bg-color">
       <div className="px-3 py-3 lg:px-5 lg:pl-3">
         <div className="flex items-center justify-between">
 
           <div className="flex items-center">
-            <button className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+            <button onClick={handleUserNavOpen}  className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
               <SpringButton>
                 <RxHamburgerMenu size={22} />
               </SpringButton>
@@ -107,7 +112,11 @@ const UserNav = ({ handleLogout }: Props) => {
 
             <div className="flex items-center ms-3">
               <div>
-                <img className='w-10 h-10 object-cover' src={logo} alt="" />
+                <Link to='/' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
+                  <SpringButton>
+                    <img className='w-10 h-10 object-cover' src={logo} alt="" />
+                  </SpringButton>
+                </Link>
               </div>
             </div>
           </div>
@@ -115,20 +124,6 @@ const UserNav = ({ handleLogout }: Props) => {
           <div className="flex items-center">
             <div className="flex items-center ms-3">
               <div>
-                <Link to='/' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
-                  <SpringButton>
-                    <TbHome className='text-gray-200 ' size={25} />
-                  </SpringButton>
-                </Link>
-              </div>
-            </div>
-            <div className="flex items-center ms-3">
-              <div>
-                {/* <Link to='/' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
-                  <SpringButton>
-                    <FiSearch className='text-gray-200 ' size={25} />
-                  </SpringButton>
-                </Link> */}
                 <Search handleSearch={handleSearch} />
               </div>
             </div>

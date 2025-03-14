@@ -5,7 +5,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import UserSkeletonLoader from '../../components/basic/UserSkeletonLoader';
 import { AnimatePresence } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUserLiveUsers } from '../../features/user/userSlice';
+import { selectUserLiveUsers, selectUserNavOpen } from '../../features/user/userSlice';
 import { getLiveUsers } from '../../features/user/userApi';
 import { AppDispatch } from '../../app/store';
 import { selectAuthUser } from '../../features/auth/authSlice';
@@ -20,6 +20,7 @@ const ViewLivePage = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const users = useSelector(selectUserLiveUsers)
   const currentUser = useSelector(selectAuthUser)
+  const userNavOpen = useSelector(selectUserNavOpen)
   // const [hasMore, setHasMore] = useState<boolean>(() => page < numberOfPages);
   const [hasMore, setHasMore] = useState<boolean>(false);
   const [openModel, setOpenModel] = useState(false)
@@ -62,7 +63,7 @@ const ViewLivePage = (props: Props) => {
 
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
-      <div className="p-4 sm:ml-64" >
+      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`}>
         <div className="p-4 mt-14 w-[70vw]">
 
           <PageTitle  firstWord='Watch' secondWord='Live'/>

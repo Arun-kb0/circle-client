@@ -7,6 +7,7 @@ import {
   selectUserFollowingCurrentPage,
   selectUserFollowingNumberOfPages,
   selectUserFollowingStatus,
+  selectUserNavOpen,
 } from '../../features/user/userSlice'
 import { getFollowing } from '../../features/user/userApi'
 import UsersList from '../../components/user/follow/UsersList'
@@ -26,6 +27,8 @@ const FollowingPage = ({ userId }: Props) => {
   const status = useSelector(selectUserFollowingStatus)
   const page = useSelector(selectUserFollowingCurrentPage)
   const numberOfPages = useSelector(selectUserFollowingNumberOfPages)
+  const userNavOpen = useSelector(selectUserNavOpen)
+  
   const [hasMore, setHasMore] = useState<boolean>(() => page < numberOfPages);
   const [isUserProfile, setisUserProfile] = useState(location.pathname === '/profile')
 
@@ -45,7 +48,7 @@ const FollowingPage = ({ userId }: Props) => {
 
   return (
     <main className='main-section justify-center relative overflow-y-auto' >
-      <div className="p-4 sm:ml-64" >
+      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`}>
         <div className="p-4 mt-14">
 
           {!isUserProfile && <PageTitle firstWord='' secondWord='Following' />}

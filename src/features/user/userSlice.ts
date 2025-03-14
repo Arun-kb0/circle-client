@@ -52,6 +52,7 @@ type UserStateType = {
   notificationCurrentPages: number
 
   unreadNotificationsCount: number
+  userNavOpen: boolean
 }
 
 const initialState: UserStateType = {
@@ -91,6 +92,7 @@ const initialState: UserStateType = {
   notificationCurrentPages: 0,
 
   unreadNotificationsCount: 0,
+  userNavOpen: true
 }
 
 const userSlice = createSlice({
@@ -131,7 +133,12 @@ const userSlice = createSlice({
         if (!item.read) count++;
         return count;
       }, 0)
+    },
+
+    setUserNavOpen: (state, action: PayloadAction<boolean>) => {
+      state.userNavOpen = action.payload
     }
+
   },
 
   extraReducers: (builder) => {
@@ -376,6 +383,9 @@ export const selectUserNotificationNumberOfPages = (state: RootState) => state.u
 export const selectUserNotificationPage = (state: RootState) => state.user.notificationCurrentPages
 export const selectUserUnreadNotificationsCount = (state: RootState) => state.user.unreadNotificationsCount
 
+export const selectUserNavOpen = (state: RootState) => state.user.userNavOpen
+
+
 export const {
   clearFollowers,
   clearFollowing,
@@ -383,7 +393,8 @@ export const {
   setUserSocketId,
   setNotificationSocketId,
   setNotifications,
-  setSingleNotification
+  setSingleNotification,
+  setUserNavOpen
 } = userSlice.actions
 
 export default userSlice.reducer

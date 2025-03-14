@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import OrbAnimation from '../../components/basic/OrbAnimation';
 import { AnimatePresence } from 'framer-motion';
 import PageTitle from '../../components/basic/PageTitle';
+import { selectUserNavOpen } from '../../features/user/userSlice';
 
 
 type Props = {}
@@ -33,6 +34,8 @@ const CreatePost = (props: Props) => {
   const imageToCrop = useSelector(selectPostImageToCrop)
   const postCache = useSelector(selectPostCreateCache)
   const imageToCropIndex = useSelector(selectPostImageToCropIndex)
+  const userNavOpen = useSelector(selectUserNavOpen)
+
 
   const [images, setImages] = useState<string[]>(postCache.images)
   const [imageFiles, setImageFiles] = useState<File[]>(postCache.imageFiles)
@@ -143,7 +146,7 @@ const CreatePost = (props: Props) => {
 
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
-      <div className="p-4 sm:ml-64" >
+      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`}>
         <div className="p-4 mt-14 w-[70vw]">
 
           <PageTitle firstWord='Create' secondWord='Post' />
