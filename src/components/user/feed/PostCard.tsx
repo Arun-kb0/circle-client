@@ -25,6 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import ShareComponent from '../../basic/ShareComponent';
 import Avatar from '../../basic/Avatar';
 import { CiBookmark, CiBookmarkCheck } from 'react-icons/ci';
+import { toast } from 'react-toastify';
 
 
 type Props = {
@@ -61,12 +62,13 @@ const PostCard = ({ post, openCommentModel }: Props) => {
 
   const postDropdownElements: DropDownElementsType[] = [
     {
-      handler: () => {
-        dispatch(report({
+      handler: async () => {
+       await dispatch(report({
           userId: user?._id as string,
           contentId: post._id,
           contentType: 'post'
-        }))
+       })).unwrap()
+        toast(`post created by ${post.authorName} reported`)
       },
       name: "report"
     }

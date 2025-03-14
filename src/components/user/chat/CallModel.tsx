@@ -25,6 +25,7 @@ import AudioVisualizer from "./AudioVisualizer"
 import { IoVideocam, IoVideocamOff } from "react-icons/io5"
 import usePeerConnection from "../../../hook/usePeerConnection"
 import { AppDispatch } from "../../../app/store"
+import { toast } from "react-toastify"
 
 type Props = {
   handleClose: () => void;
@@ -274,6 +275,15 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
     handleClose()
   }
 
+  useEffect(() => {
+    socket?.on(socketEvents.callEnded, () => {
+      toast('Call ended')
+    })
+
+    return () => {
+      socket?.off(socketEvents.callEnded)
+    }
+  }, [])
 
   return (
     <BackdropVerifyOtp onClick={handleClose}>

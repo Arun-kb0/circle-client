@@ -10,6 +10,7 @@ import { IoMdCloseCircleOutline } from 'react-icons/io';
 import { IoClose } from 'react-icons/io5';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import LiveStreamChat from './LiveStreamChat';
+import { toast } from 'react-toastify';
 
 type Props = {
   streamerId: string,
@@ -93,6 +94,7 @@ const ViewLiveModel = ({ handleClose, streamerId }: Props) => {
     });
 
     socket?.on(socketEvents.userLiveStreamEnded, (data) => {
+      toast("Live stream ended !")
       console.log('Live stream ended from broadcaster:', data);
       cleanupRemoteStream();
       setRemoteStream(new MediaStream());
