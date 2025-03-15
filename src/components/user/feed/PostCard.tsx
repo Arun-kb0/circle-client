@@ -128,7 +128,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
     <motion.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
-      className="nav-bg-color lg:w-[50vw] rounded-lg shadow overflow-hidden"
+      className="nav-bg-color sm:w-[50vw] w-[90vw] rounded-lg shadow overflow-hidden"
     >
       <div className="flex items-center justify-between m-2 relative" >
         <div className='flex justify-start items-center'>

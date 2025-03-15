@@ -3,7 +3,7 @@ type Props = {}
 const PostSkeletonLoader = (props: Props) => {
   return (
 
-    <article className="nav-bg-color lg:w-[50vw] overflow-hidden animate-pulse">
+    <article className="nav-bg-color sm:w-[50vw] w-[90vw] overflow-hidden animate-pulse">
       <div className="flex items-center justify-between m-2 relative">
         <div className="flex justify-start items-center">
           <div className="flex items-center mr-3">

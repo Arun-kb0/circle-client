@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { IoWalletOutline } from 'react-icons/io5'
 import Transaction from './Transaction'
-import { TransactionType } from '../../../constants/types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectPaymentTransactions, selectPaymentTransactionsCurrentPage,
@@ -40,7 +39,7 @@ const Wallet = () => {
   }
 
   return (
-    <article className='space-y-6'>
+    <article className='sm:w-[50vw] w-[90vw] space-y-6 ' >
 
       <section className="space-y-4 p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
         <IoWalletOutline size={32} />

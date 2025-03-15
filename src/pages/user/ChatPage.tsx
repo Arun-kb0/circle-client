@@ -62,7 +62,7 @@ const ChatPage = (props: Props) => {
 
           <PageTitle firstWord='' secondWord='Chat' />
 
-          <div className='lg:p-4 sm:p-1  flex justify-between gap-8 lg:w-[160vh] md:w-[100vh] sm:w-[80vh]'>
+          <div className='flex justify-center gap-3 w-full lg:w-[80vw]'>
             <AnimatePresence
               initial={false}
               mode='wait'
@@ -76,14 +76,15 @@ const ChatPage = (props: Props) => {
               }
             </AnimatePresence>
 
-            <div className='rounded-lg bg-gray-900 p-3  w-8/12 '>
+            <div className='rounded-lg bg-gray-900 p-3 sm:w-8/12  w-9/12'>
               <ChatSection
                 handleCallModelOpen={handleCallModelOpen}
               />
             </div>
-            <div className='w-3/12'>
+            <div className='sm:w-3/12 w-2/12'>
               <ChatUsers />
             </div>
+
           </div>
 
 

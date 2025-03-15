@@ -123,13 +123,14 @@ const ChatSection = ({ handleCallModelOpen }: Props) => {
   return (
     <section >
       <div className='relative flex justify-start bg-gray-800 px-3 gap-4 items-center py-3 rounded-lg shadow-lg '>
-        <Avatar
-          image={chatUser?.image}
-          alt={chatUser?.name}
-          userId={chatUser?.userId as string}
-          size={8}
-        />
-        <h5 className='font-bold '>{chatUser?.name}</h5>
+        <div className='w-[65px]'>
+          <Avatar
+            image={chatUser?.image}
+            alt={chatUser?.name}
+            userId={chatUser?.userId as string}
+          />
+        </div>
+        <h5 className='font-bold'>{chatUser?.name}</h5>
         <div className='w-full flex justify-end item-center gap-4'>
           <button onClick={() => handleCallModelOpen('video')}>
             <FaVideo size={20} />

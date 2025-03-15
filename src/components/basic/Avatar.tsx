@@ -15,7 +15,7 @@ type Props = {
   disableNavigation?: boolean
 }
 
-const Avatar = ({ image, alt, userId, size = 6, disableNavigation = false }: Props) => {
+const Avatar = ({ image, alt, userId, size = 34, disableNavigation = false }: Props) => {
   const navigator = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
 
@@ -26,7 +26,7 @@ const Avatar = ({ image, alt, userId, size = 6, disableNavigation = false }: Pro
   }
 
   const handleProfileNav = async () => {
-    if(disableNavigation) return
+    if (disableNavigation) return
     await handleClearProfile()
     await dispatch(getUser(userId))
     navigator('/user-profile')
@@ -34,9 +34,14 @@ const Avatar = ({ image, alt, userId, size = 6, disableNavigation = false }: Pro
 
   return (
     <SpringButton>
-      <button onClick={handleProfileNav} className='px-2 py-1'>
+      <button onClick={handleProfileNav} className='p-1'>
         {image
-          ? <img className={`w-${size} h-${size} rounded-full object-cover mx-2`} src={image} alt={alt} />
+          ? <img
+            className={`rounded-full object-cover`}
+            src={image}
+            alt={alt}
+            style={{ width: size, height: size, borderRadius: '50%' }}
+          />
           : <FaUserCircle size={size} className={`w-${size} h-${size}`} />
         }
       </button>

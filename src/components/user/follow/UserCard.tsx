@@ -72,7 +72,7 @@ const UserCard = ({ userId, name, image }: Props) => {
             image={image}
             alt={name}
             userId={userId}
-            size={24}
+            size={75}
           />
         </div>
 

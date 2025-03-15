@@ -57,16 +57,16 @@ const ChatInput = ({ handleScrollToMessage, setEmojiModelOpen, emoji }: Props) =
     <div className="mb-1 relative">
       {gifPickerOpen && <GifPicker onGifSelect={handleGifSelect} />}
 
-      <div className='flex gap-7 items-center'>
+      <div className='flex flex-wrap lg:gap-5 sm:gap-3 gap-1 items-center'>
         <input
           onChange={e => setCurrentMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           value={currentMessage}
           type="text"
           id="large-input"
-          className="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className="block sm:min-w-56 min-w-40 w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
-        <div className='flex justify-center items-center gap-2'>
+        <div className='flex justify-center items-center gap-2 sm:w-auto w-full'>
           <button onClick={() => setGifPickerOpen(prev => !prev)} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-full text-xs px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
             <MdGif size={20} />
           </button>

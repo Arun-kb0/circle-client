@@ -37,18 +37,20 @@ const ChatUser = ({ name, image, userId, messageCount }: Props) => {
   }
 
   return (
-    <section className="flex items-center">
-      <div className="flex-shrink-0">
-        <button onClick={handleJoinRoom} type="button" className="relative inline-flex items-center">
-          {image
-            ? <img className="w-8 h-8 rounded-full object-cover" src={image} alt="Neil image" />
-            : <FaUserCircle size={35} />
-          }
-          <span className={`top-0 left-7 absolute  w-3.5 h-3.5 border-2 border-white dark:border-gray-800 rounded-full ${isOnline ? 'bg-green-400' : 'bg-red-400'}`}></span>
+    <section className="flex flex-wrap sm:text-sm text-xs items-center justify-center">
+      <div className="flex-shrink-0 justify-center">
+        <button onClick={handleJoinRoom}  className="relative inline-flex items-center">
+          <Avatar
+            image={image}
+            alt={name}
+            userId={userId}
+            disableNavigation={true}
+          />
+          <span className={`top-0 left-7 absolute w-3.5 h-3.5 border-2 border-white dark:border-gray-800 rounded-full ${isOnline ? 'bg-green-400' : 'bg-red-400'}`}></span>
         </button>
       </div>
-      <div className="flex-1 min-w-0 ms-4">
-        <p className="capitalize text-sm font-medium text-gray-900 truncate dark:text-white"> {name} </p>
+      <div className="flex-1 justify-center min-w-0 ms-4">
+        <p className="capitalize font-medium text-gray-900 truncate dark:text-white"> {name} </p>
       </div>
     </section>
   )
