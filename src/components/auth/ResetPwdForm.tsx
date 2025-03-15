@@ -120,7 +120,7 @@ const ResetPwdForm = ({ openModel }:Props) => {
         Reset Password
       </button>
       <div className='flex space-x-2 text-black'>
-        <p> got to </p>
+        <p> Got to </p>
         <Link to='/login' className='text-blue-400'> login </Link>
       </div>
 

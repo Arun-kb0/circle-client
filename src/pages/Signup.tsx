@@ -15,14 +15,13 @@ const Signup = () => {
 
 
   return (
-    <main className='main-section items-center min-h-screen bg-cover bg-center' style={{
-      backgroundImage: `url(${signupImage})`,
-      backgroundSize: "contain",
-      backgroundRepeat: "no-repeat", 
-      backgroundPosition: "center",
-    }}>
-
-      <div className='backdrop-blur-sm bg-white/30 p-4 rounded-md shadow-lg '>
+    <main className='relative overflow-hidden'>
+      <div className='main-section items-center min-h-screen bg-cover bg-center' style={{
+        backgroundImage: `url(${signupImage})`,
+        backgroundSize: "contain",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+      }}>
         <AnimatePresence
           initial={false}
           mode='wait'
@@ -36,13 +35,16 @@ const Signup = () => {
           }
         </AnimatePresence>
 
-        <SignupForm
-          role={roles.user}
-          name={'Circle Signup'}
-          homePath='/'
-          loginPath='/login'
-          openModel={open}
-        />
+        <div className='backdrop-blur-sm bg-white/30 p-4 rounded-md shadow-lg '>
+          <SignupForm
+            role={roles.user}
+            name={'Circle Signup'}
+            homePath='/'
+            loginPath='/login'
+            openModel={open}
+          />
+        </div>
+
       </div>
     </main>
   )
