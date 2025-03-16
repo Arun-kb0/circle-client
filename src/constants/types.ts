@@ -312,17 +312,34 @@ export type TransactionWithUsersType = {
 export type PaginationReportFiltered = {
   reports: ReportAdminType[]
   numberOfPages: number
-  currentPage:number
+  currentPage: number
 }
 
 export type PaginationSubscriptionFiltered = {
   subscriptions: SubscriptionWithUserType[]
   numberOfPages: number
-  currentPage:number
+  currentPage: number
 }
 
 export type PaginationTransactionsFiltered = {
   transactions: TransactionWithUsersType[]
   numberOfPages: number
-  currentPage:number
+  currentPage: number
+}
+
+export type RadioInputDataType = {
+  id: string
+  name: string
+  label: string
+  value: string
+}
+
+export type UserSubscriptionPlanType = {
+  _id: string
+  userId: string
+  monthly: number
+  yearly: number
+  lifetime: number
+  createdAt: string
+  updatedAt: string
 }

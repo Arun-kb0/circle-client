@@ -2,16 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { FaUserCircle } from 'react-icons/fa'
 import ProfilePosts from './ProfilePosts'
 import ProfileAbout from './ProfileAbout'
-import { UserType } from '../../../constants/types'
+import { RadioInputDataType, SubscriptionsType, UserType } from '../../../constants/types'
 import FollowingPage from '../../../pages/user/FollowingPage'
 import Followers from './Followers'
 import SpringButton from '../../basic/SpringButton'
 import { LuCrown } from 'react-icons/lu'
-import { createOrder, subscribeWithWallet } from '../../../features/payment/paymentApi'
+import { createOrder, getUserSubscriptionPlan, subscribeWithWallet } from '../../../features/payment/paymentApi'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../../../app/store'
 import { selectAuthUser } from '../../../features/auth/authSlice'
-import { resetPaymentStatus, selectPaymentStatus, selectPaymentSubscriptions } from '../../../features/payment/paymentSlice'
+import { clearUserSubscriptionPlan, resetPaymentStatus, selectPaymentStatus, selectPaymentSubscriptions, selectPaymentUserSubscriptionPlan } from '../../../features/payment/paymentSlice'
 import { PiCrownSimpleFill } from 'react-icons/pi'
 import { IoWallet } from 'react-icons/io5'
 import phonePaySvg from '../../../assets/phonePay.svg'
@@ -19,6 +19,7 @@ import { toast } from 'react-toastify'
 import PaymentSuccess from '../../basic/PaymentSuccess'
 import PaymentFailed from '../../basic/PaymentFailed'
 import Avatar from '../../basic/Avatar'
+import RadioInputs from '../../basic/RadioInputs'
 
 type Props = {
   user: UserType
@@ -29,7 +30,10 @@ const Profile = ({ user }: Props) => {
   const paymentStatus = useSelector(selectPaymentStatus)
   const currentUser = useSelector(selectAuthUser)
   const subscriptions = useSelector(selectPaymentSubscriptions)
+  const plan = useSelector(selectPaymentUserSubscriptionPlan)
   const [activeSection, setActiveSection] = useState<"posts" | "about" | "following" | "followers" | null>('posts')
+  const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionsType['plan']>('monthly')
+  const [subscriptionAmount, setSubscriptionAmount] = useState(200)
   const [isSubscribed, setIsSubscribed] = useState<boolean>(() => {
     return Boolean(subscriptions.find(item => item.status === 'active' && item.subscriberToUserId === user._id))
   })
@@ -39,6 +43,27 @@ const Profile = ({ user }: Props) => {
     if (activeSection === section) return
     setActiveSection((prev) => (prev === section ? null : section))
   }
+
+  const radioInputData: RadioInputDataType[] = [
+    {
+      id: 'monthly-id',
+      name: 'radio-group',
+      label: `monthly ₹${plan ? plan.monthly : 200}`,
+      value: 'monthly'
+    },
+    {
+      id: 'yearly-id',
+      name: 'radio-group',
+      label: `yearly ₹${plan ? plan.yearly : 1000}`,
+      value: 'yearly'
+    },
+    {
+      id: 'lifetime-id',
+      name: 'radio-group',
+      label: `lifetime ₹${plan ? plan.lifetime : 5000}`,
+      value: 'lifetime'
+    }
+  ]
 
 
   const handlePayment = (type: "phone-pay" | "wallet") => {
@@ -50,7 +75,8 @@ const Profile = ({ user }: Props) => {
       orderType: 'user-subscription',
       subscribedToUserId: user._id,
       subscribedToUserName: user.name,
-      amount: 1000
+      amount: subscriptionAmount,
+      plan: subscriptionPlan
     }
     if (type === 'phone-pay') {
       dispatch(createOrder({ data }))
@@ -73,6 +99,27 @@ const Profile = ({ user }: Props) => {
     }
   }, [paymentStatus])
 
+  const handleRadioBtnClick = (value: string) => {
+    setSubscriptionPlan(value as SubscriptionsType['plan'])
+    switch (value as SubscriptionsType['plan']) {
+      case 'monthly': 
+        setSubscriptionAmount(plan ? plan.monthly : 200)
+        break
+      case 'yearly': 
+        setSubscriptionAmount(plan ? plan.yearly : 1000)
+        break
+      case 'lifetime': 
+        setSubscriptionAmount(plan ? plan.lifetime : 5000)
+        break
+      default:
+        console.error('invalid subscription plan')
+    }
+  }
+
+  useEffect(() => {
+    dispatch(clearUserSubscriptionPlan())
+    dispatch(getUserSubscriptionPlan({ userId: user._id }))
+  }, [dispatch, user._id])
 
   return (
     <main className='space-y-8'>
@@ -121,18 +168,24 @@ const Profile = ({ user }: Props) => {
             </div>
 
             {showPayBtns &&
-              <div className='flex gap-1 justify-end mr-2'>
-                <button className='cursor-pointer' onClick={() => handlePayment('phone-pay')}>
-                  <SpringButton>
-                    <img src={phonePaySvg} alt='phonePay icon' />
-                  </SpringButton>
-                </button>
-                <button onClick={() => handlePayment('wallet')} className='text-green-500 cursor-pointer'>
-                  <SpringButton>
-                    <IoWallet size={38} />
-                  </SpringButton>
-                </button>
-              </div>
+              <section className='space-y-2'>
+                <RadioInputs
+                  data={radioInputData}
+                  handleInputClick={handleRadioBtnClick}
+                />
+                <div className='flex gap-1 justify-start mr-2'>
+                  <button className='cursor-pointer' onClick={() => handlePayment('phone-pay')}>
+                    <SpringButton>
+                      <img src={phonePaySvg} alt='phonePay icon' />
+                    </SpringButton>
+                  </button>
+                  <button onClick={() => handlePayment('wallet')} className='text-green-500 cursor-pointer'>
+                    <SpringButton>
+                      <IoWallet size={38} />
+                    </SpringButton>
+                  </button>
+                </div>
+              </section>
             }
 
           </div>

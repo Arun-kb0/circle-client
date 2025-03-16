@@ -4,11 +4,12 @@ import {
   PaginationTransactionsFiltered,
   StateType, SubscriptionPagination, SubscriptionsType,
   SubscriptionWithUserType,
-  TransactionPagination, TransactionType, TransactionWithUsersType, WalletType
+  TransactionPagination, TransactionType, TransactionWithUsersType, UserSubscriptionPlanType, WalletType
 } from "../../constants/types"
 import {
   createOrder, getFilteredSubscriptions, getFilteredTransactions, getSubscriptions, getTransactions,
-  getUserWallet, subscribeWithWallet
+  getUserSubscriptionPlan,
+  getUserWallet, setUserSubscriptionPlan, subscribeWithWallet
 } from "./paymentApi"
 import { RootState } from "../../app/store"
 
@@ -34,6 +35,7 @@ type PaymentState = {
   transactionsFilteredNumberOfPages: number
   transactionsFilteredCurrentPge: number
   transactionsFilteredStatus: StateType
+  userSubscriptionPlan: UserSubscriptionPlanType | null
 }
 
 const initialState: PaymentState = {
@@ -56,7 +58,8 @@ const initialState: PaymentState = {
   transactionsFiltered: [],
   transactionsFilteredNumberOfPages: 0,
   transactionsFilteredCurrentPge: 0,
-  transactionsFilteredStatus: "failed"
+  transactionsFilteredStatus: "failed",
+  userSubscriptionPlan: null
 }
 
 const paymentSlice = createSlice({
@@ -66,6 +69,9 @@ const paymentSlice = createSlice({
 
     resetPaymentStatus: (state) => {
       state.paymentStatus = 'idle'
+    },
+    clearUserSubscriptionPlan: (state) => {
+      state.userSubscriptionPlan = null
     }
 
   },
@@ -175,6 +181,21 @@ const paymentSlice = createSlice({
       })
 
 
+      .addCase(setUserSubscriptionPlan.fulfilled, (state, action: PayloadAction<{ userSubscriptionPlan: UserSubscriptionPlanType }>) => {
+        state.userSubscriptionPlan = action.payload.userSubscriptionPlan
+      })
+      .addCase(setUserSubscriptionPlan.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
+      .addCase(getUserSubscriptionPlan.fulfilled, (state, action: PayloadAction<{ userSubscriptionPlan: UserSubscriptionPlanType }>) => {
+        state.userSubscriptionPlan = action.payload.userSubscriptionPlan
+      })
+      .addCase(getUserSubscriptionPlan.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
+
   }
 
 })
@@ -201,8 +222,11 @@ export const selectPaymentFilteredTransactionsNumberOfPages = (state: RootState)
 export const selectPaymentFilteredTransactionsCurrentPage = (state: RootState) => state.payment.transactionsFilteredCurrentPge
 export const selectPaymentFilteredTransactionsStatus = (state: RootState) => state.payment.transactionsFilteredStatus
 
+export const selectPaymentUserSubscriptionPlan = (state: RootState) => state.payment.userSubscriptionPlan
+
 export const {
-  resetPaymentStatus
+  resetPaymentStatus,
+  clearUserSubscriptionPlan
 } = paymentSlice.actions
 
 
