@@ -102,13 +102,13 @@ const Profile = ({ user }: Props) => {
   const handleRadioBtnClick = (value: string) => {
     setSubscriptionPlan(value as SubscriptionsType['plan'])
     switch (value as SubscriptionsType['plan']) {
-      case 'monthly': 
+      case 'monthly':
         setSubscriptionAmount(plan ? plan.monthly : 200)
         break
-      case 'yearly': 
+      case 'yearly':
         setSubscriptionAmount(plan ? plan.yearly : 1000)
         break
-      case 'lifetime': 
+      case 'lifetime':
         setSubscriptionAmount(plan ? plan.lifetime : 5000)
         break
       default:
@@ -120,6 +120,11 @@ const Profile = ({ user }: Props) => {
     dispatch(clearUserSubscriptionPlan())
     dispatch(getUserSubscriptionPlan({ userId: user._id }))
   }, [dispatch, user._id])
+
+  useEffect(() => {
+    if (!plan) return
+    setSubscriptionAmount(plan.monthly)
+  }, [plan])
 
   return (
     <main className='space-y-8'>
