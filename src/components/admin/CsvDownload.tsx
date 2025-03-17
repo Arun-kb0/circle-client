@@ -5,7 +5,7 @@ import { PostType } from '../../constants/FeedTypes';
 
 type Props = {
   headers: { label: string, key: string }[]
-  data: PostType[]
+  data: any
 }
 
 const CsvDownload = ({ headers, data }: Props) => (

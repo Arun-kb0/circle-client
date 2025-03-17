@@ -9,17 +9,35 @@ import Pagination from '../../components/basic/Pagination';
 import Search from '../../components/Search';
 import { FieldValues } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import CsvDownload from '../../components/admin/CsvDownload';
+import PdfDownload from '../../components/admin/PdfDownload';
 
 type Props = {}
+
+
+const csvHeaders = [
+  { label: 'Name', key: 'name' },
+  { label: 'Email', key: 'email' },
+  { label: 'Status', key: 'status' },
+  { label: 'Location', key: 'location' },
+  { label: 'Followee Count', key: 'followeeCount' },
+  { label: 'Follower Count', key: 'followerCount' },
+  { label: 'Created at', key: 'createdAt' },
+]
+
+const pdfHeaders = [[
+  'media', 'authorName', 'tags',
+  'desc', 'likesCount', 'commentCount',
+  'reportsCount', 'updatedAt', 'status'
+]]
 
 const UserManagement = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const [startDate, setStartDate] = useState<Date>(() => {
-    const currentDate = new Date()
-    const oneYearBefore = new Date()
-    oneYearBefore.setMonth(currentDate.getMonth() - 1)
-    return oneYearBefore
+    const newStartDate = new Date()
+    newStartDate.setFullYear(1970)
+    return newStartDate
   })
   const [endDate, setEndDate] = useState<Date>(new Date())
   const [searchText, setSearchText] = useState('')
@@ -66,7 +84,7 @@ const UserManagement = (props: Props) => {
         <div className="lg:p-4 sm:p-1 mt-14 flex justify-between gap-8 lg:w-[160vh] md:w-[100vh] sm:w-[80vh]">
 
           <div className='mt-10'>
-            
+
             <h5 className='text-2xl font-semibold text-center capitalize tracking-wider'>User Management</h5>
 
             <div className='flex space-x-5 items-end'>
@@ -80,6 +98,14 @@ const UserManagement = (props: Props) => {
               <Search
                 handleSearch={handleFilter}
               />
+              <CsvDownload
+                headers={csvHeaders}
+                data={users}
+              />
+              {/* <PdfDownload
+                headers={pdfHeaders}
+                data={users}
+              /> */}
             </div>
 
             <UserTable

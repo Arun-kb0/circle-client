@@ -22,7 +22,10 @@ import GlobalFeed from './pages/user/GlobalFeed'
 import CreatePost from './pages/user/CreatePost'
 import ChatPage from './pages/user/ChatPage'
 import FollowPeople from './pages/user/FollowPeople'
-import { selectChatUser, setAllChatRooms, setCallRoomId, setIsInChat, setRoomId } from './features/chat/chatSlice'
+import {
+  selectChatUser, setAllChatRooms, setCallRoomId,
+  setIncomingCallAndSignal, setIsInChat, setRoomId
+} from './features/chat/chatSlice'
 import { callUserConnection, receiveMessage } from './features/chat/chatApi'
 import ProfilePage from './pages/user/ProfilePage'
 import EditPostPage from './pages/user/EditPostPage'
@@ -37,14 +40,20 @@ import { setCallNotificationState } from './features/notification/notificationSl
 import { getFollowers } from './features/user/userApi'
 import PostManagement from './pages/admin/PostManagement'
 import { Socket } from 'socket.io-client'
-import { setOnlineUsers, setUserSocketId } from './features/user/userSlice'
+import { setNotificationSocketId, setOnlineUsers, setSingleNotification, setUserSocketId } from './features/user/userSlice'
 import ReportManagement from './pages/admin/ReportManagement'
 import GoLivePage from './pages/user/GoLivePage'
 import ViewLivePage from './pages/user/ViewLivePage'
 import AdminHome from './pages/admin/AdminHome'
+import WalletPage from './pages/user/WalletPage'
+import { getSubscriptions } from './features/payment/paymentApi'
+import PaymentSuccessPage from './pages/user/PaymentSuccessPage'
+import PaymentFailedPage from './pages/user/PaymentFailedPage'
+import SavedPostsPage from './pages/user/SavedPostsPage'
+import SubscriptionManagement from './pages/admin/SubscriptionManagement'
+import WalletTransactionsManagement from './pages/admin/WalletTransactionsManagement'
 
 function App() {
-  // const socket = SocketIoClient.getInstance()
   const navigate = useNavigate()
   const location = useLocation()
   const dispatch = useDispatch<AppDispatch>()
@@ -53,26 +62,44 @@ function App() {
   const chatUser = useSelector(selectChatUser)
   const friendsRoomId = useSelector(selectAuthFriendsRoomId)
   const [socket, setSocket] = useState<Socket | null>(null)
+  const [notificationSocket, setNotificationSocket] = useState<Socket | null>(null)
 
   useEffect(() => {
     dispatch(refresh())
   }, [])
 
+
   useEffect(() => {
     if (!user) return
+    dispatch(getSubscriptions(1))
     const newSocket = SocketIoClient.getInstance(user._id)
     setSocket(newSocket)
+    const newNotificationSocket = SocketIoClient.getNotificationInstance(user._id)
+    setNotificationSocket(newNotificationSocket)
   }, [user])
 
   useEffect(() => {
     if (!user) return
     socket?.on(socketEvents.getOnlineUsers, (data) => {
+      console.log('online users')
+      console.log(data.onlineUsers)
       dispatch(setOnlineUsers(data.onlineUsers))
     })
     socket?.on(socketEvents.me, (data) => {
       console.log('userSocketId = ', data.userSocketId)
       dispatch(setUserSocketId(data.userSocketId))
     })
+    notificationSocket?.on(socketEvents.getNotificationSocketId, (data) => {
+      console.log('notification socket')
+      dispatch(setNotificationSocketId(data.notificationSocketId))
+    })
+
+
+    return () => {
+      socket?.off(socketEvents.getOnlineUsers)
+      socket?.off(socketEvents.me)
+      notificationSocket?.off(socketEvents.getNotificationSocketId)
+    }
   }, [user, socket])
 
   // ! check this route and remove if not using
@@ -83,7 +110,6 @@ function App() {
     console.log(socketEvents.joinUserRoom, 'emitted roomId', friendsRoomId)
   }, [friendsRoomId])
 
-  
 
   useEffect(() => {
     if (!user) return
@@ -140,7 +166,47 @@ function App() {
       : dispatch(setIsInChat(false))
   }, [location.pathname])
 
-  
+  // * notification useEffect
+  useEffect(() => {
+    const handleNotificationSocketId = (data: any) => {
+      console.log(socketEvents.getNotificationSocketId)
+      console.log(data)
+      dispatch(setNotificationSocketId(data.notificationSocketId))
+    }
+    const handleNewNotification = async (data: any) => {
+      console.log(socketEvents.newNotification)
+      console.log(data)
+      if (data.type === 'call') {
+        console.log('call notification handling')
+        const { data: extraData } = data
+        if (!extraData.chatUser) throw new Error('chat user not found in incoming call')
+        if (!user) throw new Error('auth user not found')
+        const chatRoomId = extraData.roomId.endsWith('-call')
+          ? extraData.roomId.slice(0, -5)
+          : extraData.roomId
+        dispatch(setRoomId({ roomId: chatRoomId, user: extraData.chatUser }))
+        dispatch(setCallRoomId({ roomId: extraData.roomId, user: extraData.chatUser }))
+        dispatch(setCallNotificationState(extraData.type))
+        dispatch(setIncomingCallAndSignal({
+          isIncomingCall: true,
+          signal: extraData.signal,
+          callModelType: extraData.callModelType
+        }))
+        await dispatch(getFollowers({ userId: user._id, page: 1 }))
+        return
+      }
+      dispatch(setSingleNotification(data))
+    }
+
+    notificationSocket?.on(socketEvents.getNotificationSocketId, handleNotificationSocketId)
+    notificationSocket?.on(socketEvents.newNotification, handleNewNotification)
+
+    return () => {
+      notificationSocket?.off(socketEvents.getNotificationSocketId, handleNotificationSocketId)
+      notificationSocket?.off(socketEvents.newNotification, handleNewNotification)
+    }
+  }, [notificationSocket])
+
 
   return (
     <>
@@ -152,6 +218,8 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/verify' element={<OtpModel />} />
         <Route path='/resetPwd' element={<ResetPassword />} />
+        <Route path='/payment-success' element={<PaymentSuccessPage />} />
+        <Route path='/payment-failed' element={<PaymentFailedPage />} />
 
 
         <Route path='/admin/login' element={<AdminLogin />} />
@@ -172,6 +240,8 @@ function App() {
           <Route path='/crop' element={<CropperPage />} />
           <Route path='/go-live' element={<GoLivePage />} />
           <Route path='/view-live' element={<ViewLivePage />} />
+          <Route path='/wallet' element={<WalletPage />} />
+          <Route path='/saved' element={<SavedPostsPage />} />
 
         </Route>
 
@@ -182,6 +252,8 @@ function App() {
             <Route path='user' element={<UserManagement />} />
             <Route path='post' element={<PostManagement />} />
             <Route path='report' element={<ReportManagement />} />
+            <Route path='subscription' element={<SubscriptionManagement />} />
+            <Route path='transaction-wallet' element={<WalletTransactionsManagement />} />
           </Route>
         </Route>
 

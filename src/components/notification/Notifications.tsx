@@ -1,15 +1,13 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import NotificationCard from './NotificationCard'
 import { motion } from 'framer-motion'
+import { NotificationType } from '../../constants/types';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUserNotificationNumberOfPages, selectUserNotificationPage, selectUserNotifications, selectUserUnreadNotificationsCount } from '../../features/user/userSlice';
+import { getNotifications, readNotifications } from '../../features/user/userApi';
+import { AppDispatch } from '../../app/store';
+import { selectAuthUser } from '../../features/auth/authSlice';
 
-export type NotificationType<T = any> = {
-  id: string;
-  status: 'read' | 'unread';
-  authorName: string;
-  message: string;
-  time: Date;
-  data?: T;
-};
 
 const testNotifications: NotificationType[] = [
   {
@@ -57,6 +55,24 @@ type Props = {
 }
 
 const Notifications = ({ position, open }: Props) => {
+  const dispatch = useDispatch<AppDispatch>()
+  const user = useSelector(selectAuthUser)
+  const notifications = useSelector(selectUserNotifications)
+  const numberOfPages = useSelector(selectUserNotificationNumberOfPages)
+  const unreadNotificationCount = useSelector(selectUserUnreadNotificationsCount)
+  const page = useSelector(selectUserNotificationPage)
+
+  useEffect(() => {
+    if (unreadNotificationCount > 0) {
+      dispatch(readNotifications())
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!user) return
+    dispatch(getNotifications({ page: 1, receiverId: user._id }))
+  }, [page])
+
   return (
     <>
       {open &&
@@ -71,7 +87,7 @@ const Notifications = ({ position, open }: Props) => {
           </div>
           <div className="flow-root">
             <ul role="list" className="divide-y divide-gray-200 dark:divide-gray-700">
-              {testNotifications.map((notification, index) => (
+              {notifications.map((notification, index) => (
                 <NotificationCard
                   key={index}
                   notification={notification}

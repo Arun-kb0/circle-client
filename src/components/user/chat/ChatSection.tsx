@@ -5,10 +5,12 @@ import SendMessage from './SendMessage';
 import SocketIoClient from '../../../config/SocketIoClient';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  removeDeletedMessage,
   selectChatMessageCurrentPage, selectChatMessageNumberOfPages, selectChatMessages,
   selectChatMessageStatus,
   selectChatRoomId, selectChatUser,
   setAllAsReadMsgNotification,
+  updateChatMessage,
 } from '../../../features/chat/chatSlice';
 import { AppDispatch } from '../../../app/store';
 import { selectAuthUser } from '../../../features/auth/authSlice';
@@ -17,18 +19,20 @@ import { Link } from 'react-router-dom';
 import { IoMdMore } from 'react-icons/io';
 import { clearChat, getRoomMessages, receiveMessage } from '../../../features/chat/chatApi';
 import DropDown from '../../basic/DropDown';
-import { DropDownElementsType } from '../../../constants/types';
+import { DropDownElementsType, MessageType } from '../../../constants/types';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ChatSkeltonLoader from '../../basic/ChatSkeltonLoader';
 import EmojiPicker, { EmojiClickData, EmojiStyle, Theme } from 'emoji-picker-react';
 import { MdCall } from 'react-icons/md';
+import socketEvents from '../../../constants/socketEvents';
+import Avatar from '../../basic/Avatar';
 
 
 type Props = {
   handleCallModelOpen: (type: 'audio' | 'video') => void
 }
 
-const ChatSection = ({handleCallModelOpen}: Props) => {
+const ChatSection = ({ handleCallModelOpen }: Props) => {
   const socket = SocketIoClient.getInstance()
   const dispatch = useDispatch<AppDispatch>()
 
@@ -47,7 +51,7 @@ const ChatSection = ({handleCallModelOpen}: Props) => {
       return messageObj[roomId];
     }
     return [];
-  }, [roomId, messageObj])
+  }, [roomId, messageObj]) as MessageType[]
 
   const page = useSelector(selectChatMessageCurrentPage)
   const numberOfPages = useSelector(selectChatMessageNumberOfPages)
@@ -85,6 +89,25 @@ const ChatSection = ({handleCallModelOpen}: Props) => {
     handleScrollToMessage()
   }, [socket])
 
+  useEffect(() => {
+    const handleDeleteMessage = (msg: any) => {
+      console.log(socketEvents.messageDeleted)
+      dispatch(removeDeletedMessage({ message: msg }))
+    }
+    const handleEditMessage = (msg: any) => {
+      console.log(socketEvents.editMessage)
+      console.log(msg)
+      dispatch(updateChatMessage({ message: msg }))
+    }
+    socket?.on(socketEvents.messageDeleted, handleDeleteMessage)
+    socket?.on(socketEvents.editMessage, handleEditMessage)
+
+    return () => {
+      socket?.off(socketEvents.messageDeleted, handleDeleteMessage)
+      socket?.off(socketEvents.editMessage, handleEditMessage)
+    }
+  }, [socket])
+
   const dropDownElements: DropDownElementsType[] = [
     {
       handler: () => {
@@ -95,18 +118,21 @@ const ChatSection = ({handleCallModelOpen}: Props) => {
     }
   ]
 
+
+
   return (
     <section >
       <div className='relative flex justify-start bg-gray-800 px-3 gap-4 items-center py-3 rounded-lg shadow-lg '>
-        <Link to='/user-profile'>
-          {chatUser?.image
-            ? <img className="w-8 h-8 rounded-full object-cover mx-2" src={chatUser?.image} alt={chatUser.name} />
-            : <FaUserCircle size={35} />
-          }
-        </Link>
-        <h5 className='font-bold '>{chatUser?.name}</h5>
+        <div className='w-[65px]'>
+          <Avatar
+            image={chatUser?.image}
+            alt={chatUser?.name}
+            userId={chatUser?.userId as string}
+          />
+        </div>
+        <h5 className='font-bold'>{chatUser?.name}</h5>
         <div className='w-full flex justify-end item-center gap-4'>
-          <button onClick={()=> handleCallModelOpen('video') }>
+          <button onClick={() => handleCallModelOpen('video')}>
             <FaVideo size={20} />
           </button>
           <button onClick={() => handleCallModelOpen('audio')}>
@@ -144,25 +170,11 @@ const ChatSection = ({handleCallModelOpen}: Props) => {
         {!chatUser && <div className='w-full h-full flex justify-center items-center'> <h5 className='font-semibold text-lg'>select a user to chat</h5> </div>}
         {chatUser && !hasMore && messages.length === 0 && <div className="text-center">No messages</div>}
         {messages.map((message) => (
-          user?._id === message.authorId
-            ? <SendMessage
-              key={message.authorId}
-              id={message.id}
-              name={message.authorName}
-              userImage={message.authorImage}
-              time={message.updatedAt}
-              status={message.status}
-              message={message.message}
-            />
-            : <ChatMessage
-              key={message.authorId}
-              id={message.id}
-              name={message.authorName}
-              userImage={message.authorImage}
-              time={message.updatedAt}
-              status={message.status}
-              message={message.message}
-            />
+          <ChatMessage
+            key={message.updatedAt as unknown as string}
+            message={message}
+            isUserSendMessage={user?._id === message.authorId}
+          />
         ))}
         <div ref={ref} className='w-full h-24'></div>
 

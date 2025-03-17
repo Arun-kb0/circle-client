@@ -16,15 +16,15 @@ const ResetPassword = (props: Props) => {
 
 
   return (
-    <main className='main-section items-center min-h-screen bg-cover bg-center'
-      style={{
-        backgroundImage: `url(${resetPassword})`,
-        backgroundSize: "contain", 
-        backgroundRepeat: "no-repeat", 
-        backgroundPosition: "center",
-      }}
-    >
-      <div className='backdrop-blur-sm bg-white/30 p-4 rounded-md shadow-lg '>
+    <main className='relative overflow-hidden'>
+      <div className='main-section items-center min-h-screen bg-cover bg-center'
+        style={{
+          backgroundImage: `url(${resetPassword})`,
+          backgroundSize: "contain",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+        }}
+      >
 
         <AnimatePresence
           initial={false}
@@ -39,9 +39,11 @@ const ResetPassword = (props: Props) => {
           }
         </AnimatePresence>
 
-        <ResetPwdForm
-          openModel={open}
-        />
+        <div className='backdrop-blur-sm bg-white/30 p-4 rounded-md shadow-lg '>
+          <ResetPwdForm
+            openModel={open}
+          />
+        </div>
       </div>
     </main>
   )

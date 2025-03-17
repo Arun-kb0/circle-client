@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { RxHamburgerMenu } from "react-icons/rx";
 import { BsBell } from "react-icons/bs";
 import { TbHome } from "react-icons/tb";
@@ -8,7 +8,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import BadgeButton from '../basic/BadgeButton';
 import { AiOutlineMessage } from "react-icons/ai";
 import { useDispatch, useSelector } from 'react-redux';
-import { selectChatUnreadMsgNotification } from '../../features/chat/chatSlice';
+import { selectChatIsIncomingCall, selectChatUnreadMsgNotification, setIncomingCallAndSignal } from '../../features/chat/chatSlice';
 import DropDown from '../basic/DropDown';
 import { DropDownElementsType } from '../../constants/types';
 import { AppDispatch } from '../../app/store';
@@ -16,10 +16,15 @@ import { logout } from '../../features/auth/authApi';
 import { selectAuthUser } from '../../features/auth/authSlice';
 import { FaUserCircle } from 'react-icons/fa';
 import { clearUserCreatedPosts } from '../../features/post/postSlice';
-import { clearFollowers, clearFollowing } from '../../features/user/userSlice';
+import { clearFollowers, clearFollowing, selectUserNavOpen, selectUserNotifications, selectUserUnreadNotificationsCount, setUserNavOpen } from '../../features/user/userSlice';
 import logo from '../../assets/vite.png'
 import Notifications from '../notification/Notifications';
 import IncomingCallAnimation from '../basic/IncomingCallAnimation';
+import { MdCallEnd } from 'react-icons/md';
+import Search from '../Search';
+import { FieldValues } from 'react-hook-form';
+import { searchPost } from '../../features/post/postApi';
+import Avatar from '../basic/Avatar';
 
 
 type Props = {
@@ -30,13 +35,17 @@ const UserNav = ({ handleLogout }: Props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const user = useSelector(selectAuthUser)
-  const unreadNotificationCount = useSelector(selectChatUnreadMsgNotification)
+  const isIncomingCall = useSelector(selectChatIsIncomingCall)
+  const unreadMsgNotificationCount = useSelector(selectChatUnreadMsgNotification)
+  const unreadNotificationsCount = useSelector(selectUserUnreadNotificationsCount)
+  const navOpen = useSelector(selectUserNavOpen)
+
 
   const [userDropDown, setUserDropDown] = useState(false)
   const [notificationDropDown, setNotificationDropDown] = useState(false)
-  
+
   const [callState, setCallState] = useState<'ring' | 'end'>('ring')
-  const [showIncomingCall, setShowIncomingCall] = useState<boolean>(false)
+  const [showCallBtns, setShowCallBtns] = useState<boolean>(false)
 
   const handleClearProfile = async () => {
     dispatch(clearUserCreatedPosts());
@@ -59,7 +68,35 @@ const UserNav = ({ handleLogout }: Props) => {
   ]
 
   const handleIncomingCall = () => {
+    setShowCallBtns(false)
     navigate('/chat')
+  }
+  const handleCallEnd = () => {
+    setCallState('end')
+    dispatch(setIncomingCallAndSignal({
+      isIncomingCall: false,
+      signal: undefined,
+      callModelType: undefined
+    }))
+  }
+
+  const handleSearch = (data: FieldValues | undefined) => {
+    dispatch(searchPost({
+      page: 1,
+      searchText: data?.searchText ? data?.searchText : '',
+      isAdmin: false
+    }))
+  }
+
+  useEffect(() => {
+    setShowCallBtns(isIncomingCall)
+    if (isIncomingCall) {
+      setCallState('ring')
+    }
+  }, [isIncomingCall])
+
+  const handleUserNavOpen = () => {
+    dispatch(setUserNavOpen(!navOpen))
   }
 
   return (
@@ -68,7 +105,7 @@ const UserNav = ({ handleLogout }: Props) => {
         <div className="flex items-center justify-between">
 
           <div className="flex items-center">
-            <button className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+            <button onClick={handleUserNavOpen}  className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
               <SpringButton>
                 <RxHamburgerMenu size={22} />
               </SpringButton>
@@ -76,7 +113,11 @@ const UserNav = ({ handleLogout }: Props) => {
 
             <div className="flex items-center ms-3">
               <div>
-                <img className='w-10 h-10 object-cover' src={logo} alt="" />
+                <Link to='/' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
+                  <SpringButton>
+                    <img className='w-10 h-10 object-cover' src={logo} alt="" />
+                  </SpringButton>
+                </Link>
               </div>
             </div>
           </div>
@@ -84,20 +125,7 @@ const UserNav = ({ handleLogout }: Props) => {
           <div className="flex items-center">
             <div className="flex items-center ms-3">
               <div>
-                <Link to='/' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
-                  <SpringButton>
-                    <TbHome className='text-gray-200 ' size={25} />
-                  </SpringButton>
-                </Link>
-              </div>
-            </div>
-            <div className="flex items-center ms-3">
-              <div>
-                <Link to='/' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
-                  <SpringButton>
-                    <FiSearch className='text-gray-200 ' size={25} />
-                  </SpringButton>
-                </Link>
+                <Search handleSearch={handleSearch} />
               </div>
             </div>
           </div>
@@ -106,10 +134,15 @@ const UserNav = ({ handleLogout }: Props) => {
 
             {/* incoming call */}
             <div className="flex items-center ms-3 relative">
-              {showIncomingCall &&
-                <a onClick={handleIncomingCall}>
-                  <IncomingCallAnimation state={callState} />
-                </a>
+              {showCallBtns &&
+                <div className="flex gap-1 items-center px-3">
+                  <button onClick={handleIncomingCall} >
+                    <IncomingCallAnimation state={callState} />
+                  </button>
+                  <button onClick={handleCallEnd} className='flex bg-red-500 text-white rounded-full p-1 items-center justify-center'  >
+                    <MdCallEnd size={16} />
+                  </button>
+                </div>
               }
             </div>
 
@@ -117,7 +150,10 @@ const UserNav = ({ handleLogout }: Props) => {
               <div>
                 <button onClick={() => setNotificationDropDown(prev => !prev)} className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
                   <SpringButton>
-                    <BsBell className='text-gray-200 ' size={23} />
+                    <BadgeButton
+                      count={unreadNotificationsCount}
+                      icon={<BsBell className='text-gray-200 ' size={23} />}
+                    />
                   </SpringButton>
                 </button>
                 <Notifications
@@ -132,7 +168,7 @@ const UserNav = ({ handleLogout }: Props) => {
                 <Link to='/chat' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
                   <SpringButton>
                     <BadgeButton
-                      count={unreadNotificationCount}
+                      count={unreadMsgNotificationCount}
                       icon={<AiOutlineMessage className='text-gray-200 ' size={23} />}
                     />
                   </SpringButton>
@@ -144,10 +180,16 @@ const UserNav = ({ handleLogout }: Props) => {
               <div>
                 <button onClick={() => setUserDropDown(prev => !prev)} type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
                   <SpringButton>
-                    {user?.image?.url
+                    {/* {user?.image?.url
                       ? <img className="w-8 h-8 rounded-full object-cover" src={user.image.url} alt="Neil image" />
                       : <FaUserCircle size={35} />
-                    }
+                    } */}
+                    <Avatar
+                      userId={''}
+                      image={user?.image?.url}
+                      alt={user?.name}
+                      disableNavigation={true}
+                    />
                   </SpringButton>
                 </button>
               </div>

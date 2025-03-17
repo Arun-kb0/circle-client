@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { UserType } from '../../../constants/types';
@@ -9,6 +9,8 @@ import { uploadFiles } from '../../../features/post/postApi';
 import { selectUploadFilesStatus } from '../../../features/post/postSlice';
 import Spinner from '../../Spinner';
 import { selectUserOtherUser } from '../../../features/user/userSlice';
+import SetupSubscription from './SetupSubscription';
+import { selectPaymentUserSubscriptionPlan } from '../../../features/payment/paymentSlice';
 
 type Props = {
   user: UserType
@@ -28,6 +30,8 @@ const ProfileAbout = ({ user }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const currentUser = useSelector(selectAuthUser)
   const imageUploadStatus = useSelector(selectUploadFilesStatus)
+  const plan = useSelector(selectPaymentUserSubscriptionPlan)
+
   const [isEditable, setIsEditable] = useState(() => currentUser?._id === user._id)
 
   const {
@@ -67,6 +71,7 @@ const ProfileAbout = ({ user }: Props) => {
     }
     dispatch(updatedUser(userReq))
   };
+
 
   return (
     <div className="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
@@ -198,6 +203,10 @@ const ProfileAbout = ({ user }: Props) => {
           </button>}
         </article>
       </form>
+
+      {isEditable &&
+        <SetupSubscription plan={plan} />
+      }
 
     </div >
 

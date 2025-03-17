@@ -12,7 +12,6 @@ type Props = {
 
 const PdfDownload = ({ headers, data }: Props) => {
 
-
   const generatePDF = () => {
     const doc = new jsPDF();
     (doc as any).autoTable({

@@ -21,6 +21,9 @@ type ChatStateType = {
   callRoomId: string | null
   callUser: ChatUserType | null
   callStatus: StateType
+  isIncomingCall: boolean
+  callSignal: any
+  callModelType: undefined | 'video' | 'audio'
 }
 
 
@@ -40,7 +43,10 @@ const initialState: ChatStateType = {
 
   callRoomId: null,
   callUser: null,
-  callStatus: "idle"
+  callStatus: "idle",
+  isIncomingCall: false,
+  callSignal: undefined,
+  callModelType: undefined
 }
 
 const chatSlice = createSlice({
@@ -87,7 +93,7 @@ const chatSlice = createSlice({
         id: uuid(),
         authorName: message.authorName,
         message: message.message,
-        time: message.createdAt,
+        time: new Date(message.createdAt),
         status: 'unread'
       }
       if (!isExits) state.messageNotification.push(newNotification)
@@ -111,9 +117,34 @@ const chatSlice = createSlice({
       state.chatUser = user
     },
 
-    setAllChatRooms: (state, action) => {
+    setIncomingCallAndSignal: (state, action: PayloadAction<{ isIncomingCall: boolean, signal: any, callModelType: 'video' | 'audio' | undefined }>) => {
+      const { isIncomingCall, signal, callModelType } = action.payload
+      state.isIncomingCall = isIncomingCall
+      state.callSignal = signal
+      state.callModelType = callModelType
+    },
 
-    }
+    removeDeletedMessage: (state, action: PayloadAction<{ message: MessageType }>) => {
+      if (state.roomId && state.messages) {
+        const { message } = action.payload
+        const updatedMessages = state.messages[state.roomId].filter(msg => msg.id !== message.id)
+        state.messages[state.roomId] = updatedMessages
+        localStorage.removeItem("messages")
+        localStorage.setItem("messages", JSON.stringify(state.messages))
+      }
+    },
+
+    updateChatMessage: (state, action: PayloadAction<{ message: MessageType }>) => {
+      if (state.messages) {
+        const { message } = action.payload
+        const updatedMessages = state.messages[message.roomId].map(msg => {
+          return msg.id === message.id ? message : msg
+        })
+        state.messages[message.roomId] = updatedMessages
+      }
+    },
+
+    setAllChatRooms: (state, action) => { }
 
 
   },
@@ -127,7 +158,7 @@ const chatSlice = createSlice({
       })
       .addCase(getRoomMessages.fulfilled, (state, action: PayloadAction<PaginationMessages>) => {
         state.messageStatus = 'success'
-        console.log(action.payload)
+        if (!action.payload) return
         const { messages, numberOfPages, currentPage } = action.payload
         if (messages.length === 0) return
         if (!state.messages) state.messages = {}
@@ -194,16 +225,23 @@ export const selectChatMessageStatus = (state: RootState) => state.chat.messageS
 export const selectChatCallRoomId = (state: RootState) => state.chat.callRoomId
 export const selectChatCallUser = (state: RootState) => state.chat.callUser
 export const selectChatCallStatus = (state: RootState) => state.chat.callStatus
+export const selectChatIsIncomingCall = (state: RootState) => state.chat.isIncomingCall
+export const selectChatCallSignal = (state: RootState) => state.chat.callSignal
+export const selectChatCallModelType = (state: RootState) => state.chat.callModelType
 
 
 export const {
   setRoomId,
   addMessage,
   setIsInChat,
+  removeDeletedMessage,
+  updateChatMessage,
+
   showMsgNotification,
   setAllAsReadMsgNotification,
   setCallRoomId,
-  setAllChatRooms
+  setAllChatRooms,
+  setIncomingCallAndSignal
 } = chatSlice.actions
 
 export default chatSlice.reducer

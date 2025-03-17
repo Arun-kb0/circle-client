@@ -1,3 +1,4 @@
+import { PostType } from "./FeedTypes"
 
 export type CallStatusType = 'idle' | 'incoming-call' | 'call-end' | 'call-active'
 export type StateType = 'loading' | 'success' | 'failed' | 'idle'
@@ -25,7 +26,6 @@ export type UserType = {
   updatedAt: Date
 }
 
-
 export type PaginationUsers = {
   users: UserType[];
   numberOfPages: number;
@@ -39,10 +39,10 @@ export type MessageType = {
   authorName: string
   authorImage?: string
   receiverId: string
-  mediaType: 'text' | 'audio' | 'photo'
+  mediaType: 'text' | 'audio' | 'photo' | 'gif'
   message: string
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
   status: 'sent' | 'received' | 'seen'
 }
 
@@ -51,7 +51,6 @@ export type ChatUserType = {
   name: string,
   image?: string
 }
-
 
 export type NotificationType<T = any> = {
   id: string
@@ -62,6 +61,18 @@ export type NotificationType<T = any> = {
   data?: T
 }
 
+export type NotificationDataType = {
+  _id: string
+  authorId: string
+  receiverId: string
+  type: 'call' | 'message' | 'follow' | 'like' | 'comment' | 'replay'
+  message: string
+  read: boolean
+  createdAt: string
+  updatedAt: string,
+  authorName: string
+  authorImage?: string
+}
 
 export type DropDownElementsType = {
   handler: () => void
@@ -93,7 +104,6 @@ export type SignalDataType = {
   candidate?: RTCIceCandidate;
 }
 
-
 export type UserRoomNotificationType = {
   type: 'incoming-call'
   roomId: string
@@ -106,7 +116,6 @@ export type AuthenticationResponseType = {
   accessToken: string
   friendsRoomId: string
 }
-
 
 export type CallUserEventDataType = {
   signal: any
@@ -137,7 +146,6 @@ export type LiveMessageType = {
   createdAt: Date
   updatedAt: Date
 }
-
 
 export type LineChartDatum = {
   x: string; // ISO date string (e.g., "2020-01-01")
@@ -172,4 +180,166 @@ export type UsersCountTypes = {
 export type CountByDataType = {
   date: string
   count: number
+}
+
+export type PaginationNotification = {
+  numberOfPages: number,
+  currentPage: number,
+  notifications: NotificationDataType[],
+}
+
+export type TransactionType = {
+  _id: string;
+  userId: string;
+  senderId: string
+  receiverId: string
+  type: 'credit' | 'debit'
+  amount: number;
+  currency: string;
+  status: 'pending' | 'completed' | 'failed';
+  createdAt: string
+  updatedAt: string
+  userName: string
+  userImage?: string
+}
+
+export type SubscriptionsType = {
+  _id: string
+  merchantTransactionId: string
+  subscriberUserId: string
+  subscriberToUserId: string
+  plan: 'monthly' | 'yearly' | 'lifetime'
+  status: 'inactive' | 'active' | 'cancelled'
+  createdAt: string
+  updatedAt: string
+}
+
+export type WalletType = {
+  _id: string
+  userId: string,
+  balance: number
+  currency: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type TransactionPagination = {
+  transactions: TransactionType[];
+  numberOfPages: number;
+  currentPage: number;
+}
+
+export type SubscriptionPagination = {
+  subscriptions: SubscriptionsType[];
+  numberOfPages: number;
+  currentPage: number;
+}
+
+export type SavedType = {
+  _id: string;
+  userId: string;
+  postId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ReportType = {
+  _id: string;
+  userId: string;
+  contentId: string;
+  contentType: 'post' | 'story' | 'user' | 'comment';
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type PaginationSavedPost = {
+  savedPosts: PostType[];
+  numberOfPages: number;
+  currentPage: number;
+}
+
+export type ReportAdminType = {
+  _id: string
+  userId: string
+  contentId: string
+  contentType: 'post' | 'story' | 'user' | 'comment'
+  description?: string
+  createdAt: string
+  updatedAt: string
+  userName: string
+  userImage?: string
+  post: PostType
+}
+
+
+export type SubscriptionWithUserType = {
+  _id: string
+  merchantTransactionId: string
+  subscriberUserId: string
+  subscriberToUserId: string
+  plan: 'monthly' | 'yearly' | 'lifetime'
+  status: 'inactive' | 'active' | 'cancelled'
+  createdAt: string
+  updatedAt: string
+  subscriberUserName: string
+  subscriberUserImage: string
+  subscriberToUserName: string
+  subscriberToUserImage: string
+}
+
+
+export type TransactionWithUsersType = {
+  _id: string;
+  userId: string;
+  senderId: string
+  receiverId: string
+  type: 'credit' | 'debit'
+  amount: number;
+  currency: string;
+  status: 'pending' | 'completed' | 'failed';
+  createdAt: string
+  updatedAt: string
+  senderName: string
+  senderImage?: string
+  senderEmail: string
+  receiverName: string
+  receiverImage?: string
+  receiverEmail: string
+}
+
+
+export type PaginationReportFiltered = {
+  reports: ReportAdminType[]
+  numberOfPages: number
+  currentPage: number
+}
+
+export type PaginationSubscriptionFiltered = {
+  subscriptions: SubscriptionWithUserType[]
+  numberOfPages: number
+  currentPage: number
+}
+
+export type PaginationTransactionsFiltered = {
+  transactions: TransactionWithUsersType[]
+  numberOfPages: number
+  currentPage: number
+}
+
+export type RadioInputDataType = {
+  id: string
+  name: string
+  label: string
+  value: string
+}
+
+export type UserSubscriptionPlanType = {
+  _id: string
+  userId: string
+  monthly: number
+  yearly: number
+  lifetime: number
+  createdAt: string
+  updatedAt: string
 }

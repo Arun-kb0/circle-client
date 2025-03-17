@@ -4,13 +4,16 @@ import { motion, useElementScroll } from "framer-motion"
 import { dropIn } from "../../../constants/animationDropins"
 import { FaVideo } from "react-icons/fa"
 import { MdCall, MdCallEnd } from "react-icons/md"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import {
   selectChatCallRoomId,
+  selectChatCallSignal,
   selectChatCallStatus,
   selectChatCallUser,
+  selectChatIsIncomingCall,
   selectChatUser,
   setCallRoomId,
+  setIncomingCallAndSignal,
 } from "../../../features/chat/chatSlice"
 import socketEvents from "../../../constants/socketEvents"
 import SocketIoClient from "../../../config/SocketIoClient"
@@ -21,6 +24,8 @@ import useAudioStream from "../../../hook/useAudioStream"
 import AudioVisualizer from "./AudioVisualizer"
 import { IoVideocam, IoVideocamOff } from "react-icons/io5"
 import usePeerConnection from "../../../hook/usePeerConnection"
+import { AppDispatch } from "../../../app/store"
+import { toast } from "react-toastify"
 
 type Props = {
   handleClose: () => void;
@@ -29,6 +34,7 @@ type Props = {
 
 const CallModel = ({ handleClose, callModelType }: Props) => {
   const socket = SocketIoClient.getInstance()
+  const dispatch = useDispatch<AppDispatch>()
   const callRoomId = useSelector(selectChatCallRoomId);
   const callUserDetails = useSelector(selectChatCallUser);
   const status = useSelector(selectChatCallStatus);
@@ -36,6 +42,9 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
   const user = useSelector(selectAuthUser)
   const friendsRoomId = useSelector(selectAuthFriendsRoomId)
   const callNotificationState = useSelector(selectCallNotification)
+
+  const isIncomingCall = useSelector(selectChatIsIncomingCall)
+  const callSignal = useSelector(selectChatCallSignal)
 
 
   const [stream, setStream] = useState<MediaStream>()
@@ -73,6 +82,25 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
     socket?.off(socketEvents.iceCandidate)
   }, [stream, socket])
 
+  const handleIncomingCall = (data: any) => {
+    setReceivingCall(true)
+    play()
+    setCaller(data.from)
+    setName(data.name)
+    setCallerSignal(data.signal)
+  }
+
+  useEffect(() => {
+    if (isIncomingCall) {
+      const data = {
+        from: callRoomId,
+        signal: callSignal,
+        name: chatUser?.name
+      }
+      handleIncomingCall(data)
+    }
+  }, [isIncomingCall])
+
   useEffect(() => {
     cleanupResources()
     //* Get local video/audio stream
@@ -92,13 +120,7 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
       .catch((err) => console.error("Error accessing media devices:", err))
 
     //* Listen for incoming call event
-    socket?.on(socketEvents.callUser, (data) => {
-      setReceivingCall(true)
-      play()
-      setCaller(data.from)
-      setName(data.name)
-      setCallerSignal(data.signal)
-    })
+    socket?.on(socketEvents.callUser, handleIncomingCall)
 
     return () => {
       cleanupResources()
@@ -116,7 +138,6 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
     }
   }, [remoteStream])
 
-  // !replace this with hook if have time
   const createPeerConnection = () => {
     const peerConnection = new RTCPeerConnection()
 
@@ -171,7 +192,15 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
         signal: offer, // sending the SDP offer
         from: me,
         name: name,
-      };
+        extraData: {
+          callModelType,
+          authorId: user?._id,
+          authorName: user?.name,
+          authorImage: user?.image?.url,
+          receiverId: chatUser?.userId,
+          receiverName: chatUser?.name,
+        }
+      }
       socket?.emit(socketEvents.callUser, callUserData)
     } catch (err) {
       console.error("Error creating offer:", err)
@@ -222,6 +251,14 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
 
       // Send the answer back to the caller
       socket?.emit(socketEvents.answerCall, { signal: answer, to: caller })
+      if (isIncomingCall) {
+        dispatch(setIncomingCallAndSignal({
+          isIncomingCall: false,
+          signal: undefined,
+          callModelType: undefined
+        }))
+      }
+
     } catch (err) {
       console.error("Error answering call:", err)
     }
@@ -238,6 +275,15 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
     handleClose()
   }
 
+  useEffect(() => {
+    socket?.on(socketEvents.callEnded, () => {
+      toast('Call ended')
+    })
+
+    return () => {
+      socket?.off(socketEvents.callEnded)
+    }
+  }, [])
 
   return (
     <BackdropVerifyOtp onClick={handleClose}>

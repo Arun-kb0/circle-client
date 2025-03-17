@@ -5,10 +5,13 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import UserSkeletonLoader from '../../components/basic/UserSkeletonLoader';
 import { AnimatePresence } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUserLiveUsers } from '../../features/user/userSlice';
+import { selectUserLiveUsers, selectUserNavOpen } from '../../features/user/userSlice';
 import { getLiveUsers } from '../../features/user/userApi';
 import { AppDispatch } from '../../app/store';
 import { selectAuthUser } from '../../features/auth/authSlice';
+import { createOrder } from '../../features/payment/paymentApi';
+import { Link } from 'react-router-dom';
+import PageTitle from '../../components/basic/PageTitle';
 
 type Props = {}
 
@@ -17,6 +20,7 @@ const ViewLivePage = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const users = useSelector(selectUserLiveUsers)
   const currentUser = useSelector(selectAuthUser)
+  const userNavOpen = useSelector(selectUserNavOpen)
   // const [hasMore, setHasMore] = useState<boolean>(() => page < numberOfPages);
   const [hasMore, setHasMore] = useState<boolean>(false);
   const [openModel, setOpenModel] = useState(false)
@@ -36,6 +40,7 @@ const ViewLivePage = (props: Props) => {
     // setHasMore(newPage < numberOfPages)
   }
 
+  // ! navigate to profile if not subscribed
   const handleViewLive = (userId: string) => {
     if (!userId) {
       console.error('invalid user id')
@@ -45,14 +50,23 @@ const ViewLivePage = (props: Props) => {
     handleOpen()
   }
 
+
+  const handlePayment = () => {
+    const data = {
+      name: "Doe",
+      mobileNumber: 1231231231,
+      amount: 100
+    }
+    dispatch(createOrder({ data }))
+  }
+
+
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
-      <div className="p-4 sm:ml-64" >
+      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`}>
         <div className="p-4 mt-14 w-[70vw]">
 
-          <div className='py-3 flex justify-center items-center'>
-            <h5 className='capitalize text-center text-xl font-semibold tracking-wider '>live stream</h5>
-          </div>
+          <PageTitle  firstWord='Watch' secondWord='Live'/>
 
           <AnimatePresence
             initial={false}
@@ -80,6 +94,7 @@ const ViewLivePage = (props: Props) => {
               </div>
             }
           >
+
             {users.map(user => (
               currentUser?._id !== user._id &&
               <LiveUserCard
@@ -90,6 +105,7 @@ const ViewLivePage = (props: Props) => {
                 handleViewLive={handleViewLive}
               />
             ))}
+
           </InfiniteScroll>
 
         </div>

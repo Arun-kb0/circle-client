@@ -58,7 +58,7 @@ const VerifyOtpModal = ({ componentType, handleClose }: Props) => {
         animate="visible"
         exit="exit"
       >
-        <div className="relative p-4 w-full  max-w-md max-h-full">
+        <div className="p-4 w-full overflow-hidden ">
           <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <form onSubmit={handleSubmit(handleVerify)} className="p-4 md:p-5 text-center space-y-3">
               <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Enter OTP</h3>

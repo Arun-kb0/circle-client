@@ -6,12 +6,14 @@ import CallModel from '../../components/user/chat/CallModel'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../../app/store'
 import { joinCallRoom } from '../../features/chat/chatApi'
-import { selectChatUser, setCallRoomId } from '../../features/chat/chatSlice'
+import { selectChatCallModelType, selectChatIsIncomingCall, selectChatUser, setCallRoomId } from '../../features/chat/chatSlice'
 import { selectAuthUser } from '../../features/auth/authSlice'
 import SocketIoClient from '../../config/SocketIoClient'
 import socketEvents from '../../constants/socketEvents'
 import { generateCallRoomId } from '../../util/generator'
 import { selectCallNotification } from '../../features/notification/notificationSlice'
+import PageTitle from '../../components/basic/PageTitle'
+import { selectUserNavOpen } from '../../features/user/userSlice'
 
 type Props = {}
 
@@ -22,19 +24,17 @@ const ChatPage = (props: Props) => {
   const chatUser = useSelector(selectChatUser)
   const user = useSelector(selectAuthUser)
   const socket = SocketIoClient.getInstance()
-  const callNotification = useSelector(selectCallNotification)
+  // const callNotification = useSelector(selectCallNotification)
+  const isIncomingCall = useSelector(selectChatIsIncomingCall)
+  const incomingCallModelType = useSelector(selectChatCallModelType)
+  const userNavOpen = useSelector(selectUserNavOpen)
 
   const handleCallModelOpen = (type: 'video' | 'audio') => {
     console.log('handleCallModelOpen')
     if (!chatUser || !user) return
-    console.log('handleCallModelOpen',chatUser  )
+    console.log('handleCallModelOpen', chatUser)
     setCallModelOpen(true)
     setCallModelType(type)
-    // dispatch(joinCallRoom({
-    //   senderId: user._id,
-    //   receiverId: chatUser.userId,
-    //   chatUser
-    // }))
 
     const senderId = user?._id
     const receiverId = chatUser?.userId
@@ -50,37 +50,43 @@ const ChatPage = (props: Props) => {
   }
 
   useEffect(() => {
-    if (callNotification === 'incoming-call') {
-      handleCallModelOpen('video')
+    if (isIncomingCall) {
+      handleCallModelOpen(incomingCallModelType as "video" | "audio")
     }
-  }, [callNotification])
+  }, [isIncomingCall])
 
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
-      <div className="p-4 sm:ml-64" >
-        <div className="lg:p-4 sm:p-1 mt-14 flex justify-between gap-8 lg:w-[160vh] md:w-[100vh] sm:w-[80vh]">
+      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`}>
+        <div className="p-4 mt-14">
 
-          <AnimatePresence
-            initial={false}
-            mode='wait'
-            onExitComplete={() => null}
-          >
-            {callModelOpen &&
-              <CallModel
-                handleClose={() => setCallModelOpen(false)}
-                callModelType={callModelType}
+          <PageTitle firstWord='' secondWord='Chat' />
+
+          <div className='flex justify-center gap-3 w-full lg:w-[80vw]'>
+            <AnimatePresence
+              initial={false}
+              mode='wait'
+              onExitComplete={() => null}
+            >
+              {callModelOpen &&
+                <CallModel
+                  handleClose={() => setCallModelOpen(false)}
+                  callModelType={callModelType}
+                />
+              }
+            </AnimatePresence>
+
+            <div className='rounded-lg bg-gray-900 p-3 sm:w-8/12  w-9/12'>
+              <ChatSection
+                handleCallModelOpen={handleCallModelOpen}
               />
-            }
-          </AnimatePresence>
+            </div>
+            <div className='sm:w-3/12 w-2/12'>
+              <ChatUsers />
+            </div>
 
-          <div className='rounded-lg bg-gray-900 p-3  w-8/12 '>
-            <ChatSection
-              handleCallModelOpen={handleCallModelOpen}
-            />
           </div>
-          <div className='w-3/12'>
-            <ChatUsers />
-          </div>
+
 
         </div>
       </div>

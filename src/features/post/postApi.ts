@@ -7,6 +7,7 @@ import { CommentType, LikeType, PostType } from "../../constants/FeedTypes";
 import { toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
 import { DataStrategyFunctionArgs } from "react-router-dom";
+import { ReportType } from "../../constants/types";
 
 
 type GetUserCreatedPostsArgs = { userId: string, page: number }
@@ -365,14 +366,14 @@ export const uploadFiles = createAsyncThunk('/cloudinary/upload', async (files: 
 
 
 type SearchPostArgs = { page: number, startDate?: string, endDate?: string, searchText?: string, isAdmin?: boolean }
-export const searchPost = createAsyncThunk('/posts/all', async ({ page, searchText, startDate, endDate, isAdmin = false }: SearchPostArgs, { dispatch, getState }) => {
+export const searchPost = createAsyncThunk('/posts/search', async ({ page, searchText, startDate, endDate, isAdmin = false }: SearchPostArgs, { dispatch, getState }) => {
   try {
     const state = getState() as RootState
     const accessToken = state.auth.accessToken
     const dispatchFunction = dispatch as AppDispatch
     if (!accessToken) throw new Error(' no accessToken found ')
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
-    const path = isAdmin ? '/admin/post/search-post' : '/post/search-post'
+    const path = isAdmin ? '/admin/post/search-post' : '/feed/search-post'
     const params = {
       page,
       searchText,
@@ -442,3 +443,91 @@ export const getPostsCountByDate = createAsyncThunk('/admin/posts/count-by-date'
   }
 })
 
+// * save and report
+type SavePostArgs = { userId: string, postId: string }
+export const savePost = createAsyncThunk('/post/save', async ({ userId, postId }: SavePostArgs, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const body = { userId, postId }
+    const res = await axiosPrivate.post('/post/save', body)
+    removeInterceptors()
+    console.log("save post")
+    console.log(res.data)
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+type ReportArgs = { userId: string, contentId: string, contentType: ReportType['contentType'] }
+export const report = createAsyncThunk('/post/report', async ({ userId, contentId, contentType }: ReportArgs, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const body = { userId, contentId, contentType }
+    const res = await axiosPrivate.post('/post/report', body)
+    removeInterceptors()
+    console.log("report ")
+    console.log(res.data)
+    return res.data.reportData
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+
+export const getSavedPosts = createAsyncThunk('/post/saved', async (page: number, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const params = { page }
+    const res = await axiosPrivate.get('/feed/saved', { params })
+    removeInterceptors()
+    console.log("get saved posts")
+    console.log(res.data)
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+
+// * admin
+// * get filtered reports
+
+type GetFilteredReportsArgs = { page: number, startDate?: string, endDate?: string, searchText?: string }
+export const getFilteredReports = createAsyncThunk('/admin/report/filtered', async ({ page, searchText, startDate, endDate}: GetFilteredReportsArgs, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+   
+    const params = {
+      page,
+      searchText,
+      startDate,
+      endDate,
+    }
+    const res = await axiosPrivate.get('/admin/report/filtered', { params })
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})

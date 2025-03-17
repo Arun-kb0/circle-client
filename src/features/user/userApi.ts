@@ -245,5 +245,46 @@ export const getUsersCountByDateDetails = createAsyncThunk('/admin/user/count-by
   }
 })
 
+// * notifications routes
+type GetNotificationsArgs = { page: number, receiverId: string }
+export const getNotifications = createAsyncThunk('/user/notifications/get', async ({ page, receiverId }: GetNotificationsArgs, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const params = { page, receiverId }
+    const res = await axiosPrivate.get('/notification', { params })
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+export const readNotifications = createAsyncThunk('/user/read-notifications', async (_, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const notifications = state.user.notifications
+    const notificationIds = notifications.filter(item => !item.read).map(item => item._id)
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const body = notificationIds
+    const res = await axiosPrivate.patch('/notification/read', { body })
+    removeInterceptors()
+    console.log("readNotifications")
+    console.log(res.data)
+    return res.data.notificationIds
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+
 
 

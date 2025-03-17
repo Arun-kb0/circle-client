@@ -75,17 +75,17 @@ const AdminSidebar = (props: Props) => {
           </li>
           <li>
             <SpringButton>
-              <Link to='/admin/chat' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link to='/admin/subscription' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <LuUserRoundPlus size={22} />
-                <span className="ms-3">Follow</span>
+                <span className="ms-3">Subscriptions</span>
               </Link>
             </SpringButton>
           </li>
           <li>
             <SpringButton>
-              <Link to='/admin/report' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link to='/admin/transaction-wallet' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                 <LuUserRoundPlus size={22} />
-                <span className="ms-3">Follow</span>
+                <span className="ms-3">wallet transactions</span>
               </Link>
             </SpringButton>
           </li>

@@ -7,10 +7,13 @@ import {
   selectUserFollowingCurrentPage,
   selectUserFollowingNumberOfPages,
   selectUserFollowingStatus,
+  selectUserNavOpen,
 } from '../../features/user/userSlice'
 import { getFollowing } from '../../features/user/userApi'
 import UsersList from '../../components/user/follow/UsersList'
 import { selectAuthUser } from '../../features/auth/authSlice'
+import PageTitle from '../../components/basic/PageTitle'
+import { useLocation } from 'react-router-dom'
 
 
 type Props = {
@@ -19,11 +22,15 @@ type Props = {
 
 const FollowingPage = ({ userId }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
+  const location = useLocation()
   const followingUsers = useSelector(selectUserFollowing)
   const status = useSelector(selectUserFollowingStatus)
   const page = useSelector(selectUserFollowingCurrentPage)
   const numberOfPages = useSelector(selectUserFollowingNumberOfPages)
+  const userNavOpen = useSelector(selectUserNavOpen)
+  
   const [hasMore, setHasMore] = useState<boolean>(() => page < numberOfPages);
+  const [isUserProfile, setisUserProfile] = useState(location.pathname === '/profile')
 
   useEffect(() => {
     if (followingUsers.length === 0) {
@@ -40,9 +47,11 @@ const FollowingPage = ({ userId }: Props) => {
 
 
   return (
-    <main className='main-section justify-center relative overflow-y-auto ' >
-      <div className="p-4" >
-        <div className="">
+    <main className='main-section justify-center relative overflow-y-auto' >
+      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`}>
+        <div className="p-4 mt-14">
+
+          {!isUserProfile && <PageTitle firstWord='' secondWord='Following' />}
 
           <UsersList
             users={followingUsers}

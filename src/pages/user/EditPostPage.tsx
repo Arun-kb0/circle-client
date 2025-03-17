@@ -12,6 +12,8 @@ import { updatePost, uploadFiles } from '../../features/post/postApi';
 import PostForm from '../../components/user/createPost/PostForm';
 import { AnimatePresence } from 'framer-motion';
 import OrbAnimation from '../../components/basic/OrbAnimation';
+import PageTitle from '../../components/basic/PageTitle';
+import { selectUserNavOpen } from '../../features/user/userSlice';
 
 type Props = {}
 
@@ -26,6 +28,8 @@ const EditPostPage = (props: Props) => {
   const navigator = useNavigate()
   const location = useLocation()
   const post = location.state as PostType
+  const userNavOpen = useSelector(selectUserNavOpen)
+  
 
   const [images, setImages] = useState<string[]>(() => {
     return post.mediaType !== 'text'
@@ -155,8 +159,10 @@ const EditPostPage = (props: Props) => {
 
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
-      <div className="p-4 sm:ml-64" >
+      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`}>
         <div className="p-4 mt-14">
+
+          <PageTitle firstWord='Edit' secondWord='Post' />
 
           <AnimatePresence
             initial={false}

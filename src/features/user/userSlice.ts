@@ -1,10 +1,11 @@
 import { ActionCreator, createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { CountByDataType, LineChartDataType, PaginationUsers, PieChartType, StateType, UsersCountTypes, UserType } from "../../constants/types"
+import { CountByDataType, LineChartDataType, NotificationDataType, PaginationNotification, PaginationUsers, PieChartType, StateType, UsersCountTypes, UserType } from "../../constants/types"
 import {
   blockUser, followUser, getAllUsers, getFollowers,
   getFollowing,
   getLiveUsers,
-  getSuggestedPeople, getUser, getUsersCount, getUsersCountByDateDetails, unblockUser, unFollow
+  getNotifications,
+  getSuggestedPeople, getUser, getUsersCount, getUsersCountByDateDetails, readNotifications, unblockUser, unFollow
 } from "./userApi"
 import { RootState } from "../../app/store"
 
@@ -37,6 +38,7 @@ type UserStateType = {
   onlineUsers: string[]
   socketId: string | undefined
   liveUsers: UserType[],
+  notificationSocketId: string | undefined
 
   totalUsers: number
   totalFemaleUsers: number
@@ -45,6 +47,12 @@ type UserStateType = {
   pieChartData: PieChartType[]
   userLineChartData: LineChartDataType | null
 
+  notifications: NotificationDataType[]
+  notificationNumberOfPages: number
+  notificationCurrentPages: number
+
+  unreadNotificationsCount: number
+  userNavOpen: boolean
 }
 
 const initialState: UserStateType = {
@@ -76,14 +84,21 @@ const initialState: UserStateType = {
   totalMaleUsers: 0,
   totalOtherUsers: 0,
   pieChartData: [],
-  userLineChartData: null
+  userLineChartData: null,
+  notificationSocketId: undefined,
+
+  notifications: [],
+  notificationNumberOfPages: 0,
+  notificationCurrentPages: 0,
+
+  unreadNotificationsCount: 0,
+  userNavOpen: true
 }
 
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-
     clearFollowers: (state) => {
       state.followCurrentPage = 0
       state.usersNumberOfPages = 0
@@ -101,6 +116,27 @@ const userSlice = createSlice({
     },
     setUserSocketId: (state, action: PayloadAction<string>) => {
       state.socketId = action.payload
+    },
+
+    setNotificationSocketId: (state, action: PayloadAction<string>) => {
+      state.notificationSocketId = action.payload
+    },
+
+    setSingleNotification: (state, action: PayloadAction<NotificationDataType>) => {
+      if (!action.payload) return
+      state.notifications.unshift(action.payload)
+      state.unreadNotificationsCount += 1
+    },
+    setNotifications: (state, action: PayloadAction<NotificationDataType[]>) => {
+      state.notifications = [...action.payload, ...state.notifications]
+      state.unreadNotificationsCount = state.notifications.reduce((count, item) => {
+        if (!item.read) count++;
+        return count;
+      }, 0)
+    },
+
+    setUserNavOpen: (state, action: PayloadAction<boolean>) => {
+      state.userNavOpen = action.payload
     }
 
   },
@@ -277,6 +313,30 @@ const userSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(readNotifications.fulfilled, (state, action: PayloadAction<string[]>) => {
+        const notificationIds = new Set(action.payload)
+        const updatedNotifications = state.notifications.map(item => {
+          if (notificationIds.has(item._id)) return { ...item, read: true }
+          return item
+        })
+        state.notifications = updatedNotifications
+        state.unreadNotificationsCount = 0
+      })
+      .addCase(readNotifications.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
+      .addCase(getNotifications.fulfilled, (state, action: PayloadAction<PaginationNotification>) => {
+        const { notifications, currentPage, numberOfPages } = action.payload
+        const idsSet = new Set(state.notifications.map(item => item._id))
+        const uniqueNotifications = notifications.filter(item => !idsSet.has(item._id))
+        state.notifications.push(...uniqueNotifications)
+        state.notificationCurrentPages = currentPage
+        state.notificationNumberOfPages = numberOfPages
+      })
+      .addCase(getNotifications.rejected, (state, action) => {
+        state.error = action.error.message
+      })
   }
 })
 
@@ -316,11 +376,25 @@ export const selectUserTotalOtherUsers = (state: RootState) => state.user.totalO
 export const selectUserPieChartData = (state: RootState) => state.user.pieChartData
 export const selectUserLineChartData = (state: RootState) => state.user.userLineChartData
 
+export const selectUserNotificationSocketId = (state: RootState) => state.user.notificationSocketId
+
+export const selectUserNotifications = (state: RootState) => state.user.notifications
+export const selectUserNotificationNumberOfPages = (state: RootState) => state.user.notificationNumberOfPages
+export const selectUserNotificationPage = (state: RootState) => state.user.notificationCurrentPages
+export const selectUserUnreadNotificationsCount = (state: RootState) => state.user.unreadNotificationsCount
+
+export const selectUserNavOpen = (state: RootState) => state.user.userNavOpen
+
+
 export const {
   clearFollowers,
   clearFollowing,
   setOnlineUsers,
-  setUserSocketId
+  setUserSocketId,
+  setNotificationSocketId,
+  setNotifications,
+  setSingleNotification,
+  setUserNavOpen
 } = userSlice.actions
 
 export default userSlice.reducer

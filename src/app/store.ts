@@ -1,20 +1,8 @@
-import { configureStore } from "@reduxjs/toolkit";
-import authReducer from '../features/auth/authSlice'
-import userReducer from '../features/user/userSlice'
-import postReducer from '../features/post/postSlice'
-import chatReducer from '../features/chat/chatSlice'
-import notificationReducer from '../features/notification/notificationSlice'
+import {  configureStore } from "@reduxjs/toolkit";
+import rootReducer from "./rootReducer";
 
 export const store = configureStore({
-
-  reducer: {
-    auth: authReducer,
-    user: userReducer,
-    post: postReducer,
-    chat: chatReducer,
-    notification: notificationReducer
-  },
-
+  reducer: rootReducer
 })
 
 export const resetStore = () => ({ type: 'resetStore' });

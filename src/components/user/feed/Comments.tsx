@@ -3,9 +3,6 @@ import CommentCard from './CommentCard'
 import BackdropVerifyOtp from '../../backdrop/BackdropVerifyOtp'
 import { motion } from 'framer-motion'
 import { dropIn } from '../../../constants/animationDropins';
-import RecursiveComments from './RecursiveComments';
-import { NestedCommentsType } from '../../../constants/FeedTypes';
-import TestComments from './TestComments';
 
 
 
@@ -26,8 +23,6 @@ const Comments = ({ handleClose }: Props) => {
         exit="exit"
       >
         <CommentCard />
-        
-        {/* <TestComments/> */}
        
       </motion.div>
 

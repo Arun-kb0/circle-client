@@ -1,19 +1,21 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import {
   CommentPaginationRes, CommentType, LikeType,
+  PaginationSearchPost,
   PostPaginationRes, PostType
 } from '../../constants/FeedTypes'
 import {
   createComment, createPost, deleteComment,
-  deletePost, feedCounts, getComments, getPopularPosts, getPosts,
+  deletePost, feedCounts, getComments, getFilteredReports, getPopularPosts, getPosts,
   getPostsCountByDate,
-  getUserCreatedPosts, like, unlike,
+  getSavedPosts,
+  getUserCreatedPosts, like, report, savePost, searchPost, unlike,
   updateComment, updatePost, uploadFiles
 } from './postApi'
 import { RootState } from '../../app/store'
 import {
   CountByDataType, FeedCountsType,
-  LineChartDataType, StateType
+  LineChartDataType, PaginationReportFiltered, PaginationSavedPost, ReportAdminType, ReportType, SavedType, StateType
 } from '../../constants/types'
 
 type PostStateType = {
@@ -62,6 +64,21 @@ type PostStateType = {
   totalLikes: number
   popularPosts: PostType[]
   postLineChartData: LineChartDataType | null
+
+  sharePostId: string | null
+  sharePostModelOpen: boolean
+
+  reports: ReportType[]
+
+  savedPosts: PostType[]
+  savedPostsNumberOfPages: number
+  savedPostsCurrentPage: number
+  savedPostsState: StateType
+
+  reportFiltered: ReportAdminType[]
+  reportFilteredNumberOfPages: number
+  reportFilteredCurrentPge: number
+  reportFilteredStatus: StateType
 }
 
 const initialState: PostStateType = {
@@ -106,7 +123,21 @@ const initialState: PostStateType = {
   totalComments: 0,
   totalLikes: 0,
   popularPosts: [],
-  postLineChartData: null
+  postLineChartData: null,
+
+  sharePostId: null,
+  sharePostModelOpen: false,
+  reports: [],
+
+  savedPosts: [],
+  savedPostsNumberOfPages: 0,
+  savedPostsCurrentPage: 0,
+  savedPostsState: 'idle',
+
+  reportFiltered: [],
+  reportFilteredNumberOfPages: 0,
+  reportFilteredCurrentPge: 0,
+  reportFilteredStatus: 'idle'
 }
 
 const postSlice = createSlice({
@@ -155,6 +186,12 @@ const postSlice = createSlice({
       state.comments.forEach(comment => {
         if (comment._id === commentId) comment.replayCount = count
       })
+    },
+
+    setSharePostModelOpen: (state, action) => {
+      const { postId, open } = action.payload
+      state.sharePostId = postId
+      state.sharePostModelOpen = open
     }
 
 
@@ -407,6 +444,84 @@ const postSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(savePost.fulfilled, (state, action: PayloadAction<{ savedData: SavedType, savedPost: PostType }>) => {
+        if (!action.payload) return
+        const { savedData, savedPost } = action.payload
+        const existsIndex = state.savedPosts.findIndex(item => item._id === savedPost._id)
+        if (existsIndex !== -1) {
+          state.savedPosts.splice(existsIndex, 1)
+          return
+        }
+        state.savedPosts.push(savedPost)
+      })
+      .addCase(savePost.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
+      .addCase(report.fulfilled, (state, action: PayloadAction<ReportType>) => {
+        if (!action.payload) return
+        // const { contentType, contentId } = action.payload
+        state.reports.push(action.payload)
+      })
+      .addCase(report.rejected, (state, action) => {
+        state.error = action.error.message
+      })
+
+      .addCase(getSavedPosts.pending, (state) => {
+        state.savedPostsState = 'loading'
+      })
+      .addCase(getSavedPosts.fulfilled, (state, action: PayloadAction<PaginationSavedPost>) => {
+        state.savedPostsState = 'success'
+        const { savedPosts, numberOfPages, currentPage } = action.payload
+        const existingPostIds = new Set(state.savedPosts.map(post => post._id));
+        const newPosts = savedPosts.filter(post => !existingPostIds.has(post._id));
+        state.savedPosts = [...state.savedPosts, ...newPosts]
+        state.savedPostsCurrentPage = currentPage
+        state.savedPostsNumberOfPages = numberOfPages
+      })
+      .addCase(getSavedPosts.rejected, (state, action) => {
+        state.savedPostsState = 'failed'
+        state.error = action.error.message
+      })
+
+
+      .addCase(searchPost.pending, (state) => {
+        state.postStatus = 'loading'
+      })
+      .addCase(searchPost.fulfilled, (state, action: PayloadAction<PaginationSearchPost>) => {
+        state.postStatus = 'success'
+        const { posts, numberOfPages, currentPage } = action.payload
+        // const existingPostIds = new Set(state.posts.map(post => post._id));
+        // const newPosts = posts.filter(post => !existingPostIds.has(post._id));
+        state.posts = posts
+        state.postNumberOfPages = currentPage
+        state.postPage = numberOfPages
+      })
+      .addCase(searchPost.rejected, (state, action) => {
+        state.postStatus = 'failed'
+        state.error = action.error.message
+      })
+
+      .addCase(getFilteredReports.pending, (state) => {
+        state.reportFilteredStatus = 'loading'
+      })
+      .addCase(getFilteredReports.fulfilled, (state, action: PayloadAction<PaginationReportFiltered>) => {
+        if(!action.payload) return
+        state.reportFilteredStatus = 'success'
+        const { reports, numberOfPages, currentPage } = action.payload
+        // const existingPostIds = new Set(state.posts.map(post => post._id));
+        // const newPosts = posts.filter(post => !existingPostIds.has(post._id));
+        state.reportFiltered = reports
+        state.reportFilteredCurrentPge = currentPage
+        state.reportFilteredNumberOfPages = numberOfPages
+      })
+      .addCase(getFilteredReports.rejected, (state, action) => {
+        state.reportFilteredStatus = 'failed'
+        state.error = action.error.message
+      })
+
+
+
   }
 })
 
@@ -451,6 +566,20 @@ export const selectTotalLikeCounts = (state: RootState) => state.post.totalLikes
 export const selectPostPopularPosts = (state: RootState) => state.post.popularPosts
 export const selectPostLineChartData = (state: RootState) => state.post.postLineChartData
 
+export const selectPostSharePostModelOpen = (state: RootState) => state.post.sharePostModelOpen
+export const selectPostSharePostId = (state: RootState) => state.post.sharePostId
+
+export const selectPostReports = (state: RootState) => state.post.reports
+export const selectPostSavedPosts = (state: RootState) => state.post.savedPosts
+export const selectPostSavedPostsNumberOfPages = (state: RootState) => state.post.savedPostsNumberOfPages
+export const selectPostSavedPostsCurrentPage = (state: RootState) => state.post.savedPostsCurrentPage
+export const selectPostSavedPostsState = (state: RootState) => state.post.savedPostsState
+
+export const selectPostReportFiltered = (state: RootState) => state.post.reportFiltered
+export const selectPostReportFilteredNumberOfPages = (state: RootState) => state.post.reportFilteredNumberOfPages
+export const selectPostReportFilteredCurrentPage = (state: RootState) => state.post.reportFilteredCurrentPge
+export const selectPostReportFilteredStatus = (state: RootState) => state.post.reportFilteredStatus
+
 export const {
   selectPost,
   setCommentedUsersModelState,
@@ -461,7 +590,8 @@ export const {
   setImageToCropIndex,
   clearUserCreatedPosts,
 
-  setCommentReplayCount
+  setCommentReplayCount,
+  setSharePostModelOpen
 } = postSlice.actions
 
 export default postSlice.reducer

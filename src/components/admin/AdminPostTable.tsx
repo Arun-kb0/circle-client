@@ -3,6 +3,7 @@ import { PostType } from '../../constants/FeedTypes'
 import moment from 'moment'
 import { MdBlock } from 'react-icons/md'
 import { TiTickOutline } from "react-icons/ti"
+import Avatar from '../basic/Avatar'
 
 type Props = {
   posts: PostType[]
@@ -32,7 +33,7 @@ const AdminPostTable = ({ posts, handleBlock, handleUnblock, }: Props) => {
 
         <tbody>
           {posts.map((post) => (
-            <tr key={post._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+            <tr key={post._id} className={`bg-white border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 ${post.reportsCount > 5 ? 'dark:bg-red-900' : 'dark:bg-gray-800'}`}>
               <td className="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
                 <div className="flex flex-wrap justify-start gap-1 max-w-40 overflow-hidden">
                   {post.mediaType !== 'text' ? (
@@ -53,10 +54,11 @@ const AdminPostTable = ({ posts, handleBlock, handleUnblock, }: Props) => {
               </td>
               <td className="px-6 py-4 w-auto flex justify-center items-center space-y-1">
                 <div className="">
-                  <img
-                    className="w-10 h-10 rounded-full object-cover"
-                    src={post.authorImage}
+                  <Avatar
+                    image={post.authorImage}
                     alt={post.authorName}
+                    userId={post.authorName}
+                    disableNavigation={true}
                   />
                   <div className="flex justify-center">
                     <span className="text-xs">{post.authorName}</span>

@@ -10,14 +10,22 @@ import { HiOutlineUserCircle } from 'react-icons/hi2';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
-import { deletePost, like, unlike } from '../../../features/post/postApi'
-import { selectPost, selectPostLikes, setCommentedUsersModelState, setLikedUsersModelState } from '../../../features/post/postSlice';
+import { deletePost, like, report, savePost, unlike } from '../../../features/post/postApi'
+import {
+  selectPost, selectPostLikes, selectPostReports,
+  selectPostSavedPosts,
+  setCommentedUsersModelState, setLikedUsersModelState, setSharePostModelOpen
+} from '../../../features/post/postSlice';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { GoHeartFill } from "react-icons/go";
 import DropDown from '../../basic/DropDown';
 import { DropDownElementsType } from '../../../constants/types';
 import { IoIosMore } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
+import ShareComponent from '../../basic/ShareComponent';
+import Avatar from '../../basic/Avatar';
+import { CiBookmark, CiBookmarkCheck } from 'react-icons/ci';
+import { toast } from 'react-toastify';
 
 
 type Props = {
@@ -26,20 +34,43 @@ type Props = {
 }
 
 const PostCard = ({ post, openCommentModel }: Props) => {
-  const navigator = useNavigate()
+  const navigatorRouter = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const likes = useSelector(selectPostLikes)
   const user = useSelector(selectAuthUser)
+  const savedPosts = useSelector(selectPostSavedPosts)
+  const reports = useSelector(selectPostReports)
 
+  const [isSavedPost, setIsSavedPost] = useState<boolean>(() => {
+    return Boolean(savedPosts.find(item => item._id === post._id))
+  })
+  const [isReportedPost, setIsReportedPost] = useState<boolean>(() => {
+    return Boolean(reports.find(item => item.contentType === 'post' && item.contentId === post._id))
+  })
   const [openPostDropdown, setOpenPostDropdown] = useState(false)
-  const postDropdownElements: DropDownElementsType[] = [
+
+  const userPostDropdownElements: DropDownElementsType[] = [
     {
       handler: () => { dispatch(deletePost(post._id)) },
       name: "delete"
     },
     {
-      handler: () => { navigator('/edit-post', { state: post }) },
+      handler: () => { navigatorRouter('/edit-post', { state: post }) },
       name: 'edit'
+    }
+  ]
+
+  const postDropdownElements: DropDownElementsType[] = [
+    {
+      handler: async () => {
+       await dispatch(report({
+          userId: user?._id as string,
+          contentId: post._id,
+          contentType: 'post'
+       })).unwrap()
+        toast(`post created by ${post.authorName} reported`)
+      },
+      name: "report"
     }
   ]
 
@@ -50,7 +81,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
   })
 
   const handleImageView = () => {
-    
+
   }
 
   const handleLike = () => {
@@ -63,8 +94,21 @@ const PostCard = ({ post, openCommentModel }: Props) => {
     setIsLiked(false)
   }
 
-  const handleShare = () => {
-
+  const handleShare = async () => {
+    // dispatch(setSharePostModelOpen({ open: true, postId: post._id }))
+    const url = window.location.href
+    const title = post.mediaType === 'text' ? post.desc : 'Shared post'
+    const text = 'shared post'
+    try {
+      if (navigator.share) {
+        await navigator.share({ url, title, text });
+        console.log('Content shared successfully!');
+      } else {
+        console.log('Web Share API is not supported in this browser.');
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
   }
 
   const handleShowLikedUsers = () => {
@@ -72,41 +116,46 @@ const PostCard = ({ post, openCommentModel }: Props) => {
     dispatch(setLikedUsersModelState(true))
   }
 
+  const handleSavePost = () => {
+    dispatch(savePost({
+      userId: user?._id as string,
+      postId: post._id
+    }))
+    setIsSavedPost(prev => !prev)
+  }
+
   return (
     <motion.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
-      className="nav-bg-color lg:w-[50vw] rounded-lg shadow overflow-hidden "
+      className="nav-bg-color sm:w-[50vw] w-[90vw] rounded-lg shadow overflow-hidden"
     >
       <div className="flex items-center justify-between m-2 relative" >
         <div className='flex justify-start items-center'>
           <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
-            <SpringButton>
-              {post.authorImage
-                ? <img className="mr-2 w-6 h-6 rounded-full object-cover" src={post.authorImage} alt={post.authorName} />
-                : <HiOutlineUserCircle size={22} className='mr-2 w-6 h-6 rounded-full' />
-              }
-            </SpringButton>
+            <Avatar
+              image={post.authorImage}
+              alt={post.authorName}
+              userId={post.authorId}
+            />
             {post.authorId === user?._id ? 'You' : post.authorName}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">{moment(post.updatedAt).fromNow()}</p>
         </div>
 
-        {post.authorId === user?._id &&
-          <button className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600" onClick={() => setOpenPostDropdown(prev => !prev)} >
-            <IoIosMore size={17} />
-            <span className="sr-only">Comment settings</span>
-          </button>
-        }
+        <button className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600" onClick={() => setOpenPostDropdown(prev => !prev)} >
+          <IoIosMore size={17} />
+          <span className="sr-only">Comment settings</span>
+        </button>
         <DropDown
           open={openPostDropdown}
-          elements={postDropdownElements}
+          elements={post.authorId === user?._id ? userPostDropdownElements : postDropdownElements}
           position='right-0 top-10'
         />
       </div>
 
       {post.mediaType === 'image' && post.media &&
-        <PostImages  media={post.media}/>
+        <PostImages media={post.media} />
       }
       <div className="p-5">
         {post.mediaType === 'text' && post.media &&
@@ -151,8 +200,25 @@ const PostCard = ({ post, openCommentModel }: Props) => {
             </SpringButton>
           </button>
 
+          {isSavedPost
+            ? (
+              <button onClick={handleSavePost} className='flex items-center mr-3 gap-2'>
+                <SpringButton>
+                  <CiBookmarkCheck size={20} />
+                </SpringButton>
+              </button>
+            ) : (
+              <button onClick={handleSavePost} className='flex items-center mr-3 gap-2'>
+                <SpringButton>
+                  <CiBookmark size={20} />
+                </SpringButton>
+              </button>
+            )
+          }
+
         </div>
       </div>
+
     </motion.div>
 
   )
