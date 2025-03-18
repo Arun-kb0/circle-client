@@ -1,3 +1,5 @@
+import { UserType } from "./types"
+
 export type PostType = {
   _id: string,
   desc?: string
@@ -64,6 +66,7 @@ export type LikeType = {
 
 export type PaginationSearchPost = {
   posts: PostType[],
+  users: UserType[],
   numberOfPages: number
   currentPage: number
   // likes: LikeType[]
