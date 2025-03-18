@@ -26,6 +26,7 @@ import EmojiPicker, { EmojiClickData, EmojiStyle, Theme } from 'emoji-picker-rea
 import { MdCall } from 'react-icons/md';
 import socketEvents from '../../../constants/socketEvents';
 import Avatar from '../../basic/Avatar';
+import MessageTypingAnimation from '../../basic/MessageTypingAnimation';
 
 
 type Props = {
@@ -40,6 +41,7 @@ const ChatSection = ({ handleCallModelOpen }: Props) => {
   const [open, setOpen] = useState(false)
   const [emojiModelOpen, setEmojiModelOpen] = useState<boolean>(false)
   const [emoji, setEmoji] = useState<EmojiClickData | null>(null)
+  const [isMessageTyping, setIsMessageTyping] = useState(false)
 
   const user = useSelector(selectAuthUser)
   const messageObj = useSelector(selectChatMessages)
@@ -118,6 +120,18 @@ const ChatSection = ({ handleCallModelOpen }: Props) => {
     }
   ]
 
+  useEffect(() => {
+    const handleMessageTyping = () => { setIsMessageTyping(true) }
+    const handleMessageTypingStopped = () => { setIsMessageTyping(false) }
+    socket?.on(socketEvents.messageTyping, handleMessageTyping)
+    socket?.on(socketEvents.messageTypingStopped, handleMessageTypingStopped)
+
+    return () => {
+      socket?.off(socketEvents.messageTyping, handleMessageTyping)
+      socket?.off(socketEvents.messageTypingStopped, handleMessageTypingStopped)
+    }
+  }, [socket])
+
 
 
   return (
@@ -176,6 +190,7 @@ const ChatSection = ({ handleCallModelOpen }: Props) => {
             isUserSendMessage={user?._id === message.authorId}
           />
         ))}
+        {isMessageTyping && <MessageTypingAnimation />}
         <div ref={ref} className='w-full h-24'></div>
 
       </InfiniteScroll>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { BsSendFill } from "react-icons/bs";
 import { useDispatch, useSelector } from 'react-redux';
 import { selectChatRoomId } from '../../../features/chat/chatSlice';
@@ -8,6 +8,9 @@ import { sendMessage } from '../../../features/chat/chatApi';
 import { EmojiClickData } from 'emoji-picker-react'
 import { MdEmojiEmotions, MdGif } from 'react-icons/md';
 import GifPicker from '../../basic/GifPicker';
+import SocketIoClient from '../../../config/SocketIoClient';
+import socketEvents from '../../../constants/socketEvents';
+import ChatUser from './ChatUser';
 
 type Props = {
   handleScrollToMessage: () => void
@@ -17,11 +20,14 @@ type Props = {
 }
 
 const ChatInput = ({ handleScrollToMessage, setEmojiModelOpen, emoji }: Props) => {
+  const socket = SocketIoClient.getInstance()
   const dispatch = useDispatch<AppDispatch>()
   const roomId = useSelector(selectChatRoomId)
   const user = useSelector(selectAuthUser)
   const [currentMessage, setCurrentMessage] = useState('')
   const [gifPickerOpen, setGifPickerOpen] = useState<boolean>(false)
+
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const handleSendMessage = () => {
     if (user && roomId && currentMessage !== "") {
@@ -31,9 +37,25 @@ const ChatInput = ({ handleScrollToMessage, setEmojiModelOpen, emoji }: Props) =
     }
   }
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentMessage(e.target.value)
+    socket?.emit(socketEvents.messageTyping, { roomId })
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current)
+    }
+    typingTimeoutRef.current = setTimeout(() => {
+      socket?.emit(socketEvents.messageTypingStopped, { roomId })
+    }, 2000)
+  }
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSendMessage()
+      socket?.emit(socketEvents.messageTypingStopped, { roomId })
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
     }
   }
 
@@ -52,6 +74,18 @@ const ChatInput = ({ handleScrollToMessage, setEmojiModelOpen, emoji }: Props) =
     setEmojiModelOpen(false)
   }, [emoji])
 
+  // useEffect(() => {
+  //   socket?.emit(socketEvents.messageTyping, { roomId })
+  // }, [currentMessage])
+
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    }
+  }, [])
+
 
   return (
     <div className="mb-1 relative">
@@ -59,7 +93,7 @@ const ChatInput = ({ handleScrollToMessage, setEmojiModelOpen, emoji }: Props) =
 
       <div className='flex flex-wrap lg:gap-5 sm:gap-3 gap-1 items-center'>
         <input
-          onChange={e => setCurrentMessage(e.target.value)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           value={currentMessage}
           type="text"
