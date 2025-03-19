@@ -8,6 +8,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import errorHandler from "../../errorHandler/errorHandler";
 import { axiosPrivate } from "../../config/axiosInstance";
 import configureAxios from "../../config/configureAxios";
+import { sortFollowingUser } from "../user/userSlice";
 
 
 // * api calls
@@ -118,6 +119,7 @@ export const sendMessage = ({ currentMessage, user, roomId, mediaType }: SendMes
       updatedAt: updatedAt
     }
     dispatch(addMessage(chatMsg))
+    dispatch(sortFollowingUser({ userId: chatMsg.receiverId }))
   } catch (error) {
     console.error(error)
   }

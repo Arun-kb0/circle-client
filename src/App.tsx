@@ -40,7 +40,7 @@ import { setCallNotificationState } from './features/notification/notificationSl
 import { getFollowers } from './features/user/userApi'
 import PostManagement from './pages/admin/PostManagement'
 import { Socket } from 'socket.io-client'
-import { setNotificationSocketId, setOnlineUsers, setSingleNotification, setUserSocketId } from './features/user/userSlice'
+import { setNotificationSocketId, setOnlineUsers, setSingleNotification, setUserSocketId, sortFollowingUser } from './features/user/userSlice'
 import ReportManagement from './pages/admin/ReportManagement'
 import GoLivePage from './pages/user/GoLivePage'
 import ViewLivePage from './pages/user/ViewLivePage'
@@ -144,6 +144,7 @@ function App() {
     socket?.on(socketEvents.receiveMessage, (data) => {
       // toast('new message')
       dispatch(receiveMessage(data))
+      dispatch(sortFollowingUser({ userId: data.authorId }))
       console.log(data)
     })
 
