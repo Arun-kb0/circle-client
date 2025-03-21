@@ -123,8 +123,6 @@ export const logout = createAsyncThunk('/auth/logout', async (_, { dispatch }) =
       withCredentials: true
     })
     // dispatch(resetStore())
-    sessionStorage.clear()
-    localStorage.clear()
     return res.data
   } catch (error) {
     return errorHandler(error)

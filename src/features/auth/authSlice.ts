@@ -6,6 +6,56 @@ import {
 import { AuthenticationResponseType, StateType, UserType } from "../../constants/types";
 import { RootState } from "../../app/store";
 import { uploadProfileImage } from "../user/userApi";
+import { selectUserUnreadNotificationsCount } from "../user/userSlice";
+
+const showNavRoutes = [
+  // '/signup',
+  // '/login',
+  // '/verify',
+  // '/resetPwd',
+  // '/payment-success',
+  // '/payment-failed',
+
+  // // Admin routes
+  // '/admin/login',
+  // '/admin/signup',
+
+  // Protected user routes
+  '/',
+  '/profile',
+  '/user-profile',
+  '/global-feed',
+  '/create-post',
+  '/edit-post',
+  '/chat',
+  '/following',
+  '/follow-people',
+  '/crop',
+  '/go-live',
+  '/view-live',
+  '/wallet',
+  '/saved',
+
+  // Protected admin routes
+  '/admin',
+  '/admin/user',
+  '/admin/post',
+  '/admin/report',
+  '/admin/subscription',
+  '/admin/transaction-wallet',
+]
+
+const getUserFromLocalStorage = (): UserType | undefined => {
+  const user = localStorage.getItem('user')
+  if (!user) return undefined
+  try {
+    return JSON.parse(user)
+  } catch (error) {
+    console.error("Failed to parse user from localStorage:", error)
+    return undefined
+  }
+}
+
 
 type AuthStateType = {
   otpId: string | undefined
@@ -19,13 +69,14 @@ type AuthStateType = {
   status: StateType,
   error: string | undefined
   friendsRoomId: string | null
+  showNavbar: boolean
 }
 
 const initialState: AuthStateType = {
   otpId: undefined,
   mailToVerify: undefined,
-  user: undefined,
-  accessToken: undefined,
+  user: getUserFromLocalStorage(),
+  accessToken: localStorage.getItem('accessToken') || undefined,
   status: 'idle',
   error: undefined,
 
@@ -33,7 +84,8 @@ const initialState: AuthStateType = {
   resetPwdEmail: undefined,
   resetPwdOtpId: undefined,
   resetPwdStatus: 'idle',
-  friendsRoomId: null
+  friendsRoomId: null,
+  showNavbar: false
 }
 
 const authSlice = createSlice({
@@ -42,7 +94,21 @@ const authSlice = createSlice({
   reducers: {
     setAuthUser: (state, action: PayloadAction<{ user: UserType }>) => {
       state.user = action.payload.user
+    },
+
+    setAuthAccessToken: (state, action: PayloadAction<string>) => {
+      if (!action.payload) return
+      state.accessToken = action.payload
+    },
+
+    setShowNavbar: (state, action: PayloadAction<string>) => {
+      if (showNavRoutes.includes(action.payload)) {
+        state.showNavbar = true
+      } else {
+        state.showNavbar = false
+      }
     }
+
   },
 
   extraReducers: (builder) => {
@@ -56,6 +122,8 @@ const authSlice = createSlice({
         const { user, accessToken } = action.payload
         state.accessToken = accessToken
         state.user = user
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('user', JSON.stringify(user))
       })
       .addCase(googleOauthLogin.rejected, (state, action) => {
         state.status = 'failed'
@@ -71,6 +139,8 @@ const authSlice = createSlice({
         state.accessToken = accessToken
         state.user = user
         state.friendsRoomId = friendsRoomId
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('user', JSON.stringify(user))
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed'
@@ -99,6 +169,8 @@ const authSlice = createSlice({
         const { accessToken, user } = action.payload
         state.accessToken = accessToken
         state.user = user
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('user', JSON.stringify(user))
       })
       .addCase(verifyEmail.rejected, (state, action) => {
         state.status = 'failed'
@@ -159,17 +231,23 @@ const authSlice = createSlice({
 
       .addCase(refresh.fulfilled, (state, action: PayloadAction<AuthenticationResponseType>) => {
         state.status = 'success'
-        const { user, accessToken ,friendsRoomId} = action.payload
+        const { user, accessToken, friendsRoomId } = action.payload
         state.accessToken = accessToken
         state.user = user
         state.friendsRoomId = friendsRoomId
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('user', JSON.stringify(user))
       })
       .addCase(refresh.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message
       })
 
-      .addCase(logout.fulfilled, () => initialState)
+      .addCase(logout.fulfilled, (state) => {
+        localStorage.clear()
+        sessionStorage.clear()
+        return initialState
+      })
 
       .addCase(uploadProfileImage.pending, (state) => {
         state.status = 'loading'
@@ -191,6 +269,8 @@ const authSlice = createSlice({
         const { user, accessToken } = action.payload
         state.accessToken = accessToken
         state.user = user
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('user', JSON.stringify(user))
       })
 
       .addCase(adminLogin.rejected, (state, action) => {
@@ -206,6 +286,8 @@ const authSlice = createSlice({
         const { user, accessToken } = action.payload
         state.accessToken = accessToken
         state.user = user
+        localStorage.setItem('accessToken', accessToken)
+        localStorage.setItem('user', JSON.stringify(user))
       })
       .addCase(adminSignup.rejected, (state, action) => {
         state.status = 'failed'
@@ -220,10 +302,14 @@ export const selectAuthStatus = (state: RootState) => state.auth.status
 export const selectAuthError = (state: RootState) => state.auth.error
 
 export const selectAuthResetStatus = (state: RootState) => state.auth.resetPwdStatus
-export const selectAuthFriendsRoomId = (state:RootState )=> state.auth.friendsRoomId
+export const selectAuthFriendsRoomId = (state: RootState) => state.auth.friendsRoomId
+
+export const selectAuthShowNavbar = (state: RootState) => state.auth.showNavbar
 
 export const {
-  setAuthUser
+  setAuthUser,
+  setAuthAccessToken,
+  setShowNavbar
 } = authSlice.actions
 
 export default authSlice.reducer

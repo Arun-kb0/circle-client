@@ -31,7 +31,7 @@ import ProfilePage from './pages/user/ProfilePage'
 import EditPostPage from './pages/user/EditPostPage'
 import CropperPage from './pages/user/CropperPage'
 import FollowersPage from './pages/user/FollowingPage'
-import { selectAuthFriendsRoomId, selectAuthUser } from './features/auth/authSlice'
+import { selectAuthFriendsRoomId, selectAuthShowNavbar, selectAuthUser, setShowNavbar } from './features/auth/authSlice'
 import OtherUserProfilePage from './pages/user/OtherUserProfilePage'
 import socketEvents from './constants/socketEvents'
 import SocketIoClient from './config/SocketIoClient'
@@ -52,22 +52,27 @@ import PaymentFailedPage from './pages/user/PaymentFailedPage'
 import SavedPostsPage from './pages/user/SavedPostsPage'
 import SubscriptionManagement from './pages/admin/SubscriptionManagement'
 import WalletTransactionsManagement from './pages/admin/WalletTransactionsManagement'
+import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   const navigate = useNavigate()
   const location = useLocation()
   const dispatch = useDispatch<AppDispatch>()
-  const hideNavbarPaths = ['/login', '/signup', '/resetPwd', '/admin/signup', '/admin/login']
   const user = useSelector(selectAuthUser)
   const chatUser = useSelector(selectChatUser)
   const friendsRoomId = useSelector(selectAuthFriendsRoomId)
+  const showNavbar = useSelector(selectAuthShowNavbar)
+
   const [socket, setSocket] = useState<Socket | null>(null)
   const [notificationSocket, setNotificationSocket] = useState<Socket | null>(null)
 
   useEffect(() => {
+    dispatch(setShowNavbar(location.pathname))
+  }, [location.pathname])
+
+  useEffect(() => {
     dispatch(refresh())
   }, [])
-
 
   useEffect(() => {
     if (!user) return
@@ -211,7 +216,7 @@ function App() {
 
   return (
     <>
-      {!hideNavbarPaths.includes(location.pathname) && <Navbar />}
+      {showNavbar && <Navbar />}
       <ToastContainer theme='dark' />
 
       <Routes>
@@ -258,7 +263,8 @@ function App() {
           </Route>
         </Route>
 
-        <Route path="*" element={<Unauthorized message='not found' desc="this route doesn't exists" />} />
+        {/* <Route path="*" element={<Unauthorized message='not found' desc="this route doesn't exists" />} /> */}
+        <Route path="*" element={<NotFoundPage />} />
 
       </Routes>
     </>
