@@ -1,7 +1,7 @@
 import { PostType } from "./FeedTypes"
 
 export type CallStatusType = 'idle' | 'incoming-call' | 'call-end' | 'call-active'
-export type StateType = 'loading' | 'success' | 'failed' | 'idle'
+export type StateType = 'idle' | 'loading' | 'success' | 'failed'
 
 export type UserType = {
   _id: string

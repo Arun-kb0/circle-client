@@ -4,7 +4,7 @@ import { BsBell } from "react-icons/bs";
 import { TbHome } from "react-icons/tb";
 import { FiSearch } from "react-icons/fi";
 import SpringButton from '../basic/SpringButton';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import BadgeButton from '../basic/BadgeButton';
 import { AiOutlineMessage } from "react-icons/ai";
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,6 +34,7 @@ type Props = {
 const UserNav = ({ handleLogout }: Props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
+  const location = useLocation()
   const user = useSelector(selectAuthUser)
   const isIncomingCall = useSelector(selectChatIsIncomingCall)
   const unreadMsgNotificationCount = useSelector(selectChatUnreadMsgNotification)
@@ -81,6 +82,7 @@ const UserNav = ({ handleLogout }: Props) => {
   }
 
   const handleSearch = (data: FieldValues | undefined) => {
+    if (location.pathname !== '/') navigate('/')
     dispatch(searchPost({
       page: 1,
       searchText: data?.searchText ? data?.searchText : '',
@@ -105,7 +107,7 @@ const UserNav = ({ handleLogout }: Props) => {
         <div className="flex items-center justify-between">
 
           <div className="flex items-center">
-            <button onClick={handleUserNavOpen}  className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+            <button onClick={handleUserNavOpen} className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
               <SpringButton>
                 <RxHamburgerMenu size={22} />
               </SpringButton>

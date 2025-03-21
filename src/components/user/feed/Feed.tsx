@@ -5,9 +5,10 @@ import Comments from './Comments';
 import { AnimatePresence } from 'framer-motion'
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  clearSearchResults,
   selectLikedUsersModelState,
   selectPost, selectPostNumberOfPages,
-  selectPostPage, selectPostPosts, selectPostSharePostModelOpen, selectPostStatus,
+  selectPostPage, selectPostPosts, selectPostSearchStatus, selectPostSearchUserResult, selectPostSharePostModelOpen, selectPostStatus,
   setLikedUsersModelState,
   setSharePostModelOpen
 } from '../../../features/post/postSlice';
@@ -18,6 +19,10 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import PostSkeltonLoader from '../../basic/PostSkeletonLoader';
 import { DataStrategyFunctionArgs } from 'react-router-dom';
 import ShareComponent from '../../basic/ShareComponent';
+import UsersList from '../follow/UsersList';
+import PageTitle from '../../basic/PageTitle';
+import { IoMdArrowRoundBack } from 'react-icons/io';
+import SpringButton from '../../basic/SpringButton';
 
 
 const Feed = () => {
@@ -37,6 +42,10 @@ const Feed = () => {
   const numberOfPages = useSelector(selectPostNumberOfPages)
   const page = useSelector(selectPostPage)
   const status = useSelector(selectPostStatus)
+
+  const searchPostStatus = useSelector(selectPostSearchStatus)
+  const searchUser = useSelector(selectPostSearchUserResult)
+
   const [hasMore, setHasMore] = useState<boolean>(() => page <= numberOfPages)
 
   useEffect(() => {
@@ -55,6 +64,11 @@ const Feed = () => {
 
   const handleShareClose = () => {
     dispatch(setSharePostModelOpen({ open: false, post: null }))
+  }
+
+  const handleSearchGoBack = () => {
+    dispatch(clearSearchResults())
+    dispatch(getPosts(1))
   }
 
   return (
@@ -81,6 +95,27 @@ const Feed = () => {
         }
       </AnimatePresence>
 
+      {searchPostStatus === 'success' &&
+        <section>
+          <PageTitle firstWord='Search' secondWord='Results' />
+          <div className='flex justify-start'>
+            <SpringButton>
+              <button onClick={handleSearchGoBack}  className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'>
+                <IoMdArrowRoundBack size={32} />
+              </button>
+            </SpringButton>
+          </div>
+
+          <div className='p-4 flex flex-wrap justify-center gap-8'>
+            <UsersList
+              users={searchUser}
+              loadMorePosts={function (): Promise<void> {
+                throw new Error('Function not implemented.');
+              }}
+              hasMore={false} />
+          </div>
+        </section>
+      }
 
       <InfiniteScroll
         className='space-y-4 h-64 overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500'

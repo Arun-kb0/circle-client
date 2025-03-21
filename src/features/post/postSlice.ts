@@ -15,7 +15,8 @@ import {
 import { RootState } from '../../app/store'
 import {
   CountByDataType, FeedCountsType,
-  LineChartDataType, PaginationReportFiltered, PaginationSavedPost, ReportAdminType, ReportType, SavedType, StateType
+  LineChartDataType, PaginationReportFiltered, PaginationSavedPost, ReportAdminType, ReportType, SavedType, StateType,
+  UserType
 } from '../../constants/types'
 
 type PostStateType = {
@@ -79,6 +80,12 @@ type PostStateType = {
   reportFilteredNumberOfPages: number
   reportFilteredCurrentPge: number
   reportFilteredStatus: StateType
+
+
+  searchUserResult: UserType[]
+  searchNumberOfPages: number
+  searchCurrentPage: number
+  searchStatus: StateType
 }
 
 const initialState: PostStateType = {
@@ -137,7 +144,12 @@ const initialState: PostStateType = {
   reportFiltered: [],
   reportFilteredNumberOfPages: 0,
   reportFilteredCurrentPge: 0,
-  reportFilteredStatus: 'idle'
+  reportFilteredStatus: 'idle',
+
+  searchUserResult: [],
+  searchNumberOfPages: 0,
+  searchCurrentPage: 0,
+  searchStatus: 'idle',
 }
 
 const postSlice = createSlice({
@@ -192,6 +204,14 @@ const postSlice = createSlice({
       const { postId, open } = action.payload
       state.sharePostId = postId
       state.sharePostModelOpen = open
+    },
+
+    clearSearchResults: (state) => {
+      state.searchUserResult = []
+      state.posts = []
+      state.searchNumberOfPages = 0
+      state.searchCurrentPage = 0
+      state.searchStatus = 'idle'
     }
 
 
@@ -486,19 +506,18 @@ const postSlice = createSlice({
 
 
       .addCase(searchPost.pending, (state) => {
-        state.postStatus = 'loading'
+        state.searchStatus = 'loading'
       })
       .addCase(searchPost.fulfilled, (state, action: PayloadAction<PaginationSearchPost>) => {
-        state.postStatus = 'success'
-        const { posts, numberOfPages, currentPage } = action.payload
-        // const existingPostIds = new Set(state.posts.map(post => post._id));
-        // const newPosts = posts.filter(post => !existingPostIds.has(post._id));
+        state.searchStatus = 'success'
+        const { posts, users, numberOfPages, currentPage } = action.payload
+        state.searchUserResult = users
         state.posts = posts
-        state.postNumberOfPages = currentPage
-        state.postPage = numberOfPages
+        state.searchCurrentPage = currentPage
+        state.searchNumberOfPages = numberOfPages
       })
       .addCase(searchPost.rejected, (state, action) => {
-        state.postStatus = 'failed'
+        state.searchStatus = 'failed'
         state.error = action.error.message
       })
 
@@ -506,7 +525,7 @@ const postSlice = createSlice({
         state.reportFilteredStatus = 'loading'
       })
       .addCase(getFilteredReports.fulfilled, (state, action: PayloadAction<PaginationReportFiltered>) => {
-        if(!action.payload) return
+        if (!action.payload) return
         state.reportFilteredStatus = 'success'
         const { reports, numberOfPages, currentPage } = action.payload
         // const existingPostIds = new Set(state.posts.map(post => post._id));
@@ -580,6 +599,11 @@ export const selectPostReportFilteredNumberOfPages = (state: RootState) => state
 export const selectPostReportFilteredCurrentPage = (state: RootState) => state.post.reportFilteredCurrentPge
 export const selectPostReportFilteredStatus = (state: RootState) => state.post.reportFilteredStatus
 
+export const selectPostSearchUserResult = (state: RootState) => state.post.searchUserResult
+export const selectPostSearchNumberOfPages = (state: RootState) => state.post.searchNumberOfPages
+export const selectPostSearchCurrentPage = (state: RootState) => state.post.searchCurrentPage
+export const selectPostSearchStatus = (state: RootState) => state.post.searchStatus
+
 export const {
   selectPost,
   setCommentedUsersModelState,
@@ -589,9 +613,9 @@ export const {
   setCreatePostCache,
   setImageToCropIndex,
   clearUserCreatedPosts,
-
   setCommentReplayCount,
-  setSharePostModelOpen
+  setSharePostModelOpen,
+  clearSearchResults
 } = postSlice.actions
 
 export default postSlice.reducer

@@ -137,6 +137,15 @@ const userSlice = createSlice({
 
     setUserNavOpen: (state, action: PayloadAction<boolean>) => {
       state.userNavOpen = action.payload
+    },
+
+    sortFollowingUser: (state, action: PayloadAction<{ userId: string }>) => {
+      const { userId } = action.payload;
+      const foundUser = state.followingPeople.find(item => item._id === userId);
+      if (foundUser) {
+        state.followingPeople = state.followingPeople.filter(item => item._id !== userId);
+        state.followingPeople.unshift(foundUser);
+      }
     }
 
   },
@@ -394,7 +403,8 @@ export const {
   setNotificationSocketId,
   setNotifications,
   setSingleNotification,
-  setUserNavOpen
+  setUserNavOpen,
+  sortFollowingUser
 } = userSlice.actions
 
 export default userSlice.reducer

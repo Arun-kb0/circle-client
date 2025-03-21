@@ -37,7 +37,7 @@ const FollowPeople = (props: Props) => {
 
   return (
     <main className='main-section justify-center relative overflow-y-auto' >
-      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`}>
+      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`}>ch
         <div className="p-4 mt-14">
 
           <PageTitle firstWord='Follow' secondWord='Users' />

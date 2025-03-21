@@ -11,6 +11,8 @@ enum socketEvents {
   receiveNotification = 'receive-notification',
   messageDeleted = 'message-deleted',
   editMessage = 'edit-message',
+  messageTyping='message-typing',
+  messageTypingStopped='message-typing-stopped',
 
   // * call room
   joinCallRoom = 'join-call-room',
