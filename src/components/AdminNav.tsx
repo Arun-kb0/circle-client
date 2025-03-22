@@ -15,6 +15,7 @@ import BadgeButton from './basic/BadgeButton'
 import { FaUserCircle } from 'react-icons/fa'
 import DropDown from './basic/DropDown'
 import logo from '../assets/vite.png'
+import { selectUserNavOpen, setUserNavOpen } from '../features/user/userSlice'
 
 
 type Props = {
@@ -25,6 +26,7 @@ const AdminNav = ({ handleLogout }: Props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const user = useSelector(selectAuthUser)
+  const navOpen = useSelector(selectUserNavOpen)
 
   const [userDropDown, setUserDropDown] = useState(false)
   const [notificationDropDown, setNotificationDropDown] = useState(false)
@@ -46,6 +48,12 @@ const AdminNav = ({ handleLogout }: Props) => {
     }
   ]
 
+  
+    const handleUserNavOpen = () => {
+      dispatch(setUserNavOpen(!navOpen))
+    }
+  
+
 
   return (
     // <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -55,7 +63,7 @@ const AdminNav = ({ handleLogout }: Props) => {
         <div className="flex items-center justify-between">
 
           <div className="flex items-center">
-            <button className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+            <button onClick={handleUserNavOpen} className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
               <SpringButton>
                 <RxHamburgerMenu size={22} />
               </SpringButton>

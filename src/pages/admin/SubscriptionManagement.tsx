@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUserCurrentPage, selectUserNumberOfPages, selectUserStatus, selectUserUsers } from '../../features/user/userSlice';
-import { blockUser, getAllUsers, unblockUser } from '../../features/user/userApi';
+import {selectUserNavOpen} from '../../features/user/userSlice';
 import { AppDispatch } from '../../app/store';
-import UserTable from '../../components/UserTable';
 import DatePicker from '../../components/DatePicker';
 import Pagination from '../../components/basic/Pagination';
 import Search from '../../components/Search';
 import { FieldValues } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import SubscriptionTable from '../../components/admin/SubscriptionTable';
-import { SubscriptionWithUserType } from '../../constants/types';
 import {
   selectPaymentFilteredSubscriptions, selectPaymentFilteredSubscriptionsCurrentPage,
   selectPaymentFilteredSubscriptionsNumberOfPages, selectPaymentFilteredSubscriptionsStatus
@@ -22,6 +18,7 @@ type Props = {}
 
 const SubscriptionManagement = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>()
+  const userNavOpen = useSelector(selectUserNavOpen)
 
   const [startDate, setStartDate] = useState<Date>(() => {
     const newStartDate = new Date()
@@ -60,7 +57,7 @@ const SubscriptionManagement = (props: Props) => {
 
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
-      <div className="p-4 sm:ml-64" >
+      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`} >
         <div className="lg:p-4 sm:p-1 mt-14 flex justify-between gap-8 lg:w-[160vh] md:w-[100vh] sm:w-[80vh]">
 
           <div className='mt-10'>
