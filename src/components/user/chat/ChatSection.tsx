@@ -73,10 +73,8 @@ const ChatSection = ({ handleCallModelOpen }: Props) => {
   }
 
   const loadMoreMessages = () => {
-    if (status === 'loading' || !hasMore) return
+    if (status === 'loading' || page > numberOfPages) return
     dispatch(getRoomMessages(page + 1))
-    const newPage = page + 1
-    setHasMore(newPage <= numberOfPages)
   }
 
   useEffect(() => {
@@ -163,37 +161,51 @@ const ChatSection = ({ handleCallModelOpen }: Props) => {
         </div>
       </div>
 
-      <InfiniteScroll
-        className='w-full h-[60vh] space-y-3 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-200 py-4'
-        dataLength={messages.length}
-        next={loadMoreMessages}
-        hasMore={hasMore}
-        loader={
-          <></>
-          // <div className='space-y-4'>
-          //   {Array.from({ length: 3 }).map((_, index) => (
-          //     <ChatSkeltonLoader
-          //       key={index}
-          //       isSend={index % 2 === 0 ? true : false}
-          //     />
-          //   ))}
-          // </div>
-        }
-        height={window.innerHeight - 240}
+      <div id="scrollableDiv"
+        style={{ height: "60vh", overflowY: "scroll", display: "flex", flexDirection: 'column-reverse', margin: "auto" }}
+        className='bg-body-tertiary p-3 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-200 py-4'
       >
-        {!chatUser && <div className='w-full h-full flex justify-center items-center'> <h5 className='font-semibold text-lg'>select a user to chat</h5> </div>}
-        {chatUser && !hasMore && messages.length === 0 && <div className="text-center">No messages</div>}
-        {messages.map((message) => (
-          <ChatMessage
-            key={message.updatedAt as unknown as string}
-            message={message}
-            isUserSendMessage={user?._id === message.authorId}
-          />
-        ))}
-        {isMessageTyping && <MessageTypingAnimation />}
-        <div ref={ref} className='w-full h-24'></div>
-
-      </InfiniteScroll>
+        <InfiniteScroll
+          dataLength={messages.length}
+          next={loadMoreMessages}
+          hasMore={hasMore}
+          style={{ display: "flex", flexDirection: "column-reverse", overflow: "visible" }}
+          scrollableTarget="scrollableDiv"
+          inverse={true}
+          loader={
+            status === 'loading' && (
+              <div className="space-y-4">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <ChatSkeltonLoader
+                    key={index}
+                    isSend={index % 2 === 0 ? true : false}
+                  />
+                ))}
+              </div>
+            )
+          }
+          className="space-y-4"
+        >
+          <div ref={ref} className="w-full h-24"></div>
+          {isMessageTyping && <MessageTypingAnimation />}
+          {!chatUser && (
+            <div className="w-full h-full flex justify-center items-center">
+              <h5 className="font-semibold text-lg">Select a user to chat</h5>
+            </div>
+          )}
+          {chatUser && !hasMore && messages.length === 0 && (
+            <div className="text-center">No messages</div>
+          )}
+          
+          {messages.map((message) => (
+            <ChatMessage
+              key={message.updatedAt as unknown as string}
+              message={message}
+              isUserSendMessage={user?._id === message.authorId}
+            />
+          ))}
+        </InfiniteScroll>
+      </div>
 
       <div className='relative h-10 w-20'>
         <EmojiPicker

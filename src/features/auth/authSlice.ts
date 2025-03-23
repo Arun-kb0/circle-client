@@ -38,6 +38,7 @@ const showNavRoutes = [
 
   // Protected admin routes
   '/admin/',
+  '/admin',
   '/admin/user',
   '/admin/post',
   '/admin/report',

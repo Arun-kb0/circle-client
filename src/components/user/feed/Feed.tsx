@@ -100,13 +100,13 @@ const Feed = () => {
           <PageTitle firstWord='Search' secondWord='Results' />
           <div className='flex justify-start'>
             <SpringButton>
-              <button onClick={handleSearchGoBack}  className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'>
+              <button onClick={handleSearchGoBack} className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'>
                 <IoMdArrowRoundBack size={32} />
               </button>
             </SpringButton>
           </div>
 
-          <div className='p-4 flex flex-wrap justify-center gap-8'>
+          <div className='p-4 flex flex-wrap justify-center gap-8 '>
             <UsersList
               users={searchUser}
               loadMorePosts={function (): Promise<void> {
@@ -117,30 +117,32 @@ const Feed = () => {
         </section>
       }
 
-      <InfiniteScroll
-        className='space-y-4 h-64 overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500'
-        scrollableTarget='home'
-        dataLength={posts.length}
-        next={loadMorePosts}
-        hasMore={hasMore}
-        loader={
-          <div className='space-y-4'>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <PostSkeltonLoader key={index} />
-            ))}
-          </div>
-        }
-        height={window.innerHeight - 240}
-      >
-        {status === 'success' && posts.map((post) => (
-          post.status === 'active' &&
-          <PostCard
-            key={post._id}
-            post={post}
-            openCommentModel={open}
-          />
-        ))}
-      </InfiniteScroll>
+      <div className='flex justify-center item-center'>
+        <InfiniteScroll
+          className='space-y-4 h-64 overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500'
+          scrollableTarget='home'
+          dataLength={posts.length}
+          next={loadMorePosts}
+          hasMore={hasMore}
+          loader={
+            <div className='space-y-4'>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <PostSkeltonLoader key={index} />
+              ))}
+            </div>
+          }
+          height={window.innerHeight - 240}
+        >
+          {status === 'success' && posts.map((post) => (
+            post.status === 'active' &&
+            <PostCard
+              key={post._id}
+              post={post}
+              openCommentModel={open}
+            />
+          ))}
+        </InfiniteScroll>
+      </div>
 
     </main >
   )
