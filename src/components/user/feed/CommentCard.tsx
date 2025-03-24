@@ -89,6 +89,7 @@ const CommentCard = () => {
           next={loadMorePosts}
           hasMore={hasMore}
           loader={
+            status === 'loading' &&
             <div className='space-y-4'>
               {Array.from({ length: 3 }).map((_, index) => (
                 <CommentSkeltonLoader key={index} />

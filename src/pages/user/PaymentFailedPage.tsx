@@ -11,7 +11,7 @@ const PaymentFailedPage = (props: Props) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       navigator('/')
-    }, 1000)
+    }, 1500)
     return () => {
       clearTimeout(timeout)
     }
