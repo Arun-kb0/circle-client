@@ -9,7 +9,7 @@ import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfil
 // })
 
 export default defineConfig({
-  base: process.env.VITE_BASE_PATH || "/circle-client",
+  base: process.env.VITE_BASE_PATH || "/circle-client", 
   resolve: {
     alias: {
       stream: "stream-browserify", // Ensure other dependencies are handled
