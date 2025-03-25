@@ -79,7 +79,7 @@ const Profile = ({ user }: Props) => {
       plan: subscriptionPlan
     }
     if (type === 'phone-pay') {
-      dispatch(createOrder({ data }))
+      dispatch(createOrder({ data })).unwrap()
     } else if (type === 'wallet') {
       dispatch(subscribeWithWallet({ data }))
     }

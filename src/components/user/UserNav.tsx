@@ -63,7 +63,10 @@ const UserNav = ({ handleLogout }: Props) => {
       name: "profile"
     },
     {
-      handler: () => { dispatch(logout()) },
+      handler: async () => {
+        await dispatch(logout()).unwrap()
+        navigate('/login')
+      },
       name: 'logout'
     }
   ]
@@ -182,10 +185,6 @@ const UserNav = ({ handleLogout }: Props) => {
               <div>
                 <button onClick={() => setUserDropDown(prev => !prev)} type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
                   <SpringButton>
-                    {/* {user?.image?.url
-                      ? <img className="w-8 h-8 rounded-full object-cover" src={user.image.url} alt="Neil image" />
-                      : <FaUserCircle size={35} />
-                    } */}
                     <Avatar
                       userId={''}
                       image={user?.image?.url}

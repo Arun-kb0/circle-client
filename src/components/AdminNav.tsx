@@ -1,5 +1,4 @@
 import { Link, useNavigate } from 'react-router-dom'
-import Search from './Search'
 import SpringButton from './basic/SpringButton'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../app/store'
@@ -8,13 +7,11 @@ import { useState } from 'react'
 import { DropDownElementsType } from '../constants/types'
 import { logout } from '../features/auth/authApi'
 import { RxHamburgerMenu } from 'react-icons/rx'
-import { TbHome } from 'react-icons/tb'
-import { FiSearch } from 'react-icons/fi'
 import { BsBell } from 'react-icons/bs'
-import BadgeButton from './basic/BadgeButton'
-import { FaUserCircle } from 'react-icons/fa'
 import DropDown from './basic/DropDown'
 import logo from '../assets/vite.png'
+import { selectUserNavOpen, setUserNavOpen } from '../features/user/userSlice'
+import Avatar from './basic/Avatar'
 
 
 type Props = {
@@ -25,26 +22,26 @@ const AdminNav = ({ handleLogout }: Props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const user = useSelector(selectAuthUser)
+  const navOpen = useSelector(selectUserNavOpen)
 
   const [userDropDown, setUserDropDown] = useState(false)
   const [notificationDropDown, setNotificationDropDown] = useState(false)
 
-  const handleClearProfile = async () => {
-  }
-
   const userDropDownElements: DropDownElementsType[] = [
     {
       handler: async () => {
-        await handleClearProfile()
-        navigate('/profile')
+        await dispatch(logout()).unwrap()
+        navigate('/login')
       },
-      name: "profile"
-    },
-    {
-      handler: () => { dispatch(logout()) },
       name: 'logout'
     }
   ]
+
+
+  const handleUserNavOpen = () => {
+    dispatch(setUserNavOpen(!navOpen))
+  }
+
 
 
   return (
@@ -55,7 +52,7 @@ const AdminNav = ({ handleLogout }: Props) => {
         <div className="flex items-center justify-between">
 
           <div className="flex items-center">
-            <button className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+            <button onClick={handleUserNavOpen} className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
               <SpringButton>
                 <RxHamburgerMenu size={22} />
               </SpringButton>
@@ -69,26 +66,7 @@ const AdminNav = ({ handleLogout }: Props) => {
           </div>
 
           <div className="flex items-center">
-            <div className="flex items-center ms-3">
-              <div>
-                <Link to='/' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
-                  <SpringButton>
-                    <TbHome className='text-gray-200 ' size={25} />
-                  </SpringButton>
-                </Link>
-              </div>
-            </div>
-            <div className="flex items-center ms-3">
-              <div>
-                <Link to='/' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
-                  <SpringButton>
-                    <FiSearch className='text-gray-200 ' size={25} />
-                  </SpringButton>
-                </Link>
-              </div>
-            </div>
-
-
+           
           </div>
 
           <div className="flex items-center">
@@ -107,10 +85,12 @@ const AdminNav = ({ handleLogout }: Props) => {
               <div>
                 <button onClick={() => setUserDropDown(prev => !prev)} type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
                   <SpringButton>
-                    {user?.image?.url
-                      ? <img className="w-8 h-8 rounded-full object-cover" src={user.image.url} alt="Neil image" />
-                      : <FaUserCircle size={35} />
-                    }
+                    <Avatar
+                      userId={''}
+                      image={user?.image?.url}
+                      alt={user?.name}
+                      disableNavigation={true}
+                    />
                   </SpringButton>
                 </button>
               </div>

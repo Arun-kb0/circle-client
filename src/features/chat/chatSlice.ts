@@ -71,7 +71,7 @@ const chatSlice = createSlice({
       if (!state.messages[message.roomId]) state.messages[state.roomId] = [message]
       else {
         const isExits = state.messages[message.roomId].find(msg => msg.id === message.id)
-        if (!isExits) state.messages[message.roomId].push(message)
+        if (!isExits) state.messages[message.roomId].unshift(message)
       }
 
       localStorage.removeItem("messages")
@@ -160,14 +160,16 @@ const chatSlice = createSlice({
         state.messageStatus = 'success'
         if (!action.payload) return
         const { messages, numberOfPages, currentPage } = action.payload
+        console.log("getRoomMessages")
+        console.log(messages)
         if (messages.length === 0) return
         if (!state.messages) state.messages = {}
         if (!state.messages[messages[0].roomId]) state.messages[messages[0].roomId] = messages
         else {
           const messageIds = new Set(state.messages[messages[0].roomId].map(msg => msg.id))
-          const filteredMsgs = messages.filter(msg => messageIds.has(msg.id))
+          const filteredMsgs = messages.filter(msg => !messageIds.has(msg.id))
           state.messages[messages[0].roomId].push(...filteredMsgs)
-          state.messages[messages[0].roomId].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+          state.messages[messages[0].roomId].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         }
         state.messagesNumberOfPages = numberOfPages
         state.messagesCurrentPage = currentPage

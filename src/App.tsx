@@ -5,54 +5,36 @@ import Navbar from './components/Navbar'
 import { toast, ToastContainer } from 'react-toastify'
 import Signup from './pages/Signup'
 import Login from './pages/Login'
-import RequireAuth from './components/RequireAuth'
-import { roles } from './constants/enums'
-import Unauthorized from './components/Unauthorized'
 import 'react-toastify/dist/ReactToastify.css';
 import "react-datepicker/dist/react-datepicker.css";
-import Home from './pages/user/Home'
-import UserManagement from './pages/admin/UserManagement'
 import { useEffect, useState } from 'react'
 import { refresh } from './features/auth/authApi'
 import AdminLogin from './pages/AdminLogin'
 import AdminSignup from './pages/AdminSignup'
 import OtpModel from './pages/OtpModel'
 import ResetPassword from './pages/ResetPassword'
-import GlobalFeed from './pages/user/GlobalFeed'
-import CreatePost from './pages/user/CreatePost'
-import ChatPage from './pages/user/ChatPage'
-import FollowPeople from './pages/user/FollowPeople'
 import {
   selectChatUser, setAllChatRooms, setCallRoomId,
   setIncomingCallAndSignal, setIsInChat, setRoomId
 } from './features/chat/chatSlice'
 import { callUserConnection, receiveMessage } from './features/chat/chatApi'
-import ProfilePage from './pages/user/ProfilePage'
-import EditPostPage from './pages/user/EditPostPage'
-import CropperPage from './pages/user/CropperPage'
-import FollowersPage from './pages/user/FollowingPage'
 import { selectAuthFriendsRoomId, selectAuthShowNavbar, selectAuthUser, setShowNavbar } from './features/auth/authSlice'
-import OtherUserProfilePage from './pages/user/OtherUserProfilePage'
 import socketEvents from './constants/socketEvents'
 import SocketIoClient from './config/SocketIoClient'
 import { UserRoomNotificationType } from './constants/types'
 import { setCallNotificationState } from './features/notification/notificationSlice'
 import { getFollowers } from './features/user/userApi'
-import PostManagement from './pages/admin/PostManagement'
 import { Socket } from 'socket.io-client'
-import { setNotificationSocketId, setOnlineUsers, setSingleNotification, setUserSocketId, sortFollowingUser } from './features/user/userSlice'
-import ReportManagement from './pages/admin/ReportManagement'
-import GoLivePage from './pages/user/GoLivePage'
-import ViewLivePage from './pages/user/ViewLivePage'
-import AdminHome from './pages/admin/AdminHome'
-import WalletPage from './pages/user/WalletPage'
+import {
+  setNotificationSocketId, setOnlineUsers, setSingleNotification,
+  setUserSocketId, sortFollowingUser
+} from './features/user/userSlice'
 import { getSubscriptions } from './features/payment/paymentApi'
 import PaymentSuccessPage from './pages/user/PaymentSuccessPage'
 import PaymentFailedPage from './pages/user/PaymentFailedPage'
-import SavedPostsPage from './pages/user/SavedPostsPage'
-import SubscriptionManagement from './pages/admin/SubscriptionManagement'
-import WalletTransactionsManagement from './pages/admin/WalletTransactionsManagement'
 import NotFoundPage from './pages/NotFoundPage'
+import UserRoutes from './routes/UserRoutes'
+import AdminRoutes from './routes/AdminRoutes'
 
 function App() {
   const navigate = useNavigate()
@@ -220,52 +202,8 @@ function App() {
       <ToastContainer theme='dark' />
 
       <Routes>
-        <Route path='/signup' element={<Signup />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/verify' element={<OtpModel />} />
-        <Route path='/resetPwd' element={<ResetPassword />} />
-        <Route path='/payment-success' element={<PaymentSuccessPage />} />
-        <Route path='/payment-failed' element={<PaymentFailedPage />} />
-
-
-        <Route path='/admin/login' element={<AdminLogin />} />
-        <Route path='/admin/signup' element={<AdminSignup />} />
-
-
-        {/* * protected user routes */}
-        <Route element={<RequireAuth role={roles.user} />} >
-          <Route path='/' element={<Home />} />
-          <Route path='/profile' element={<ProfilePage />} />
-          <Route path='/user-profile' element={<OtherUserProfilePage />} />
-          <Route path='/global-feed' element={<GlobalFeed />} />
-          <Route path='/create-post' element={<CreatePost />} />
-          <Route path='/edit-post' element={<EditPostPage />} />
-          <Route path='/chat' element={<ChatPage />} />
-          <Route path='/following' element={<FollowersPage userId={user?._id || ''} />} />
-          <Route path='/follow-people' element={<FollowPeople />} />
-          <Route path='/crop' element={<CropperPage />} />
-          <Route path='/go-live' element={<GoLivePage />} />
-          <Route path='/view-live' element={<ViewLivePage />} />
-          <Route path='/wallet' element={<WalletPage />} />
-          <Route path='/saved' element={<SavedPostsPage />} />
-
-        </Route>
-
-        {/* * protected admin routes */}
-        <Route element={<RequireAuth role={roles.admin} />} >
-          <Route path='/admin'>
-            <Route index element={<AdminHome />} />
-            <Route path='user' element={<UserManagement />} />
-            <Route path='post' element={<PostManagement />} />
-            <Route path='report' element={<ReportManagement />} />
-            <Route path='subscription' element={<SubscriptionManagement />} />
-            <Route path='transaction-wallet' element={<WalletTransactionsManagement />} />
-          </Route>
-        </Route>
-
-        {/* <Route path="*" element={<Unauthorized message='not found' desc="this route doesn't exists" />} /> */}
-        <Route path="*" element={<NotFoundPage />} />
-
+        <Route path='/admin/*' element={<AdminRoutes />} />
+        <Route path='/*' element={<UserRoutes user={user} />} />
       </Routes>
     </>
   )

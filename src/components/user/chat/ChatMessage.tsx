@@ -128,7 +128,7 @@ const ChatMessage = ({ message, isUserSendMessage }: Props) => {
 
       <div className={`${isUserSendMessage ? 'rounded-xl rounded-tr-none bg-gray-800' : 'rounded-e-xl rounded-es-xl bg-gray-600'} flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200`}>
         <div className="flex items-center space-x-2 rtl:space-x-reverse">
-          <span className="text-sm font-semibold text-gray-900 dark:text-white">{currentMessage.authorName}</span>
+          <span className="text-sm font-semibold text-gray-900 dark:text-white">{isUserSendMessage ? 'You' : currentMessage.authorName}</span>
           <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{moment(currentMessage.createdAt).fromNow()}</span>
         </div>
         {isEdit
@@ -172,7 +172,7 @@ const ChatMessage = ({ message, isUserSendMessage }: Props) => {
       <DropDown
         open={open}
         elements={isUserSendMessage ? senderDropDownElements : receiverDropDownElements}
-        position='top-20 left-72'
+        position={isUserSendMessage ? 'top-20 right-5' : 'top-20 md:left-72 right-5'}
       />
 
     </article>

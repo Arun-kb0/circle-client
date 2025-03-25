@@ -161,7 +161,6 @@ export const createComment = createAsyncThunk('/comment/create',
       const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
       const res = await axiosPrivate.post(`/comment/`, { comment, contentType, contentId, parentId })
       removeInterceptors()
-      toast('create comment success')
       return res.data
     } catch (error) {
       console.log(error)
@@ -179,7 +178,6 @@ export const updateComment = createAsyncThunk('/comment/update', async ({ commen
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.patch(`/comment`, { comment, commentId })
     removeInterceptors()
-    toast('update comment success')
     return res.data
   } catch (error) {
     console.log(error)
@@ -196,7 +194,6 @@ export const deleteComment = createAsyncThunk('/comment/delete', async (commentI
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.delete(`/comment/${commentId}`)
     removeInterceptors()
-    toast('delete comment success')
     return res.data
   } catch (error) {
     console.log(error)
@@ -235,7 +232,6 @@ export const createChildComment = createAsyncThunk('/comment/create-child',
       const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
       const res = await axiosPrivate.post(`/comment/`, { comment, contentType, contentId, parentId })
       removeInterceptors()
-      toast('Reply success')
       return res.data
     } catch (error) {
       console.log(error)
@@ -285,7 +281,6 @@ export const updateChildComment = createAsyncThunk('/child-comment/update', asyn
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.patch(`/comment`, { comment, commentId })
     removeInterceptors()
-    toast('update comment success')
     return res.data
   } catch (error) {
     console.log(error)
@@ -303,7 +298,6 @@ export const deleteChildComment = createAsyncThunk('/child-comment/delete', asyn
     const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
     const res = await axiosPrivate.delete(`/comment/${commentId}`)
     removeInterceptors()
-    toast('delete comment success')
     return res.data
   } catch (error) {
     console.log(error)

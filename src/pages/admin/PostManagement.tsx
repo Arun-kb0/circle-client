@@ -3,15 +3,15 @@ import AdminPostTable from '../../components/admin/AdminPostTable'
 import { PostType } from '../../constants/FeedTypes';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../app/store';
-import { selectUserUsers } from '../../features/user/userSlice';
+import { selectUserNavOpen } from '../../features/user/userSlice';
 import {
   selectPostNumberOfPages, selectPostPage, selectPostPosts,
-  selectPostSelectedPost, selectPostStatus
+  selectPostStatus
 } from '../../features/post/postSlice';
 import { FieldValues } from 'react-hook-form';
 import DatePicker from '../../components/DatePicker';
 import Search from '../../components/Search';
-import { getPosts, searchPost, updatePost } from '../../features/post/postApi';
+import {  searchPost, updatePost } from '../../features/post/postApi';
 import Pagination from '../../components/basic/Pagination';
 import { toast } from 'react-toastify';
 import CsvDownload from '../../components/admin/CsvDownload';
@@ -40,8 +40,8 @@ const pdfHeaders = [[
 
 
 const PostManagement = (props: Props) => {
-
   const dispatch = useDispatch<AppDispatch>()
+  const userNavOpen = useSelector(selectUserNavOpen)
 
   const [startDate, setStartDate] = useState<Date>(() => {
     const newStartDate = new Date()
@@ -93,7 +93,7 @@ const PostManagement = (props: Props) => {
 
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
-      <div className="p-4 sm:ml-64" >
+      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`} >
         <div className="lg:p-4 sm:p-1 mt-14 flex justify-between gap-8 lg:w-[160vh] md:w-[100vh] sm:w-[80vh]">
 
           <div className='mt-10'>
