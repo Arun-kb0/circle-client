@@ -6,7 +6,6 @@ import {
 import { AuthenticationResponseType, StateType, UserType } from "../../constants/types";
 import { RootState } from "../../app/store";
 import { uploadProfileImage } from "../user/userApi";
-import { selectUserUnreadNotificationsCount } from "../user/userSlice";
 
 const showNavRoutes = [
   // '/signup',
@@ -209,7 +208,7 @@ const authSlice = createSlice({
       .addCase(resetPwdVerifyOtp.pending, (state) => {
         state.resetPwdStatus = 'loading'
       })
-      .addCase(resetPwdVerifyOtp.fulfilled, (state, action: PayloadAction<{ email: string }>) => {
+      .addCase(resetPwdVerifyOtp.fulfilled, (state) => {
         state.resetPwdStatus = 'success'
       })
       .addCase(resetPwdVerifyOtp.rejected, (state, action) => {
@@ -244,7 +243,7 @@ const authSlice = createSlice({
         state.error = action.error.message
       })
 
-      .addCase(logout.fulfilled, (state) => {
+      .addCase(logout.fulfilled, () => {
         localStorage.clear()
         sessionStorage.clear()
         return initialState
@@ -253,7 +252,7 @@ const authSlice = createSlice({
       .addCase(uploadProfileImage.pending, (state) => {
         state.status = 'loading'
       })
-      .addCase(uploadProfileImage.fulfilled, (state, action) => {
+      .addCase(uploadProfileImage.fulfilled, (state) => {
         state.status = 'success'
       })
       .addCase(uploadProfileImage.rejected, (state, action) => {

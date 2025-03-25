@@ -170,7 +170,7 @@ export const joinCallRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsTyp
 }
 
 // * call room 
-export const callUserConnection = (data: any) => (dispatch: AppDispatch, getState: () => RootState) => {
+export const callUserConnection = (data: any) => (dispatch: AppDispatch) => {
   try {
     // console.log('callUserConnection before socket connection check')
     // if (!socket?.connected) socket?.connect()

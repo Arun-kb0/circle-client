@@ -1,9 +1,7 @@
-import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { selectAuthUser } from '../features/auth/authSlice'
 import NotFoundAnimation from '../components/basic/NotFoundAnimation'
-import { roles } from '../constants/enums'
 
 const NotFoundPage = () => {
   const user = useSelector(selectAuthUser)

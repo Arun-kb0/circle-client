@@ -1,5 +1,4 @@
-import React from 'react'
-import { CredentialResponse, GoogleLogin, googleLogout, GoogleOAuthProvider } from '@react-oauth/google'
+import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google'
 import { googleOauthLogin } from '../../features/auth/authApi'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../app/store'

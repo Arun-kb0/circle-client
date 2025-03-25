@@ -1,8 +1,5 @@
-import React from 'react'
 
-type Props = {}
-
-const ChatUserSkeletonLoader = (props: Props) => {
+const ChatUserSkeletonLoader = () => {
   return (
     <section className="flex items-center animate-pulse">
       <div className="flex-shrink-0">

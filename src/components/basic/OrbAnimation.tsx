@@ -1,4 +1,3 @@
-import React from 'react'
 import spinningOrbs from '../../assets/lottyfiles/spinningOrbs.json'
 import Lottie from 'lottie-react'
 import BackdropVerifyOtp from '../backdrop/BackdropVerifyOtp'

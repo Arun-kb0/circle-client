@@ -1,6 +1,4 @@
-import React, { useState } from 'react'
-import SpringButton from '../../basic/SpringButton'
-import { TbEdit } from 'react-icons/tb'
+import React from 'react'
 
 type Props = {
   fieldName: string
@@ -9,7 +7,7 @@ type Props = {
   inputValue: string
 }
 
-const ProfileAboutItem = ({ fieldData, fieldName, setInputValue, inputValue }: Props) => {
+const ProfileAboutItem = ({ fieldName, setInputValue, inputValue }: Props) => {
   return (
     <article className="flex items-center ">
       <div className="flex-1 min-w-0 ms-4"> <p className="text-sm font-medium text-gray-900 truncate dark:text-white"> {fieldName} </p></div>

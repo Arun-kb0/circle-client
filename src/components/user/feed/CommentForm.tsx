@@ -1,4 +1,4 @@
-import React, { forwardRef, ForwardedRef, useEffect, useState } from 'react'
+import React, { forwardRef  } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { MdGif } from 'react-icons/md';
 
@@ -20,7 +20,7 @@ const CommentForm = forwardRef<HTMLTextAreaElement, Props>(
       register,
       handleSubmit,
       reset,
-      formState: { errors },
+      formState: {  },
     } = useForm<FormData>();
 
     const onSubmit: SubmitHandler<FormData> = (data) => {

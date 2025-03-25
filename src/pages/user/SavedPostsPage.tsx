@@ -1,12 +1,10 @@
-import React from 'react'
 import SavedPosts from '../../components/user/createPost/SavedPosts'
 import PageTitle from '../../components/basic/PageTitle'
 import { selectUserNavOpen } from '../../features/user/userSlice'
 import { useSelector } from 'react-redux'
 
-type Props = {}
 
-const SavedPostsPage = (props: Props) => {
+const SavedPostsPage = () => {
   const userNavOpen = useSelector(selectUserNavOpen)
 
   return (

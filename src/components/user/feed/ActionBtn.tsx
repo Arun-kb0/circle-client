@@ -1,5 +1,3 @@
-import React from 'react'
-import { IconType } from 'react-icons/lib';
 import { IoChevronUpCircle } from "react-icons/io5";
 import { IoChevronDownCircle } from "react-icons/io5";
 

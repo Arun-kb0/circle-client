@@ -466,7 +466,7 @@ const postSlice = createSlice({
 
       .addCase(savePost.fulfilled, (state, action: PayloadAction<{ savedData: SavedType, savedPost: PostType }>) => {
         if (!action.payload) return
-        const { savedData, savedPost } = action.payload
+        const { savedPost } = action.payload
         const existsIndex = state.savedPosts.findIndex(item => item._id === savedPost._id)
         if (existsIndex !== -1) {
           state.savedPosts.splice(existsIndex, 1)

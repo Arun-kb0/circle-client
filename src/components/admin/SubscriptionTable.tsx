@@ -1,4 +1,3 @@
-import React from 'react'
 import moment from 'moment'
 import { SubscriptionWithUserType } from '../../constants/types'
 import Avatar from '../basic/Avatar'

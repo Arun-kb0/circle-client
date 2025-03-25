@@ -1,4 +1,3 @@
-import React from 'react'
 import SignupForm from '../components/auth/SignupForm'
 import { roles } from '../constants/enums'
 import adminSignupImg from '../assets/adminSignup.png'

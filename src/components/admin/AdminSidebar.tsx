@@ -1,42 +1,33 @@
-import React from 'react'
-import { FaRegUser } from "react-icons/fa6";
-import { TbMessageCircle, TbReportAnalytics } from "react-icons/tb";
-import { HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi2";
+import { TbReportAnalytics } from "react-icons/tb";
+import { HiOutlineUserGroup } from "react-icons/hi2";
 import { LuLayoutDashboard, LuUserRoundPlus } from "react-icons/lu";
-import { HiOutlineGift } from "react-icons/hi2";
-import { IoBookmarkOutline } from "react-icons/io5";
-import { PiArticleBold } from "react-icons/pi";
-import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import SpringButton from '../basic/SpringButton';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { clearFollowers, clearFollowing, selectUserNavOpen } from '../../features/user/userSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../../app/store';
-import { clearUserCreatedPosts } from '../../features/post/postSlice';
+import { Link } from 'react-router-dom';
+import {  selectUserNavOpen } from '../../features/user/userSlice';
+import {  useSelector } from 'react-redux';
 import { BsFileEarmarkPost } from 'react-icons/bs';
 
-type Props = {}
 
-const AdminSidebar = (props: Props) => {
-  const navigate = useNavigate()
-  const dispatch = useDispatch<AppDispatch>()
+const AdminSidebar = () => {
+  // const navigate = useNavigate()
+  // const dispatch = useDispatch<AppDispatch>()
   const navOpen = useSelector(selectUserNavOpen)
 
-  const handleClearProfile = async () => {
-    dispatch(clearUserCreatedPosts())
-    dispatch(clearFollowers())
-    dispatch(clearFollowing())
-  }
+  // const handleClearProfile = async () => {
+  //   dispatch(clearUserCreatedPosts())
+  //   dispatch(clearFollowers())
+  //   dispatch(clearFollowing())
+  // }
 
-  const handleNavigateToFollowing = async () => {
-    await handleClearProfile()
-    navigate('/following')
-  }
+  // const handleNavigateToFollowing = async () => {
+  //   await handleClearProfile()
+  //   navigate('/following')
+  // }
 
-  const handleNavigateToChat = async () => {
-    await handleClearProfile()
-    navigate('/chat')
-  }
+  // const handleNavigateToChat = async () => {
+  //   await handleClearProfile()
+  //   navigate('/chat')
+  // }
 
   return (
     <aside id="logo-sidebar" className={`nav-bg-color fixed top-14 left-0 z-40 lg:w-2/12 md:w-3/12 sm:w-3/12 h-screen pt-8 transition-transform duration-300 transform ${navOpen ? 'translate-x-0' : '-translate-x-full'}`} aria-label="Sidebar">

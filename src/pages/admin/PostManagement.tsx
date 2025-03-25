@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import AdminPostTable from '../../components/admin/AdminPostTable'
 import { PostType } from '../../constants/FeedTypes';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,7 +6,6 @@ import { AppDispatch } from '../../app/store';
 import { selectUserNavOpen } from '../../features/user/userSlice';
 import {
   selectPostNumberOfPages, selectPostPage, selectPostPosts,
-  selectPostStatus
 } from '../../features/post/postSlice';
 import { FieldValues } from 'react-hook-form';
 import DatePicker from '../../components/DatePicker';
@@ -18,7 +17,6 @@ import CsvDownload from '../../components/admin/CsvDownload';
 import PdfDownload from '../../components/admin/PdfDownload';
 
 
-type Props = {}
 
 const csvHeaders = [
   { label: 'Media', key: 'media' },
@@ -39,7 +37,7 @@ const pdfHeaders = [[
 ]]
 
 
-const PostManagement = (props: Props) => {
+const PostManagement = () => {
   const dispatch = useDispatch<AppDispatch>()
   const userNavOpen = useSelector(selectUserNavOpen)
 
@@ -49,11 +47,11 @@ const PostManagement = (props: Props) => {
     return newStartDate
   })
   const [endDate, setEndDate] = useState<Date>(new Date())
-  const [searchText, setSearchText] = useState('')
+  const [searchText] = useState('')
   const [page, setPage] = useState(1)
 
   const posts = useSelector(selectPostPosts)
-  const status = useSelector(selectPostStatus)
+  // const status = useSelector(selectPostStatus)
   const currentPage = useSelector(selectPostPage)
   const numberOfPages = useSelector(selectPostNumberOfPages)
 

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { ChatUserType, NotificationType, PaginationMessages, StateType, UserType } from "../../constants/types"
+import { ChatUserType, NotificationType, PaginationMessages, StateType } from "../../constants/types"
 import { RootState } from "../../app/store"
 import { MessageType } from '../../constants/types'
 import { v4 as uuid } from "uuid"
@@ -144,7 +144,7 @@ const chatSlice = createSlice({
       }
     },
 
-    setAllChatRooms: (state, action) => { }
+    setAllChatRooms: () => { }
 
 
   },
@@ -180,7 +180,7 @@ const chatSlice = createSlice({
       })
 
 
-      .addCase(clearChat.fulfilled, (state, action: PayloadAction<{ isDeleted: boolean }>) => {
+      .addCase(clearChat.fulfilled, (state) => {
         state.status = 'success'
         if (state.roomId && state.messages) {
           state.messages[state.roomId] = []

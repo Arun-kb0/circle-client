@@ -1,5 +1,4 @@
 import Lottie from 'lottie-react'
-import React from 'react'
 import messageTyping from '../../assets/lottyfiles/messageTyping.json'
 
 const MessageTypingAnimation = () => {

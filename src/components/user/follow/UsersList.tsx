@@ -1,10 +1,7 @@
-import React, { useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { UserType } from '../../../constants/types'
 import UserSkeletonLoader from '../../basic/UserSkeletonLoader'
 import UserCard from './UserCard'
-import { useSelector } from 'react-redux'
-import { selectUserFollowing } from '../../../features/user/userSlice'
 
 type Props = {
   users: UserType[]

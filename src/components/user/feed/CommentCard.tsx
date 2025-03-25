@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import CommentForm from './CommentForm'
 import CommentBox from './CommentBox'
 import { SubmitHandler } from 'react-hook-form'

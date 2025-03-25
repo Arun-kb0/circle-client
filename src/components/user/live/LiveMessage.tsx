@@ -1,4 +1,3 @@
-import React from 'react'
 import { LiveMessageType } from '../../../constants/types'
 import moment from 'moment'
 import { FaUserCircle } from 'react-icons/fa'

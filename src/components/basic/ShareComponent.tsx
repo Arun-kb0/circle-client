@@ -1,4 +1,3 @@
-import React from 'react';
 import BackdropVerifyOtp from '../backdrop/BackdropVerifyOtp';
 import { motion } from 'framer-motion';
 import { dropIn } from '../../constants/animationDropins';

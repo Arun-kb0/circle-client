@@ -1,11 +1,9 @@
-import React from 'react'
 import LiveStream from '../../components/user/live/LiveStream'
 import { selectUserNavOpen } from '../../features/user/userSlice'
 import { useSelector } from 'react-redux'
 
-type Props = {}
 
-const GoLivePage = (props: Props) => {
+const GoLivePage = () => {
   const userNavOpen = useSelector(selectUserNavOpen)
 
   return (

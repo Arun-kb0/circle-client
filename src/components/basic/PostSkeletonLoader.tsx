@@ -1,6 +1,5 @@
-type Props = {}
 
-const PostSkeletonLoader = (props: Props) => {
+const PostSkeletonLoader = () => {
   return (
 
     <article className="nav-bg-color sm:w-[50vw] w-[90vw] overflow-hidden animate-pulse">

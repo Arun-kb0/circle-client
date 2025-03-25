@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import { DropDownElementsType } from '../../constants/types'
 import { motion } from 'framer-motion'
 

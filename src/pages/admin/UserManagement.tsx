@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectUserCurrentPage, selectUserNavOpen,
@@ -11,11 +11,8 @@ import DatePicker from '../../components/DatePicker';
 import Pagination from '../../components/basic/Pagination';
 import Search from '../../components/Search';
 import { FieldValues } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import CsvDownload from '../../components/admin/CsvDownload';
-import PdfDownload from '../../components/admin/PdfDownload';
 
-type Props = {}
 
 
 const csvHeaders = [
@@ -28,13 +25,13 @@ const csvHeaders = [
   { label: 'Created at', key: 'createdAt' },
 ]
 
-const pdfHeaders = [[
-  'media', 'authorName', 'tags',
-  'desc', 'likesCount', 'commentCount',
-  'reportsCount', 'updatedAt', 'status'
-]]
+// const pdfHeaders = [[
+//   'media', 'authorName', 'tags',
+//   'desc', 'likesCount', 'commentCount',
+//   'reportsCount', 'updatedAt', 'status'
+// ]]
 
-const UserManagement = (props: Props) => {
+const UserManagement = () => {
   const dispatch = useDispatch<AppDispatch>()
   const userNavOpen = useSelector(selectUserNavOpen)
 
@@ -44,7 +41,7 @@ const UserManagement = (props: Props) => {
     return newStartDate
   })
   const [endDate, setEndDate] = useState<Date>(new Date())
-  const [searchText, setSearchText] = useState('')
+  const [searchText] = useState('')
   const [page, setPage] = useState(1)
 
   const users = useSelector(selectUserUsers)

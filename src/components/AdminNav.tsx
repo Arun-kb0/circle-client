@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import SpringButton from './basic/SpringButton'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../app/store'
@@ -18,14 +18,14 @@ type Props = {
   handleLogout: () => void
 }
 
-const AdminNav = ({ handleLogout }: Props) => {
+const AdminNav = ({  }: Props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const user = useSelector(selectAuthUser)
   const navOpen = useSelector(selectUserNavOpen)
 
   const [userDropDown, setUserDropDown] = useState(false)
-  const [notificationDropDown, setNotificationDropDown] = useState(false)
+  const [_, setNotificationDropDown] = useState(false)
 
   const userDropDownElements: DropDownElementsType[] = [
     {

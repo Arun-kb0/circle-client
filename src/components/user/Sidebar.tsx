@@ -1,13 +1,9 @@
-import React from 'react'
 import { FaRegUser } from "react-icons/fa6";
 import { TbMessageCircle } from "react-icons/tb";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { LuUserRoundPlus } from "react-icons/lu";
 import { CgMediaLive } from "react-icons/cg";
-import { HiOutlineGift } from "react-icons/hi2";
 import { IoBookmarkOutline, IoWalletOutline } from "react-icons/io5";
-import { PiArticleBold } from "react-icons/pi";
-import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import SpringButton from '../basic/SpringButton';
 import { Link, useNavigate } from 'react-router-dom';
 import { clearFollowers, clearFollowing, selectUserNavOpen } from '../../features/user/userSlice';
@@ -15,9 +11,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../app/store';
 import { clearUserCreatedPosts } from '../../features/post/postSlice';
 
-type Props = {}
 
-const Sidebar = (props: Props) => {
+const Sidebar = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const navOpen = useSelector(selectUserNavOpen)

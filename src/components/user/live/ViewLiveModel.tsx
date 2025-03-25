@@ -1,14 +1,10 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import SocketIoClient from '../../../config/SocketIoClient';
 import socketEvents from '../../../constants/socketEvents';
-import { selectUserSocketId, setUserSocketId } from '../../../features/user/userSlice';
-import { useSelector } from 'react-redux';
 import BackdropVerifyOtp from '../../backdrop/BackdropVerifyOtp';
 import { motion } from 'framer-motion'
 import { dropIn } from '../../../constants/animationDropins';
-import { IoMdCloseCircleOutline } from 'react-icons/io';
 import { IoClose } from 'react-icons/io5';
-import { selectAuthUser } from '../../../features/auth/authSlice';
 import LiveStreamChat from './LiveStreamChat';
 import { toast } from 'react-toastify';
 
@@ -16,22 +12,14 @@ type Props = {
   streamerId: string,
   handleClose: () => void
 }
-const config = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    // Optionally add TURN servers here for more robust connectivity.
-  ]
-}
 
 
 const ViewLiveModel = ({ handleClose, streamerId }: Props) => {
   const socket = SocketIoClient.getInstance();
-  const userSocketId = useSelector(selectUserSocketId);
-  const user = useSelector(selectAuthUser)
 
   const [remoteStream, setRemoteStream] = useState<MediaStream>(new MediaStream());
   const [caller, setCaller] = useState(""); // Broadcaster's socket id
-  const [name, setName] = useState("");
+  const [_, setName] = useState("");
   const [callerSignal, setCallerSignal] = useState<any>(null);
 
   const userVideo = useRef<HTMLVideoElement>(null);

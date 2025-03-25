@@ -1,5 +1,3 @@
-import moment from 'moment'
-import React from 'react'
 
 type Props = {
   title: string
@@ -7,7 +5,7 @@ type Props = {
   diff: number
 }
 
-const AdminCard = ({ title, count, diff }: Props) => {
+const AdminCard = ({ title, count }: Props) => {
   return (
     <div className="relative text-white font-sans">
       <div className="absolute top-[30%] right-[7%] w-24 h-24 rounded-full bg-[#fab5704c]" />

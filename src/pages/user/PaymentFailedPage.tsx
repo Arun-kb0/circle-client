@@ -1,11 +1,9 @@
-import React, { useEffect } from 'react'
-import PaymentSuccess from '../../components/basic/PaymentSuccess'
+import  { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PaymentFailed from '../../components/basic/PaymentFailed'
 
-type Props = {}
 
-const PaymentFailedPage = (props: Props) => {
+const PaymentFailedPage = () => {
   const navigator = useNavigate()
 
   useEffect(() => {

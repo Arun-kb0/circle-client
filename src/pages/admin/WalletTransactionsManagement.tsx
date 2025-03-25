@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import {  selectUserNavOpen } from '../../features/user/userSlice';
 import { AppDispatch } from '../../app/store';
@@ -10,12 +10,11 @@ import TransactionsTable from '../../components/admin/TransactionsTable';
 import { getFilteredTransactions } from '../../features/payment/paymentApi';
 import {
   selectPaymentFilteredTransactions, selectPaymentFilteredTransactionsCurrentPage,
-  selectPaymentFilteredTransactionsNumberOfPages, selectPaymentFilteredTransactionsStatus
+  selectPaymentFilteredTransactionsNumberOfPages
 } from '../../features/payment/paymentSlice';
 
-type Props = {}
 
-const WalletTransactionsManagement = (props: Props) => {
+const WalletTransactionsManagement = () => {
   const dispatch = useDispatch<AppDispatch>()
   const userNavOpen = useSelector(selectUserNavOpen)
 
@@ -25,11 +24,11 @@ const WalletTransactionsManagement = (props: Props) => {
     return newStartDate
   })
   const [endDate, setEndDate] = useState<Date>(new Date())
-  const [searchText, setSearchText] = useState('')
+  const [searchText] = useState('')
   const [page, setPage] = useState(1)
 
   const transactions = useSelector(selectPaymentFilteredTransactions)
-  const status = useSelector(selectPaymentFilteredTransactionsStatus)
+  // const status = useSelector(selectPaymentFilteredTransactionsStatus)
   const currentPage = useSelector(selectPaymentFilteredTransactionsCurrentPage)
   const numberOfPages = useSelector(selectPaymentFilteredTransactionsNumberOfPages)
 

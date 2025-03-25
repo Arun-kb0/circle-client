@@ -1,4 +1,3 @@
-import React from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { selectAuthUser } from '../features/auth/authSlice'

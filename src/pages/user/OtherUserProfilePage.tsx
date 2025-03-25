@@ -1,10 +1,8 @@
-import React, { useEffect } from 'react'
 import Profile from '../../components/user/profile/Profile'
 import { selectUserNavOpen, selectUserOtherUser } from '../../features/user/userSlice'
 import { useSelector } from 'react-redux'
 
-type Props = {}
-const OtherUserProfilePage = (props: Props) => {
+const OtherUserProfilePage = () => {
   const user = useSelector(selectUserOtherUser)
   const userNavOpen = useSelector(selectUserNavOpen)
   

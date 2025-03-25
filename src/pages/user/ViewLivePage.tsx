@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import ViewLiveModel from '../../components/user/live/ViewLiveModel'
 import LiveUserCard from '../../components/user/live/LiveUserCard'
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -9,20 +9,17 @@ import { selectUserLiveUsers, selectUserNavOpen } from '../../features/user/user
 import { getLiveUsers } from '../../features/user/userApi';
 import { AppDispatch } from '../../app/store';
 import { selectAuthUser } from '../../features/auth/authSlice';
-import { createOrder } from '../../features/payment/paymentApi';
-import { Link } from 'react-router-dom';
 import PageTitle from '../../components/basic/PageTitle';
 
-type Props = {}
 
 
-const ViewLivePage = (props: Props) => {
+const ViewLivePage = () => {
   const dispatch = useDispatch<AppDispatch>()
   const users = useSelector(selectUserLiveUsers)
   const currentUser = useSelector(selectAuthUser)
   const userNavOpen = useSelector(selectUserNavOpen)
   // const [hasMore, setHasMore] = useState<boolean>(() => page < numberOfPages);
-  const [hasMore, setHasMore] = useState<boolean>(false);
+  const [hasMore] = useState<boolean>(false);
   const [openModel, setOpenModel] = useState(false)
   const [streamerId, setStreamerId] = useState<string | null>(null)
 
@@ -48,16 +45,6 @@ const ViewLivePage = (props: Props) => {
     }
     setStreamerId(userId)
     handleOpen()
-  }
-
-
-  const handlePayment = () => {
-    const data = {
-      name: "Doe",
-      mobileNumber: 1231231231,
-      amount: 100
-    }
-    dispatch(createOrder({ data }))
   }
 
 

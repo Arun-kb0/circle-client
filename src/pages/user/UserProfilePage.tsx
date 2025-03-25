@@ -1,12 +1,10 @@
-import React from 'react'
 import Profile from '../../components/user/profile/Profile'
 import { useSelector } from 'react-redux'
 import { selectAuthUser } from '../../features/auth/authSlice'
 import { UserType } from '../../constants/types'
 
-type Props = {}
 
-const UserProfilePage = (props: Props) => {
+const UserProfilePage = () => {
   const user = useSelector(selectAuthUser)
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >

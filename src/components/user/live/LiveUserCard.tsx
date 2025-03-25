@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
-import { FaUserCircle } from 'react-icons/fa'
+import  { useState } from 'react'
 import { selectPaymentSubscriptions } from '../../../features/payment/paymentSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+import {  useNavigate } from 'react-router-dom'
 import { getUser } from '../../../features/user/userApi'
 import { clearUserCreatedPosts } from '../../../features/post/postSlice'
 import { clearFollowers, clearFollowing } from '../../../features/user/userSlice'
@@ -20,7 +19,7 @@ const LiveUserCard = ({ userId, name, image, handleViewLive }: Props) => {
   const navigator = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const subscriptions = useSelector(selectPaymentSubscriptions)
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(() => {
+  const [isSubscribed] = useState<boolean>(() => {
     return Boolean(subscriptions.find(item => item.subscriberToUserId === userId))
   })
 

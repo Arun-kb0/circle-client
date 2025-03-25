@@ -1,4 +1,3 @@
-import { IoMdReturnLeft } from "react-icons/io";
 
 const TO_RADIANS = Math.PI / 180;
 
@@ -53,7 +52,7 @@ export async function canvasPreview(image: any, crop: any, scale = 1, rotate = 0
 
   ctx.restore();
   // As a blob
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     canvas.toBlob((blob) => {
       if (!blob) return
 

@@ -1,4 +1,3 @@
-import React from 'react'
 import { StateType, UserType } from '../constants/types'
 import moment from 'moment'
 import { FaUserCheck, FaUserXmark } from 'react-icons/fa6'
@@ -13,7 +12,7 @@ type Props = {
   numberOfPages: number
 }
 
-const UserTable = ({ users, status, handleBlock, handleUnblock }: Props) => {
+const UserTable = ({ users, handleBlock, handleUnblock }: Props) => {
 
   return (
     <section className="relative overflow-x-auto shadow-md sm:rounded-lg mt-10">

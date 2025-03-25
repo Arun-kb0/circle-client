@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import UserListCard from '../../basic/UserListCard'
 import BackdropVerifyOtp from '../../backdrop/BackdropVerifyOtp'
 import { motion } from 'framer-motion'
@@ -10,23 +10,11 @@ type Props = {
   handleClose: () => void
 }
 
-const users = [
-  {
-    name: "test1",
-    image: 'https://flowbite.com/docs/images/people/profile-picture-5.jpg',
-    time: new Date()
-  },
-  {
-    name: "test2",
-    image: 'https://flowbite.com/docs/images/people/profile-picture-5.jpg',
-    time: new Date()
-  }
-]
 
 const LikedUsersModel = ({ handleClose }: Props) => {
   const post = useSelector(selectPostSelectedPost)
   const likes = useSelector(selectPostLikes)
-  const [users, setUsers] = useState(() => {
+  const [users] = useState(() => {
     if (!post) return []
     const users = likes.filter(like => post._id === like.contentId);
     const seenIds = new Set<string>();

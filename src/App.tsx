@@ -3,21 +3,15 @@ import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { AppDispatch } from './app/store'
 import Navbar from './components/Navbar'
 import { toast, ToastContainer } from 'react-toastify'
-import Signup from './pages/Signup'
-import Login from './pages/Login'
 import 'react-toastify/dist/ReactToastify.css';
 import "react-datepicker/dist/react-datepicker.css";
 import { useEffect, useState } from 'react'
 import { refresh } from './features/auth/authApi'
-import AdminLogin from './pages/AdminLogin'
-import AdminSignup from './pages/AdminSignup'
-import OtpModel from './pages/OtpModel'
-import ResetPassword from './pages/ResetPassword'
 import {
-  selectChatUser, setAllChatRooms, setCallRoomId,
+  setCallRoomId,
   setIncomingCallAndSignal, setIsInChat, setRoomId
 } from './features/chat/chatSlice'
-import { callUserConnection, receiveMessage } from './features/chat/chatApi'
+import { receiveMessage } from './features/chat/chatApi'
 import { selectAuthFriendsRoomId, selectAuthShowNavbar, selectAuthUser, setShowNavbar } from './features/auth/authSlice'
 import socketEvents from './constants/socketEvents'
 import SocketIoClient from './config/SocketIoClient'
@@ -30,9 +24,6 @@ import {
   setUserSocketId, sortFollowingUser
 } from './features/user/userSlice'
 import { getSubscriptions } from './features/payment/paymentApi'
-import PaymentSuccessPage from './pages/user/PaymentSuccessPage'
-import PaymentFailedPage from './pages/user/PaymentFailedPage'
-import NotFoundPage from './pages/NotFoundPage'
 import UserRoutes from './routes/UserRoutes'
 import AdminRoutes from './routes/AdminRoutes'
 
@@ -41,7 +32,6 @@ function App() {
   const location = useLocation()
   const dispatch = useDispatch<AppDispatch>()
   const user = useSelector(selectAuthUser)
-  const chatUser = useSelector(selectChatUser)
   const friendsRoomId = useSelector(selectAuthFriendsRoomId)
   const showNavbar = useSelector(selectAuthShowNavbar)
 

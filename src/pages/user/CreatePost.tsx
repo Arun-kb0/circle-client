@@ -5,11 +5,8 @@ import { createPost, uploadFiles } from '../../features/post/postApi';
 import { PostType } from '../../constants/FeedTypes';
 import {
   selectPostCreateCache, selectPostCroppedImage,
-  selectPostImageToCrop,
-  selectPostImageToCropIndex,
   selectUploadFilesStatus, setCreatePostCache,
   setCroppedImage, setImageToCrop,
-  setImageToCropIndex
 } from '../../features/post/postSlice';
 import PostForm from '../../components/user/createPost/PostForm';
 import { useNavigate } from 'react-router-dom';
@@ -19,21 +16,20 @@ import PageTitle from '../../components/basic/PageTitle';
 import { selectUserNavOpen } from '../../features/user/userSlice';
 
 
-type Props = {}
 
 type FromDataType = {
   image?: FileList
   message: string
 }
 
-const CreatePost = (props: Props) => {
+const CreatePost = () => {
   const navigator = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const uploadFilesStatus = useSelector(selectUploadFilesStatus)
   const croppedImage = useSelector(selectPostCroppedImage)
-  const imageToCrop = useSelector(selectPostImageToCrop)
+  // const imageToCrop = useSelector(selectPostImageToCrop)
   const postCache = useSelector(selectPostCreateCache)
-  const imageToCropIndex = useSelector(selectPostImageToCropIndex)
+  // const imageToCropIndex = useSelector(selectPostImageToCropIndex)
   const userNavOpen = useSelector(selectUserNavOpen)
 
 

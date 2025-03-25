@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import BackdropVerifyOtp from '../backdrop/BackdropVerifyOtp'
-import { motion, useForceUpdate } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useDispatch } from 'react-redux'
 import { resendOtp, resetPwdVerifyOtp, resetResendOtp, verifyEmail } from '../../features/auth/authApi'
 import { AppDispatch } from '../../app/store'
@@ -21,7 +21,6 @@ const VerifyOtpModal = ({ componentType, handleClose }: Props) => {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
     reset: resetForm
   } = useForm()
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import SocketIoClient from '../../../config/SocketIoClient';
 import socketEvents from '../../../constants/socketEvents';
 import { useSelector } from 'react-redux';
@@ -6,7 +6,6 @@ import { selectUserSocketId } from '../../../features/user/userSlice';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { AnsweredLiveDataType, LiveUserDataType } from '../../../constants/types';
 import LiveStreamChat from './LiveStreamChat';
-import { toast } from 'react-toastify';
 
 
 type Props = {
@@ -18,7 +17,7 @@ const LiveStream = ({ }: Props) => {
   const user = useSelector(selectAuthUser);
   const userSocketId = useSelector(selectUserSocketId);
 
-  const [audioLocalStream, setAudioLocalStream] = useState<MediaStream | null>(null);
+  const [_, setAudioLocalStream] = useState<MediaStream | null>(null);
   const myVideo = useRef<HTMLVideoElement>(null);
   const [isStreamStarted, setIsStreamStarted] = useState<boolean>(false)
   const [prepareLiveStream, setPrepareLiveStream] = useState<boolean>(false)
@@ -90,11 +89,11 @@ const LiveStream = ({ }: Props) => {
     return peerConnection;
   }
 
-  const reconnectToUser = (peerConnection: RTCPeerConnection, userId: string) => {
-    if (peerConnection.connectionState === 'closed') {
-      peerConnection.restartIce()
-    }
-  }
+  // const reconnectToUser = (peerConnection: RTCPeerConnection, userId: string) => {
+  //   if (peerConnection.connectionState === 'closed') {
+  //     peerConnection.restartIce()
+  //   }
+  // }
 
   // End the live stream
   const liveEnd = () => {

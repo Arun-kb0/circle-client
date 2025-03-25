@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { IoMdMore } from "react-icons/io";
 import { FaUserCircle } from 'react-icons/fa'
 import { useDispatch } from 'react-redux';
@@ -9,11 +9,8 @@ import { DropDownElementsType, MessageType } from '../../../constants/types';
 import { deleteMessage } from '../../../features/chat/chatApi';
 import SocketIoClient from '../../../config/SocketIoClient';
 import socketEvents from '../../../constants/socketEvents';
-import { edit } from '@cloudinary/url-gen/actions/animated';
 import { MdGif } from 'react-icons/md';
 import GifPicker from '../../basic/GifPicker';
-import { stringOrNumber } from '@cloudinary/url-gen/types/types';
-import { isCancel } from 'axios';
 
 
 type Props = {

@@ -1,5 +1,4 @@
-import React from 'react'
-import { NotificationDataType, NotificationType } from '../../constants/types'
+import { NotificationDataType } from '../../constants/types'
 import moment from 'moment'
 import { LuNewspaper } from 'react-icons/lu'
 import { TiTickOutline } from 'react-icons/ti'

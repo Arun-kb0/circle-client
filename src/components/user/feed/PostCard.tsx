@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import {  useState } from 'react'
 import { PostType } from '../../../constants/FeedTypes'
 import { GoHeart } from "react-icons/go";
 import { BiCommentDots } from "react-icons/bi";
@@ -6,15 +6,14 @@ import { IoShareSocialOutline } from "react-icons/io5";
 import PostImages from './PostImages';
 import { motion } from 'framer-motion'
 import SpringButton from '../../basic/SpringButton';
-import { HiOutlineUserCircle } from 'react-icons/hi2';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
 import { deletePost, like, report, savePost, unlike } from '../../../features/post/postApi'
 import {
-  selectPost, selectPostLikes, selectPostReports,
+  selectPost, selectPostLikes, 
   selectPostSavedPosts,
-  setCommentedUsersModelState, setLikedUsersModelState, setSharePostModelOpen
+  setCommentedUsersModelState, setLikedUsersModelState,
 } from '../../../features/post/postSlice';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { GoHeartFill } from "react-icons/go";
@@ -22,7 +21,6 @@ import DropDown from '../../basic/DropDown';
 import { DropDownElementsType } from '../../../constants/types';
 import { IoIosMore } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
-import ShareComponent from '../../basic/ShareComponent';
 import Avatar from '../../basic/Avatar';
 import { CiBookmark, CiBookmarkCheck } from 'react-icons/ci';
 import { toast } from 'react-toastify';
@@ -39,14 +37,14 @@ const PostCard = ({ post, openCommentModel }: Props) => {
   const likes = useSelector(selectPostLikes)
   const user = useSelector(selectAuthUser)
   const savedPosts = useSelector(selectPostSavedPosts)
-  const reports = useSelector(selectPostReports)
+  // const reports = useSelector(selectPostReports)
 
   const [isSavedPost, setIsSavedPost] = useState<boolean>(() => {
     return Boolean(savedPosts.find(item => item._id === post._id))
   })
-  const [isReportedPost, setIsReportedPost] = useState<boolean>(() => {
-    return Boolean(reports.find(item => item.contentType === 'post' && item.contentId === post._id))
-  })
+  // const [isReportedPost, setIsReportedPost] = useState<boolean>(() => {
+  //   return Boolean(reports.find(item => item.contentType === 'post' && item.contentId === post._id))
+  // })
   const [openPostDropdown, setOpenPostDropdown] = useState(false)
 
   const userPostDropdownElements: DropDownElementsType[] = [
@@ -80,9 +78,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
     return status ? true : false
   })
 
-  const handleImageView = () => {
-
-  }
+  // const handleImageView = () => {}
 
   const handleLike = () => {
     dispatch(like({ contentId: post._id, contentType: 'post' }))

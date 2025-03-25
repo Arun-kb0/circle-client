@@ -1,4 +1,3 @@
-import React from 'react'
 import { PostType } from '../../constants/FeedTypes'
 import moment from 'moment'
 import { MdBlock } from 'react-icons/md'

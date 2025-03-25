@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import 'react-image-crop/dist/ReactCrop.css'
 import ReactCrop, { PixelCrop, Crop } from 'react-image-crop'
 import { selectPostImageToCrop, setCroppedImage } from '../../../features/post/postSlice'
@@ -8,10 +8,9 @@ import { canvasPreview } from '../../../util/cropImage'
 import { BsFillCloudDownloadFill } from 'react-icons/bs'
 import { AiOutlineRotateRight } from 'react-icons/ai'
 
-type Props = {}
 
 
-const Cropper = (props: Props) => {
+const Cropper = () => {
   const dispatch = useDispatch()
 
   const imgRef = useRef(null);
@@ -73,7 +72,6 @@ const Cropper = (props: Props) => {
     <section className="w-[100vh] h-auto flex justify-center items-center bg-gray-800 p-10 rounded-lg shadow-lg">
       <div className="block">
         <ReactCrop
-          src={imageUrl}
           crop={crop}
           onChange={(_, percentCrop) => {
             setCrop(percentCrop);
@@ -92,14 +90,16 @@ const Cropper = (props: Props) => {
             }
           }}
         >
-          <img
-            ref={imgRef}
-            crossOrigin='anonymous'
-            alt='Error'
-            src={imageUrl}
-            style={{ transform: `scale(${scale}) rotate(${rotation}deg)` }}
-            onLoad={onImageLoad}
-          />
+          {imageUrl && (
+            <img
+              ref={imgRef}
+              crossOrigin='anonymous'
+              alt='Error'
+              src={imageUrl}
+              style={{ transform: `scale(${scale}) rotate(${rotation}deg)` }}
+              onLoad={onImageLoad}
+            />
+          )}
         </ReactCrop>
         <div className='flex justify-center items-center p-2 pb-3'>
           <input

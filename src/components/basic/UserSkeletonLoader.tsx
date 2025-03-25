@@ -1,8 +1,5 @@
-import React from 'react'
 
-type Props = {}
-
-const UserSkeletonLoader = (props: Props) => {
+const UserSkeletonLoader = () => {
   return (
     <article className="max-w-sm w-52 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 animate-pulse">
       <div className="flex justify-end px-4 pt-4">

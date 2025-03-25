@@ -1,4 +1,3 @@
-import React from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
@@ -22,7 +21,6 @@ const SetupSubscription = ({ plan }: Props) => {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors }
   } = useForm<FormValues>({
     defaultValues: {
