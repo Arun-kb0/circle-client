@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FaCircleChevronRight, FaCropSimple } from 'react-icons/fa6'
 import { FaCircleChevronLeft } from 'react-icons/fa6'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PiTrashFill } from "react-icons/pi";
-import { Link } from 'react-router-dom';
 
 type Props = {
   media: string[]
@@ -13,7 +12,7 @@ type Props = {
   handleImageCrop?: (index: number) => void
 }
 
-const PostImages = ({ media, isEdit = false, deleteFunction, handleImageCrop, resetActiveIndex = false }: Props) => {
+const PostImages = ({ media, deleteFunction, handleImageCrop, resetActiveIndex = false }: Props) => {
   const [direction, setDirection] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0)
 

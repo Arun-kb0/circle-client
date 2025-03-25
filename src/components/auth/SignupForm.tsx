@@ -4,7 +4,7 @@ import { AppDispatch } from '../../app/store'
 import { UserType } from '../../constants/types'
 import { Link, useNavigate } from 'react-router-dom'
 import { adminSignup, signup } from '../../features/auth/authApi'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { roles } from '../../constants/enums'
 import { selectAuthStatus, selectAuthUser } from '../../features/auth/authSlice'
 import Spinner from '../Spinner'
@@ -30,7 +30,6 @@ const SignupForm = ({ role, name, homePath, loginPath, openModel }: Props) => {
     handleSubmit,
     formState: { errors },
     watch,
-    reset: resetForm
   } = useForm()
 
   const onSubmit = async (data: FieldValues) => {
@@ -40,7 +39,7 @@ const SignupForm = ({ role, name, homePath, loginPath, openModel }: Props) => {
     if (role === roles.admin) {
       dispatch(adminSignup(userData))
     } else {
-      const res = await dispatch(signup(userData))
+       await dispatch(signup(userData))
       openModel && openModel()
     }
 

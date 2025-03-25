@@ -1,4 +1,4 @@
-import { ActionCreator, createSlice, PayloadAction } from "@reduxjs/toolkit"
+import {  createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { CountByDataType, LineChartDataType, NotificationDataType, PaginationNotification, PaginationUsers, PieChartType, StateType, UsersCountTypes, UserType } from "../../constants/types"
 import {
   blockUser, followUser, getAllUsers, getFollowers,

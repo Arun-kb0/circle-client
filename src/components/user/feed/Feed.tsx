@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import PostCard from './PostCard'
 import { PostType } from '../../../constants/FeedTypes'
 import Comments from './Comments';
@@ -13,11 +13,10 @@ import {
   setSharePostModelOpen
 } from '../../../features/post/postSlice';
 import { AppDispatch } from '../../../app/store';
-import { getPosts, updatePost } from '../../../features/post/postApi';
+import { getPosts } from '../../../features/post/postApi';
 import LikedUsersModel from './LikedUsersModel';
 import InfiniteScroll from 'react-infinite-scroll-component'
 import PostSkeltonLoader from '../../basic/PostSkeletonLoader';
-import { DataStrategyFunctionArgs } from 'react-router-dom';
 import ShareComponent from '../../basic/ShareComponent';
 import UsersList from '../follow/UsersList';
 import PageTitle from '../../basic/PageTitle';

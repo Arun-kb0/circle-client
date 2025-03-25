@@ -1,23 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import ChatUsers from '../../components/user/chat/ChatUsers'
 import ChatSection from '../../components/user/chat/ChatSection'
 import { AnimatePresence } from 'framer-motion'
 import CallModel from '../../components/user/chat/CallModel'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../../app/store'
-import { joinCallRoom } from '../../features/chat/chatApi'
 import { selectChatCallModelType, selectChatIsIncomingCall, selectChatUser, setCallRoomId } from '../../features/chat/chatSlice'
 import { selectAuthUser } from '../../features/auth/authSlice'
 import SocketIoClient from '../../config/SocketIoClient'
 import socketEvents from '../../constants/socketEvents'
 import { generateCallRoomId } from '../../util/generator'
-import { selectCallNotification } from '../../features/notification/notificationSlice'
 import PageTitle from '../../components/basic/PageTitle'
 import { selectUserNavOpen } from '../../features/user/userSlice'
 
-type Props = {}
 
-const ChatPage = (props: Props) => {
+const ChatPage = () => {
   const dispatch = useDispatch<AppDispatch>()
   const [callModelOpen, setCallModelOpen] = useState(false)
   const [callModelType, setCallModelType] = useState<'video' | 'audio'>('audio')

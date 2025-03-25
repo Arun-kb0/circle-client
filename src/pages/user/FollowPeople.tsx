@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectUserNavOpen,
@@ -11,9 +11,8 @@ import UsersList from '../../components/user/follow/UsersList';
 import PageTitle from '../../components/basic/PageTitle';
 
 
-type Props = {}
 
-const FollowPeople = (props: Props) => {
+const FollowPeople = () => {
   const dispatch = useDispatch<AppDispatch>()
   const users = useSelector(selectUserSuggested)
   const status = useSelector(selectUserSuggestedStatus)

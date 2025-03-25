@@ -1,23 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import BackdropVerifyOtp from '../../backdrop/BackdropVerifyOtp'
 import { motion } from 'framer-motion'
 import { dropIn } from '../../../constants/animationDropins'
 import { useForm } from 'react-hook-form'
 import { PostType } from '../../../constants/FeedTypes'
-import { IoCloudUploadOutline, IoTerminal } from "react-icons/io5";
+import { IoCloudUploadOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../../../app/store'
 import { uploadFiles } from '../../../features/post/postApi'
-import { selectUploadFiles, selectUploadFilesStatus } from '../../../features/post/postSlice'
-
-// ! remove all this depentancies
-import { Cloudinary, ImageTransformation } from '@cloudinary/url-gen';
-import { auto } from '@cloudinary/url-gen/actions/resize';
-import { autoGravity } from '@cloudinary/url-gen/qualifiers/gravity';
-import { AdvancedImage } from '@cloudinary/react';
-import { v4 as uuid } from 'uuid'
+import { selectUploadFilesStatus } from '../../../features/post/postSlice'
 import Spinner from '../../Spinner'
-import { FaCircleChevronLeft, FaCircleChevronRight } from 'react-icons/fa6'
 import PostImages from '../feed/PostImages'
 
 
@@ -35,7 +27,7 @@ type FromDataType = {
 const AddImage = ({ handleClose, handlePost }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const uploadFilesStatus = useSelector(selectUploadFilesStatus)
-  const uploadedImageUrls = useSelector(selectUploadFiles)
+  // const uploadedImageUrls = useSelector(selectUploadFiles)
   const [images, setImages] = useState<string[]>([])
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [resetActiveIndex, setResetActiveIndex] = useState(false)
@@ -43,9 +35,7 @@ const AddImage = ({ handleClose, handlePost }: Props) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    setValue,
-    getValues
+    formState: {  },
   } = useForm<FromDataType>({
     defaultValues: {
       image: undefined,

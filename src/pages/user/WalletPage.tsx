@@ -1,12 +1,9 @@
-import React from 'react'
 import Wallet from '../../components/user/wallet/Wallet'
 import PageTitle from '../../components/basic/PageTitle'
 import { selectUserNavOpen } from '../../features/user/userSlice'
 import { useSelector } from 'react-redux'
 
-type Props = {}
-
-const WalletPage = (props: Props) => {
+const WalletPage = () => {
   const userNavOpen = useSelector(selectUserNavOpen)
 
   return (

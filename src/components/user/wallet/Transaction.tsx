@@ -1,4 +1,3 @@
-import React from 'react'
 import Avatar from '../../basic/Avatar'
 import { TransactionType } from '../../../constants/types'
 import moment from 'moment'

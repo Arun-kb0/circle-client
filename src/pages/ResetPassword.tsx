@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import  { useState } from 'react'
 import ResetPwdForm from '../components/auth/ResetPwdForm'
 import VerifyOtpModal from '../components/models/VerifyOtpModal'
 import { AnimatePresence } from 'framer-motion'
@@ -6,9 +6,8 @@ import { useSelector } from 'react-redux'
 import { selectAuthResetStatus } from '../features/auth/authSlice'
 import resetPassword from '../assets/resetPassword.png'
 
-type Props = {}
 
-const ResetPassword = (props: Props) => {
+const ResetPassword = () => {
   const status = useSelector(selectAuthResetStatus)
   const [modelOpen, setModelOpen] = useState<Boolean>(false)
   const close = () => setModelOpen(false)

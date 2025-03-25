@@ -1,8 +1,6 @@
-import React from 'react'
 
-type Props = {}
 
-const CommentSkeletonLoader = (props: Props) => {
+const CommentSkeletonLoader = () => {
   return (
     <article className="relative p-5 text-base bg-white rounded-lg dark:bg-gray-800 animate-pulse">
       <footer className="flex justify-between items-center mb-2">

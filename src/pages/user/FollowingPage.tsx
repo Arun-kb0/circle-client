@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../../app/store'
 import {
-  clearFollowing,
   selectUserFollowing,
   selectUserFollowingCurrentPage,
   selectUserFollowingNumberOfPages,
@@ -11,7 +10,6 @@ import {
 } from '../../features/user/userSlice'
 import { getFollowing } from '../../features/user/userApi'
 import UsersList from '../../components/user/follow/UsersList'
-import { selectAuthUser } from '../../features/auth/authSlice'
 import PageTitle from '../../components/basic/PageTitle'
 import { useLocation } from 'react-router-dom'
 
@@ -30,7 +28,7 @@ const FollowingPage = ({ userId }: Props) => {
   const userNavOpen = useSelector(selectUserNavOpen)
   
   const [hasMore, setHasMore] = useState<boolean>(() => page < numberOfPages);
-  const [isUserProfile, setisUserProfile] = useState(location.pathname === '/profile')
+  const [isUserProfile] = useState(location.pathname === '/profile')
 
   useEffect(() => {
     if (followingUsers.length === 0) {

@@ -1,12 +1,10 @@
-import React, { useState } from 'react'
-import { FaUserCircle } from 'react-icons/fa';
+import  { useState } from 'react'
 import { MdMoreHoriz } from "react-icons/md";
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
-import { followUser, getUser, unFollow } from '../../../features/user/userApi';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { clearFollowers, clearFollowing, selectUserFollowing } from '../../../features/user/userSlice';
-import { clearUserCreatedPosts } from '../../../features/post/postSlice';
+import { followUser, unFollow } from '../../../features/user/userApi';
+import { useLocation} from 'react-router-dom';
+import {  selectUserFollowing } from '../../../features/user/userSlice';
 import Avatar from '../../basic/Avatar';
 
 type Props = {
@@ -17,10 +15,9 @@ type Props = {
 
 const UserCard = ({ userId, name, image }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
-  const navigator = useNavigate()
   const location = useLocation()
   const followingUsers = useSelector(selectUserFollowing)
-  const [isFollowing, setIsFollowing] = useState<boolean>(() => {
+  const [isFollowing] = useState<boolean>(() => {
     if (location.pathname === '/follow-people') return false
     if (location.pathname === '/following') return true
     return Boolean(followingUsers.findIndex(following => following._id === userId))
@@ -31,17 +28,17 @@ const UserCard = ({ userId, name, image }: Props) => {
   const handleRemove = () => { }
   const handleMessage = () => { }
 
-  const handleClearProfile = async () => {
-    dispatch(clearUserCreatedPosts())
-    dispatch(clearFollowers())
-    dispatch(clearFollowing())
-  }
+  // const handleClearProfile = async () => {
+  //   dispatch(clearUserCreatedPosts())
+  //   dispatch(clearFollowers())
+  //   dispatch(clearFollowing())
+  // }
 
-  const handleProfileNav = async () => {
-    await handleClearProfile()
-    await dispatch(getUser(userId))
-    navigator('/user-profile')
-  }
+  // const handleProfileNav = async () => {
+  //   await handleClearProfile()
+  //   await dispatch(getUser(userId))
+  //   navigator('/user-profile')
+  // }
 
   return (
     <article className="max-w-sm w-52 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">

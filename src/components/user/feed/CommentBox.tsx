@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import { CommentType, LikeType } from '../../../constants/FeedTypes'
 import moment from 'moment'
 import { IoIosMore } from "react-icons/io";
@@ -18,7 +18,6 @@ import { selectPostSelectedPost, setCommentReplayCount } from '../../../features
 import { toast } from 'react-toastify';
 import GifPicker from '../../basic/GifPicker';
 import { MdGif } from 'react-icons/md';
-import { stringOrNumber } from '@cloudinary/url-gen/types/types';
 
 type Props = {
   comment: CommentType
@@ -130,7 +129,7 @@ const CommentBox = ({ comment: currentComment, level, commentLikesArray }: Props
       mediaType: mediaType === 'gif' ? 'gif' : 'text',
       media: (mediaType === 'gif' && url) ? url : replayValue
     }
-    const data = await dispatch(createChildComment({
+    await dispatch(createChildComment({
       comment: repliedComment,
       contentId: selectedPost?._id as string,
       contentType: 'post',

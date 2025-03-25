@@ -1,10 +1,8 @@
-import React from 'react'
 import BackdropVerifyOtp from '../../backdrop/BackdropVerifyOtp'
 import { motion } from 'framer-motion'
 import { dropIn } from '../../../constants/animationDropins'
 import { FieldValues, useForm } from 'react-hook-form'
 import { PostType } from '../../../constants/FeedTypes'
-import { toast } from 'react-toastify'
 
 type Props = {
   handleClose: () => void
@@ -17,7 +15,7 @@ const AddText = ({ handleClose, handlePost }: Props) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: {  },
   } = useForm();
 
   const onSubmit = (formData: FieldValues) => {

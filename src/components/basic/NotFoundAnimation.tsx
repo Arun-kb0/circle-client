@@ -1,5 +1,4 @@
 import Lottie from 'lottie-react'
-import React from 'react'
 import notFound from '../../assets/lottyfiles/notFound.json'
 
 const NotFoundAnimation = () => {

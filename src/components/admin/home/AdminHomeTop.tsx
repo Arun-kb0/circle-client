@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import AdminCard from './AdminCard'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-  selectPostSelectedPost, selectTotalCommentCounts,
+   selectTotalCommentCounts,
   selectTotalLikeCounts, selectTotalPostCounts
 } from '../../../features/post/postSlice'
 import { AppDispatch } from '../../../app/store'
@@ -10,9 +10,8 @@ import { feedCounts } from '../../../features/post/postApi'
 import { getUsersCount } from '../../../features/user/userApi'
 import { selectUserTotalUsers } from '../../../features/user/userSlice'
 
-type Props = {}
 
-const AdminHomeTop = (props: Props) => {
+const AdminHomeTop = () => {
   const dispatch =useDispatch<AppDispatch>()
   const postsCount = useSelector(selectTotalPostCounts)
   const commentsCount = useSelector(selectTotalCommentCounts)

@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { FaUserCircle } from 'react-icons/fa'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectAuthUser } from '../../../features/auth/authSlice'
 import { AppDispatch } from '../../../app/store'
 import { joinRoom } from '../../../features/chat/chatApi'
-import { selectUserOnlineUsers, setOnlineUsers } from '../../../features/user/userSlice'
+import { selectUserOnlineUsers } from '../../../features/user/userSlice'
 import Avatar from '../../basic/Avatar'
 
 type Props = {
@@ -14,7 +13,7 @@ type Props = {
   messageCount: number,
 }
 
-const ChatUser = ({ name, image, userId, messageCount }: Props) => {
+const ChatUser = ({ name, image, userId }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const user = useSelector(selectAuthUser)
   const onlineUsers = useSelector(selectUserOnlineUsers)

@@ -7,7 +7,7 @@ import {
   TransactionPagination, TransactionType, TransactionWithUsersType, UserSubscriptionPlanType, WalletType
 } from "../../constants/types"
 import {
-  createOrder, getFilteredSubscriptions, getFilteredTransactions, getSubscriptions, getTransactions,
+ getFilteredSubscriptions, getFilteredTransactions, getSubscriptions, getTransactions,
   getUserSubscriptionPlan,
   getUserWallet, setUserSubscriptionPlan, subscribeWithWallet
 } from "./paymentApi"
@@ -125,7 +125,7 @@ const paymentSlice = createSlice({
       .addCase(subscribeWithWallet.pending, (state) => {
         state.paymentStatus = 'loading'
       })
-      .addCase(subscribeWithWallet.fulfilled, (state, action) => {
+      .addCase(subscribeWithWallet.fulfilled, (state) => {
         state.paymentStatus = 'success'
       })
       .addCase(subscribeWithWallet.rejected, (state, action) => {

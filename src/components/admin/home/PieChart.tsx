@@ -1,4 +1,3 @@
-import React from 'react'
 import { ResponsivePie } from '@nivo/pie'
 
 // Define a dark theme for the Pie Chart

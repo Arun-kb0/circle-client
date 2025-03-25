@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import VerifyOtpModal from '../components/models/VerifyOtpModal'
 import { AnimatePresence, motion } from 'framer-motion'
 
-type Props = {}
 
-const OtpModel = (props: Props) => {
+const OtpModel = () => {
   const [modelOpen, setModelOpen] = useState<Boolean>(false)
   const close = () => setModelOpen(false)
   const open = () => setModelOpen(true)

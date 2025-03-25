@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import PaymentSuccess from '../../components/basic/PaymentSuccess'
 import { useNavigate } from 'react-router-dom'
 
-type Props = {}
 
-const PaymentSuccessPage = (props: Props) => {
+const PaymentSuccessPage = () => {
   const navigator = useNavigate()
   useEffect(() => {
     const timeout = setTimeout(() => {

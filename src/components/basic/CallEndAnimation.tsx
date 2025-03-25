@@ -1,5 +1,4 @@
 import Lottie from 'lottie-react'
-import React, { useEffect, useRef } from 'react'
 import callEnd from '../../assets/lottyfiles/callEnd.json'
 
 const CallEndAnimation = () => {

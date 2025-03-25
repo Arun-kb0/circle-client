@@ -15,8 +15,6 @@ import OrbAnimation from '../../components/basic/OrbAnimation';
 import PageTitle from '../../components/basic/PageTitle';
 import { selectUserNavOpen } from '../../features/user/userSlice';
 
-type Props = {}
-
 
 type FromDataType = {
   image?: FileList
@@ -24,7 +22,7 @@ type FromDataType = {
 }
 
 
-const EditPostPage = (props: Props) => {
+const EditPostPage = () => {
   const navigator = useNavigate()
   const location = useLocation()
   const post = location.state as PostType
@@ -48,9 +46,7 @@ const EditPostPage = (props: Props) => {
   const imageToCrop = useSelector(selectPostImageToCrop)
 
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
+    formState: {  },
   } = useForm<FromDataType>({
     defaultValues: {
       image: undefined,

@@ -1,11 +1,9 @@
-import React from 'react'
 import Cropper from '../../components/user/createPost/Cropper'
 import { selectUserNavOpen } from '../../features/user/userSlice'
 import { useSelector } from 'react-redux'
 
-type Props = {}
 
-const CropperPage = (props: Props) => {
+const CropperPage = () => {
   const userNavOpen = useSelector(selectUserNavOpen)
 
   return (

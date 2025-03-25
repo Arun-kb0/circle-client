@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import ChatUser from './ChatUser';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -6,16 +6,13 @@ import {
   selectUserFollowingNumberOfPages, selectUserFollowingStatus,
 } from '../../../features/user/userSlice';
 import { AppDispatch } from '../../../app/store';
-import { getFollowers, getFollowing } from '../../../features/user/userApi';
-import Spinner from '../../Spinner';
+import {  getFollowing } from '../../../features/user/userApi';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ChatUserSkeletonLoader from '../../basic/ChatUserSkeletonLoader';
 
 
-type Props = {}
-
-const ChatUsers = (props: Props) => {
+const ChatUsers = () => {
   const dispatch = useDispatch<AppDispatch>()
   const currentUser = useSelector(selectAuthUser)
   const users = useSelector(selectUserFollowing)

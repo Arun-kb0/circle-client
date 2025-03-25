@@ -1,5 +1,4 @@
 import Lottie from 'lottie-react'
-import React from 'react'
 import failed from '../../assets/lottyfiles/failed.json'
 
 const FailedAnimation = () => {

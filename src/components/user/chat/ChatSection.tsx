@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import ChatMessage from './ChatMessage'
 import ChatInput from './ChatInput'
-import SendMessage from './SendMessage';
 import SocketIoClient from '../../../config/SocketIoClient';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -14,10 +13,9 @@ import {
 } from '../../../features/chat/chatSlice';
 import { AppDispatch } from '../../../app/store';
 import { selectAuthUser } from '../../../features/auth/authSlice';
-import { FaUserCircle, FaVideo } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import {  FaVideo } from 'react-icons/fa';
 import { IoMdMore } from 'react-icons/io';
-import { clearChat, getRoomMessages, receiveMessage } from '../../../features/chat/chatApi';
+import { clearChat, getRoomMessages } from '../../../features/chat/chatApi';
 import DropDown from '../../basic/DropDown';
 import { DropDownElementsType, MessageType } from '../../../constants/types';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -58,7 +56,7 @@ const ChatSection = ({ handleCallModelOpen }: Props) => {
   const page = useSelector(selectChatMessageCurrentPage)
   const numberOfPages = useSelector(selectChatMessageNumberOfPages)
   const status = useSelector(selectChatMessageStatus)
-  const [hasMore, setHasMore] = useState<boolean>(() => page <= numberOfPages);
+  const [hasMore] = useState<boolean>(() => page <= numberOfPages);
 
   useEffect(() => {
     console.log('message - room ids')

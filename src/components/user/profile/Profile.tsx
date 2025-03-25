@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { FaUserCircle } from 'react-icons/fa'
+import { useEffect, useState } from 'react'
 import ProfilePosts from './ProfilePosts'
 import ProfileAbout from './ProfileAbout'
 import { RadioInputDataType, SubscriptionsType, UserType } from '../../../constants/types'
@@ -11,7 +10,10 @@ import { createOrder, getUserSubscriptionPlan, subscribeWithWallet } from '../..
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../../../app/store'
 import { selectAuthUser } from '../../../features/auth/authSlice'
-import { clearUserSubscriptionPlan, resetPaymentStatus, selectPaymentStatus, selectPaymentSubscriptions, selectPaymentUserSubscriptionPlan } from '../../../features/payment/paymentSlice'
+import {
+  clearUserSubscriptionPlan, resetPaymentStatus, selectPaymentStatus,
+  selectPaymentSubscriptions, selectPaymentUserSubscriptionPlan
+} from '../../../features/payment/paymentSlice'
 import { PiCrownSimpleFill } from 'react-icons/pi'
 import { IoWallet } from 'react-icons/io5'
 import phonePaySvg from '../../../assets/phonePay.svg'

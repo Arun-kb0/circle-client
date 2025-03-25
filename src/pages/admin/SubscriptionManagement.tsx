@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import {selectUserNavOpen} from '../../features/user/userSlice';
 import { AppDispatch } from '../../app/store';
@@ -9,14 +9,13 @@ import { FieldValues } from 'react-hook-form';
 import SubscriptionTable from '../../components/admin/SubscriptionTable';
 import {
   selectPaymentFilteredSubscriptions, selectPaymentFilteredSubscriptionsCurrentPage,
-  selectPaymentFilteredSubscriptionsNumberOfPages, selectPaymentFilteredSubscriptionsStatus
+  selectPaymentFilteredSubscriptionsNumberOfPages
 } from '../../features/payment/paymentSlice';
 import { getFilteredSubscriptions } from '../../features/payment/paymentApi';
 
-type Props = {}
 
 
-const SubscriptionManagement = (props: Props) => {
+const SubscriptionManagement = () => {
   const dispatch = useDispatch<AppDispatch>()
   const userNavOpen = useSelector(selectUserNavOpen)
 
@@ -26,11 +25,11 @@ const SubscriptionManagement = (props: Props) => {
     return newStartDate
   })
   const [endDate, setEndDate] = useState<Date>(new Date())
-  const [searchText, setSearchText] = useState('')
+  const [searchText] = useState('')
   const [page, setPage] = useState(1)
 
   const subscriptions = useSelector(selectPaymentFilteredSubscriptions)
-  const status = useSelector(selectPaymentFilteredSubscriptionsStatus)
+  // const status = useSelector(selectPaymentFilteredSubscriptionsStatus)
   const currentPage = useSelector(selectPaymentFilteredSubscriptionsCurrentPage)
   const numberOfPages = useSelector(selectPaymentFilteredSubscriptionsNumberOfPages)
 

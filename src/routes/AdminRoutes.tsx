@@ -1,4 +1,3 @@
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import RequireAuth from '../components/RequireAuth'
 import { roles } from '../constants/enums'
@@ -12,9 +11,8 @@ import NotFoundPage from '../pages/NotFoundPage'
 import AdminLogin from '../pages/AdminLogin'
 import AdminSignup from '../pages/AdminSignup'
 
-type Props = {}
 
-const AdminRoutes = (props: Props) => {
+const AdminRoutes = () => {
   return (
     <Routes>
 

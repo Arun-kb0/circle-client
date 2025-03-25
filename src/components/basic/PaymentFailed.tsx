@@ -1,8 +1,7 @@
 import FailedAnimation from './FailedAnimation'
 
-type Props = {}
 
-const PaymentFailed = (props: Props) => {
+const PaymentFailed = () => {
   return (
     <div>
       <h1 className='text-lg font-semibold text-center text-red-400 '>Payment Failed</h1>

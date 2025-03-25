@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 // ! check and remove 
 export const uploadProfileImage = createAsyncThunk('/user/image', async (file: File, { dispatch, getState }) => {
   try {
+    console.log(file)
     console.log(dispatch, getState)
   } catch (error) {
     return errorHandler(error)

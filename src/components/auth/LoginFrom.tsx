@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../../app/store'
 import { selectAuthStatus, selectAuthUser } from '../../features/auth/authSlice'
 import { Link, useNavigate } from 'react-router-dom'
 import { FieldValues, useForm } from 'react-hook-form'
 import { roles } from '../../constants/enums'
-import { adminLogin, login, signup } from '../../features/auth/authApi'
+import { adminLogin, login } from '../../features/auth/authApi'
 import Spinner from '../Spinner'
 import OauthProviders from './OauthProviders'
 
@@ -20,7 +20,7 @@ type Props = {
 }
 
 
-const LoginFrom = ({ role, name, homePath, signupPath, loginMsg, loginPath }: Props) => {
+const LoginFrom = ({ role, name, signupPath, loginMsg, loginPath }: Props) => {
 
   const dispatch = useDispatch<AppDispatch>()
   const status = useSelector(selectAuthStatus)

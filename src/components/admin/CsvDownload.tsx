@@ -1,7 +1,5 @@
-import React from 'react';
 import { CSVLink } from 'react-csv';
 import { BsFiletypeCsv } from 'react-icons/bs';
-import { PostType } from '../../constants/FeedTypes';
 
 type Props = {
   headers: { label: string, key: string }[]

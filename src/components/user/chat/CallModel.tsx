@@ -1,29 +1,22 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import BackdropVerifyOtp from "../../backdrop/BackdropVerifyOtp"
-import { motion, useElementScroll } from "framer-motion"
+import { motion } from "framer-motion"
 import { dropIn } from "../../../constants/animationDropins"
-import { FaVideo } from "react-icons/fa"
 import { MdCall, MdCallEnd } from "react-icons/md"
 import { useDispatch, useSelector } from "react-redux"
 import {
   selectChatCallRoomId,
   selectChatCallSignal,
-  selectChatCallStatus,
-  selectChatCallUser,
   selectChatIsIncomingCall,
   selectChatUser,
-  setCallRoomId,
   setIncomingCallAndSignal,
 } from "../../../features/chat/chatSlice"
 import socketEvents from "../../../constants/socketEvents"
 import SocketIoClient from "../../../config/SocketIoClient"
-import { selectAuthFriendsRoomId, selectAuthUser } from "../../../features/auth/authSlice"
+import { selectAuthUser } from "../../../features/auth/authSlice"
 import callRingAudio from '../../../assets/audio/chime_ding.mp3'
-import { selectCallNotification } from "../../../features/notification/notificationSlice"
 import useAudioStream from "../../../hook/useAudioStream"
 import AudioVisualizer from "./AudioVisualizer"
-import { IoVideocam, IoVideocamOff } from "react-icons/io5"
-import usePeerConnection from "../../../hook/usePeerConnection"
 import { AppDispatch } from "../../../app/store"
 import { toast } from "react-toastify"
 
@@ -36,12 +29,12 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
   const socket = SocketIoClient.getInstance()
   const dispatch = useDispatch<AppDispatch>()
   const callRoomId = useSelector(selectChatCallRoomId);
-  const callUserDetails = useSelector(selectChatCallUser);
-  const status = useSelector(selectChatCallStatus);
+  // const callUserDetails = useSelector(selectChatCallUser);
+  // const status = useSelector(selectChatCallStatus);
   const chatUser = useSelector(selectChatUser)
   const user = useSelector(selectAuthUser)
-  const friendsRoomId = useSelector(selectAuthFriendsRoomId)
-  const callNotificationState = useSelector(selectCallNotification)
+  // const friendsRoomId = useSelector(selectAuthFriendsRoomId)
+  // const callNotificationState = useSelector(selectCallNotification)
 
   const isIncomingCall = useSelector(selectChatIsIncomingCall)
   const callSignal = useSelector(selectChatCallSignal)
@@ -49,15 +42,15 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
 
   const [stream, setStream] = useState<MediaStream>()
   const [remoteStream, setRemoteStream] = useState<MediaStream>(new MediaStream())
-  const [idToCall, setIdToCall] = useState(callRoomId)
+  const [idToCall] = useState(callRoomId)
   const [caller, setCaller] = useState("")
-  const [me, setMe] = useState(callRoomId)
+  const [me] = useState(callRoomId)
   const [receivingCall, setReceivingCall] = useState(false)
   const [callerSignal, setCallerSignal] = useState<any>(null)
   const [callAccepted, setCallAccepted] = useState(false)
   const [callEnded, setCallEnded] = useState(false)
   const [name, setName] = useState("")
-  const [callType, setCallType] = useState<typeof callModelType>(callModelType)
+  const [callType] = useState<typeof callModelType>(callModelType)
 
   const { audioBlob: audioLocalBlob, setStream: setAudioLocalStream } = useAudioStream()
   const { audioBlob: audioRemoteBlob, setStream: setAudioRemoteStream } = useAudioStream()

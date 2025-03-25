@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import {  useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import { UserType } from '../../../constants/types';
@@ -8,7 +8,6 @@ import { updatedUser } from '../../../features/user/userApi';
 import { uploadFiles } from '../../../features/post/postApi';
 import { selectUploadFilesStatus } from '../../../features/post/postSlice';
 import Spinner from '../../Spinner';
-import { selectUserOtherUser } from '../../../features/user/userSlice';
 import SetupSubscription from './SetupSubscription';
 import { selectPaymentUserSubscriptionPlan } from '../../../features/payment/paymentSlice';
 
@@ -32,12 +31,11 @@ const ProfileAbout = ({ user }: Props) => {
   const imageUploadStatus = useSelector(selectUploadFilesStatus)
   const plan = useSelector(selectPaymentUserSubscriptionPlan)
 
-  const [isEditable, setIsEditable] = useState(() => currentUser?._id === user._id)
+  const [isEditable] = useState(() => currentUser?._id === user._id)
 
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors }
   } = useForm<FormValues>({
     defaultValues: {

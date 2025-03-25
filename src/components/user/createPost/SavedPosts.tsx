@@ -1,5 +1,5 @@
 import { AnimatePresence } from 'framer-motion'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { PostType } from '../../../constants/FeedTypes'
 import {
@@ -13,9 +13,8 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import PostSkeletonLoader from '../../basic/PostSkeletonLoader'
 import PostCard from '../feed/PostCard'
 
-type Props = {}
 
-const SavedPosts = (props: Props) => {
+const SavedPosts = () => {
   const dispatch = useDispatch<AppDispatch>()
 
   const [modelOpen, setModelOpen] = useState<Boolean>(false)

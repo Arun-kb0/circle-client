@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { RxHamburgerMenu } from "react-icons/rx";
 import { BsBell } from "react-icons/bs";
-import { TbHome } from "react-icons/tb";
-import { FiSearch } from "react-icons/fi";
 import SpringButton from '../basic/SpringButton';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import BadgeButton from '../basic/BadgeButton';
@@ -14,9 +12,11 @@ import { DropDownElementsType } from '../../constants/types';
 import { AppDispatch } from '../../app/store';
 import { logout } from '../../features/auth/authApi';
 import { selectAuthUser } from '../../features/auth/authSlice';
-import { FaUserCircle } from 'react-icons/fa';
 import { clearUserCreatedPosts } from '../../features/post/postSlice';
-import { clearFollowers, clearFollowing, selectUserNavOpen, selectUserNotifications, selectUserUnreadNotificationsCount, setUserNavOpen } from '../../features/user/userSlice';
+import {
+  clearFollowers, clearFollowing, selectUserNavOpen,
+  selectUserUnreadNotificationsCount, setUserNavOpen
+} from '../../features/user/userSlice';
 import logo from '../../assets/vite.png'
 import Notifications from '../notification/Notifications';
 import IncomingCallAnimation from '../basic/IncomingCallAnimation';
@@ -31,7 +31,7 @@ type Props = {
   handleLogout: () => void
 }
 
-const UserNav = ({ handleLogout }: Props) => {
+const UserNav = ({  }: Props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const location = useLocation()

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import Feed from '../../components/user/feed/Feed'
 import { TbPhoto } from "react-icons/tb";
 import { TbVideo } from "react-icons/tb";

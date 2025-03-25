@@ -10,7 +10,6 @@ import { MdEmojiEmotions, MdGif } from 'react-icons/md';
 import GifPicker from '../../basic/GifPicker';
 import SocketIoClient from '../../../config/SocketIoClient';
 import socketEvents from '../../../constants/socketEvents';
-import ChatUser from './ChatUser';
 
 type Props = {
   handleScrollToMessage: () => void

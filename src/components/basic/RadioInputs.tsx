@@ -1,4 +1,3 @@
-import React from 'react'
 import { RadioInputDataType } from '../../constants/types'
 
 type Props = {

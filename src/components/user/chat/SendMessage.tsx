@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { IoMdMore } from 'react-icons/io'
 import { FaUserCircle } from 'react-icons/fa'
 import moment from 'moment'

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import SignupForm from '../components/auth/SignupForm'
 import { roles } from '../constants/enums'
 import { AnimatePresence } from 'framer-motion'

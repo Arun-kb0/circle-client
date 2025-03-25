@@ -1,52 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import NotificationCard from './NotificationCard'
 import { motion } from 'framer-motion'
-import { NotificationType } from '../../constants/types';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUserNotificationNumberOfPages, selectUserNotificationPage, selectUserNotifications, selectUserUnreadNotificationsCount } from '../../features/user/userSlice';
+import {  selectUserNotificationPage, selectUserNotifications, selectUserUnreadNotificationsCount } from '../../features/user/userSlice';
 import { getNotifications, readNotifications } from '../../features/user/userApi';
 import { AppDispatch } from '../../app/store';
 import { selectAuthUser } from '../../features/auth/authSlice';
-
-
-const testNotifications: NotificationType[] = [
-  {
-    id: '1',
-    status: 'read',
-    authorName: 'Alice',
-    message: 'Your order has been shipped.',
-    time: new Date(),
-  },
-  {
-    id: '2',
-    status: 'unread',
-    authorName: 'Bob',
-    message: 'New comment on your post.',
-    time: new Date(),
-  },
-  {
-    id: '3',
-    status: 'read',
-    authorName: 'Charlie',
-    message: 'You have a new follower!',
-    time: new Date(),
-  },
-  {
-    id: '4',
-    status: 'unread',
-    authorName: 'Dana',
-    message: 'Your password was changed successfully.',
-    time: new Date(),
-  },
-  {
-    id: '5',
-    status: 'read',
-    authorName: 'Eve',
-    message: 'Welcome to our service!',
-    time: new Date(),
-  },
-];
-
 
 
 type Props = {
@@ -58,7 +17,7 @@ const Notifications = ({ position, open }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const user = useSelector(selectAuthUser)
   const notifications = useSelector(selectUserNotifications)
-  const numberOfPages = useSelector(selectUserNotificationNumberOfPages)
+  // const numberOfPages = useSelector(selectUserNotificationNumberOfPages)
   const unreadNotificationCount = useSelector(selectUserUnreadNotificationsCount)
   const page = useSelector(selectUserNotificationPage)
 

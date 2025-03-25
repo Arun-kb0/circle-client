@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import CommentCard from './CommentCard'
 import BackdropVerifyOtp from '../../backdrop/BackdropVerifyOtp'
 import { motion } from 'framer-motion'
@@ -11,7 +10,6 @@ type Props = {
 }
 
 const Comments = ({ handleClose }: Props) => {
-  const [page, setPage] = useState(1)
 
   return (
     <BackdropVerifyOtp onClick={handleClose}>

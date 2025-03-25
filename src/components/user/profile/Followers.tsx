@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import UsersList from '../follow/UsersList'
 import { AppDispatch } from '../../../app/store'
 import { useDispatch, useSelector } from 'react-redux'

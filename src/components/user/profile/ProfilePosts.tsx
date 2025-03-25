@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectPost, selectPostUserCreatedCurrentPage,
   selectPostUserCreatedNumberOfPages, selectPostUserCreatedPosts,
   selectPostUserCreatedStatus
 } from '../../../features/post/postSlice'
-import Feed from '../feed/Feed'
 import { PostType } from '../../../constants/FeedTypes'
 import { AppDispatch } from '../../../app/store'
 import { getUserCreatedPosts } from '../../../features/post/postApi'

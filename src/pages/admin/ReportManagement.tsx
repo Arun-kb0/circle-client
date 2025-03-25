@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../app/store';
 import { selectUserNavOpen} from '../../features/user/userSlice';
@@ -6,7 +6,6 @@ import {
   selectPostReportFiltered,
   selectPostReportFilteredCurrentPage,
   selectPostReportFilteredNumberOfPages,
-  selectPostReportFilteredStatus,
 } from '../../features/post/postSlice';
 import { FieldValues } from 'react-hook-form';
 import DatePicker from '../../components/DatePicker';
@@ -14,33 +13,32 @@ import Search from '../../components/Search';
 import { getFilteredReports } from '../../features/post/postApi';
 import Pagination from '../../components/basic/Pagination';
 import AdminReportTable from '../../components/admin/AdminReportTable';
-import CsvDownload from '../../components/admin/CsvDownload';
-import PdfDownload from '../../components/admin/PdfDownload';
-import { ReportAdminType } from '../../constants/types';
+// import CsvDownload from '../../components/admin/CsvDownload';
+// import PdfDownload from '../../components/admin/PdfDownload';
+// import { ReportAdminType } from '../../constants/types';
 
 
 
-const csvHeaders = [
-  { label: 'Media', key: 'media' },
-  { label: 'Author', key: 'authorName' },
-  { label: 'Tags', key: 'tags' },
-  { label: 'Description', key: 'desc' },
-  { label: 'Likes', key: 'likesCount' },
-  { label: 'Comments', key: 'commentCount' },
-  { label: 'Reports', key: 'reportsCount' },
-  { label: 'Created at', key: 'updatedAt' },
-  { label: 'Status', key: 'status' },
-]
+// const csvHeaders = [
+//   { label: 'Media', key: 'media' },
+//   { label: 'Author', key: 'authorName' },
+//   { label: 'Tags', key: 'tags' },
+//   { label: 'Description', key: 'desc' },
+//   { label: 'Likes', key: 'likesCount' },
+//   { label: 'Comments', key: 'commentCount' },
+//   { label: 'Reports', key: 'reportsCount' },
+//   { label: 'Created at', key: 'updatedAt' },
+//   { label: 'Status', key: 'status' },
+// ]
 
-const pdfHeaders = [[
-  'media', 'authorName', 'tags',
-  'desc', 'likesCount', 'commentCount',
-  'reportsCount', 'updatedAt', 'status'
-]]
+// const pdfHeaders = [[
+//   'media', 'authorName', 'tags',
+//   'desc', 'likesCount', 'commentCount',
+//   'reportsCount', 'updatedAt', 'status'
+// ]]
 
-type Props = {}
 
-const ReportManagement = (props: Props) => {
+const ReportManagement = () => {
   const dispatch = useDispatch<AppDispatch>()
   const userNavOpen = useSelector(selectUserNavOpen)
 
@@ -50,11 +48,11 @@ const ReportManagement = (props: Props) => {
     return newStartDate
   })
   const [endDate, setEndDate] = useState<Date>(new Date())
-  const [searchText, setSearchText] = useState('')
+  const [searchText] = useState('')
   const [page, setPage] = useState(1)
 
   const reports = useSelector(selectPostReportFiltered)
-  const status = useSelector(selectPostReportFilteredStatus)
+  // const status = useSelector(selectPostReportFilteredStatus)
   const currentPage = useSelector(selectPostReportFilteredCurrentPage)
   const numberOfPages = useSelector(selectPostReportFilteredNumberOfPages)
 

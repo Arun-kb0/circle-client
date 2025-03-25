@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import SocketIoClient from '../../../config/SocketIoClient'
+import  { useEffect, useState } from 'react'
 import { LiveMessageType } from '../../../constants/types'
 import socketEvents from '../../../constants/socketEvents'
 import { useForm } from 'react-hook-form'
@@ -10,64 +9,13 @@ import { Socket } from 'socket.io-client'
 import LiveMessage from './LiveMessage'
 
 
-
-const messages = [
-  {
-    id: uuid(),
-    streamerId: "streamer1",
-    authorId: "user1",
-    authorName: "Alice Johnson",
-    message: "Hi everyone! Excited to be here.",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: uuid(),
-    streamerId: "streamer2",
-    authorId: "user2",
-    authorName: "Bob Smith",
-    message: "Hey Alice, welcome to the stream!",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: uuid(),
-    streamerId: "streamer3",
-    authorId: "user3",
-    authorName: "Charlie Lee",
-    message: "Can anyone recommend a good beginner's guide for this topic?",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: uuid(),
-    streamerId: "streamer4",
-    authorId: "user4",
-    authorName: "Diana Prince",
-    message: "I really like the way the streamer explains things!",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: uuid(),
-    streamerId: "streamer5",
-    authorId: "user5",
-    authorName: "Ethan Clark",
-    message: "Great session! Looking forward to the next one.",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
-
-
-
 type Props = {
   streamerId: string
   socket: Socket | null
   position?: string
 }
 
-const LiveStreamChat = ({ streamerId, socket, position }: Props) => {
+const LiveStreamChat = ({ streamerId, socket }: Props) => {
   const user = useSelector(selectAuthUser)
   const [messages, setMessages] = useState<LiveMessageType[]>([])
 

@@ -1,8 +1,7 @@
 import SuccessAnimation from './SuccessAnimation'
 
-type Props = {}
 
-const PaymentSuccess = (props: Props) => {
+const PaymentSuccess = () => {
   return (
     <div className='space-y-2'>
       <h1 className='text-lg font-semibold text-center text-green-500'>Payment Success</h1>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { IoWalletOutline } from 'react-icons/io5'
 import Transaction from './Transaction'
 import { useDispatch, useSelector } from 'react-redux';

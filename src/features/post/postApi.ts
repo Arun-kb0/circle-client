@@ -6,7 +6,6 @@ import errorHandler from "../../errorHandler/errorHandler";
 import { CommentType, LikeType, PostType } from "../../constants/FeedTypes";
 import { toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
-import { DataStrategyFunctionArgs } from "react-router-dom";
 import { ReportType } from "../../constants/types";
 
 

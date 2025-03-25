@@ -1,5 +1,5 @@
 import Lottie from 'lottie-react'
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import callAnimation from '../../assets/lottyfiles/callAnimation.json'
 import audioRingPhone from '../../assets/audio/ringPhone.mp3'
 

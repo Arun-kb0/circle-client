@@ -27,14 +27,14 @@ type FromDataType = {
 
 
 const PostForm = ({
-  isEdit = false, post, images, imageFiles,
+   post, images,
   onSubmit, handleDeleteImage, handleFileChange,
   handleImageCrop, resetActiveIndex, uploadFilesStatus }: Props) => {
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { },
   } = useForm<FromDataType>({
     defaultValues: {
       image: undefined,
