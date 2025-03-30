@@ -1,4 +1,4 @@
-import {  useState } from 'react'
+import { useState } from 'react'
 import { PostType } from '../../../constants/FeedTypes'
 import { GoHeart } from "react-icons/go";
 import { BiCommentDots } from "react-icons/bi";
@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
 import { deletePost, like, report, savePost, unlike } from '../../../features/post/postApi'
 import {
-  selectPost, selectPostLikes, 
+  selectPost, selectPostLikes,
   selectPostSavedPosts,
   setCommentedUsersModelState, setLikedUsersModelState,
 } from '../../../features/post/postSlice';
@@ -29,9 +29,10 @@ import { toast } from 'react-toastify';
 type Props = {
   post: PostType,
   openCommentModel: (post: PostType) => void
+  isGridView?: boolean
 }
 
-const PostCard = ({ post, openCommentModel }: Props) => {
+const PostCard = ({ post, openCommentModel, isGridView = false }: Props) => {
   const navigatorRouter = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const likes = useSelector(selectPostLikes)
@@ -61,11 +62,11 @@ const PostCard = ({ post, openCommentModel }: Props) => {
   const postDropdownElements: DropDownElementsType[] = [
     {
       handler: async () => {
-       await dispatch(report({
+        await dispatch(report({
           userId: user?._id as string,
           contentId: post._id,
           contentType: 'post'
-       })).unwrap()
+        })).unwrap()
         toast(`post created by ${post.authorName} reported`)
       },
       name: "report"
@@ -124,7 +125,7 @@ const PostCard = ({ post, openCommentModel }: Props) => {
     <motion.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
-      className="nav-bg-color sm:w-[50vw] w-[90vw] rounded-lg shadow overflow-hidden"
+      className={`${isGridView ? 'w-60' : 'sm:w-[50vw] w-[90vw]'} nav-bg-color rounded-lg shadow overflow-hidden`}
     >
       <div className="flex items-center justify-between m-2 relative" >
         <div className='flex justify-start items-center'>
@@ -151,7 +152,10 @@ const PostCard = ({ post, openCommentModel }: Props) => {
       </div>
 
       {post.mediaType === 'image' && post.media &&
-        <PostImages media={post.media} />
+        <PostImages
+          media={post.media}
+          isGridView={isGridView}
+        />
       }
       <div className="p-5">
         {post.mediaType === 'text' && post.media &&

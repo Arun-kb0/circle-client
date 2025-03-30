@@ -1,8 +1,14 @@
 
-const PostSkeletonLoader = () => {
+type Props = {
+  isGridView?: boolean
+}
+
+const PostSkeletonLoader = ({ isGridView = false }: Props) => {
   return (
 
-    <article className="nav-bg-color sm:w-[50vw] w-[90vw] overflow-hidden animate-pulse">
+    <article 
+      className={`${isGridView ? 'w-60' : 'sm:w-[50vw] w-[90vw]'} nav-bg-color rounded-lg shadow overflow-hidden`}
+    >
       <div className="flex items-center justify-between m-2 relative">
         <div className="flex justify-start items-center">
           <div className="flex items-center mr-3">
