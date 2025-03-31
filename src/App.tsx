@@ -185,6 +185,17 @@ function App() {
     }
   }, [notificationSocket])
 
+  // * live stream started notification
+  useEffect(() => {
+    const handleLiveNotification = (data: any) => {
+      toast(`${data.name} started live stream`)
+    }
+    socket?.on(socketEvents.prepareLiveStream, handleLiveNotification)
+    return () => {
+      socket?.off(socketEvents.prepareLiveStream, handleLiveNotification)
+    }
+  }, [socket])
+
 
   return (
     <>
