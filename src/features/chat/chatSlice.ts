@@ -217,6 +217,7 @@ const chatSlice = createSlice({
       })
 
       .addCase(getLastMessages.fulfilled, (state, action: PayloadAction<{ messages: MessageType[] }>) => {
+        if(!action.payload) return
         const { messages } = action.payload
         state.lastMessages = messages
       })
