@@ -11,7 +11,31 @@ import configureAxios from "../../config/configureAxios";
 import { sortFollowingUser } from "../user/userSlice";
 
 
+export const createChatRoomId = (senderId: string, receiverId: string) => {
+  const roomId = senderId < receiverId
+    ? `${senderId}-${receiverId}`
+    : `${receiverId}-${senderId}`
+  return roomId
+}
+
 // * api calls
+export const getLastMessages = createAsyncThunk('/chat/getLastMessages', async (userIds: string[], { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const { accessToken } = state.auth
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const params = { userIds }
+    const res = await axiosPrivate.get(`/chat/last-messages`, { params })
+    removeInterceptors()
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
 export const getRoomMessages = createAsyncThunk('/chat/getMessages', async (page: number = 1, { dispatch, getState }) => {
   try {
     const state = getState() as RootState

@@ -10,9 +10,10 @@ type Props = {
   deleteFunction?: (index: number) => void
   resetActiveIndex?: boolean
   handleImageCrop?: (index: number) => void
+  isGridView?: boolean
 }
 
-const PostImages = ({ media, deleteFunction, handleImageCrop, resetActiveIndex = false }: Props) => {
+const PostImages = ({ media, deleteFunction, handleImageCrop, resetActiveIndex = false, isGridView = false }: Props) => {
   const [direction, setDirection] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0)
 
@@ -48,10 +49,10 @@ const PostImages = ({ media, deleteFunction, handleImageCrop, resetActiveIndex =
   return (
     <section
       id="gallery"
-      className="relative w-full"
+      className="w-full relative"
       data-carousel="slide"
     >
-      <div className="relative h-56 overflow-hidden rounded-lg md:h-96 lg:w-[50vw]">
+      <div className={`${isGridView ? 'w-auto' : "lg:w-[50vw]"} relative h-56 overflow-hidden rounded-lg md:h-96`}>
         <AnimatePresence custom={direction}>
           {media.map((image, index) =>
             index === activeIndex ? (

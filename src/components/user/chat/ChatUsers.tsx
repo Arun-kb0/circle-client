@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import ChatUser from './ChatUser';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -6,10 +6,11 @@ import {
   selectUserFollowingNumberOfPages, selectUserFollowingStatus,
 } from '../../../features/user/userSlice';
 import { AppDispatch } from '../../../app/store';
-import {  getFollowing } from '../../../features/user/userApi';
+import { getFollowing } from '../../../features/user/userApi';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ChatUserSkeletonLoader from '../../basic/ChatUserSkeletonLoader';
+import { getLastMessages } from '../../../features/chat/chatApi';
 
 
 const ChatUsers = () => {
@@ -27,6 +28,13 @@ const ChatUsers = () => {
       dispatch(getFollowing({ userId: currentUser._id, page: 1 }))
     }
   }, [])
+
+  useEffect(() => {
+    if (!users || users.length === 0 || !currentUser) return
+    const userIds = users.map(item => item._id)
+    userIds.push(currentUser._id)
+    dispatch(getLastMessages(userIds))
+  }, [users])
 
   const loadMoreUsers = () => {
     if (!currentUser) return

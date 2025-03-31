@@ -3,7 +3,8 @@ import { ChatUserType, NotificationType, PaginationMessages, StateType } from ".
 import { RootState } from "../../app/store"
 import { MessageType } from '../../constants/types'
 import { v4 as uuid } from "uuid"
-import { clearChat, deleteMessage, getRoomMessages } from "./chatApi"
+import { clearChat, deleteMessage, getLastMessages, getRoomMessages } from "./chatApi"
+import { IoContrastOutline, IoReturnDownForwardSharp } from "react-icons/io5"
 
 type ChatStateType = {
   roomId: string | null
@@ -24,6 +25,8 @@ type ChatStateType = {
   isIncomingCall: boolean
   callSignal: any
   callModelType: undefined | 'video' | 'audio'
+
+  lastMessages: MessageType[]
 }
 
 
@@ -46,7 +49,9 @@ const initialState: ChatStateType = {
   callStatus: "idle",
   isIncomingCall: false,
   callSignal: undefined,
-  callModelType: undefined
+  callModelType: undefined,
+
+  lastMessages: []
 }
 
 const chatSlice = createSlice({
@@ -63,15 +68,19 @@ const chatSlice = createSlice({
     },
 
     addMessage: (state, action: PayloadAction<MessageType>) => {
-      console.log("addMessage action")
-      console.log(action.payload)
-      if (!state.roomId) return
+      if(!state.roomId) return
+      if (!state.roomId) IoReturnDownForwardSharp
       const message = action.payload
       if (!state.messages) state.messages = {}
       if (!state.messages[message.roomId]) state.messages[state.roomId] = [message]
       else {
         const isExits = state.messages[message.roomId].find(msg => msg.id === message.id)
         if (!isExits) state.messages[message.roomId].unshift(message)
+      }
+      IoContrastOutline
+      const index = state.lastMessages.findIndex(item => item.roomId === message.roomId);
+      if (index !== -1) {
+        state.lastMessages[index] = message;
       }
 
       localStorage.removeItem("messages")
@@ -207,7 +216,13 @@ const chatSlice = createSlice({
         state.error = action.error.message
       })
 
-
+      .addCase(getLastMessages.fulfilled, (state, action: PayloadAction<{ messages: MessageType[] }>) => {
+        const { messages } = action.payload
+        state.lastMessages = messages
+      })
+      .addCase(getLastMessages.rejected, (state, action) => {
+        state.error = action.error.message
+      })
 
   }
 
@@ -231,6 +246,8 @@ export const selectChatIsIncomingCall = (state: RootState) => state.chat.isIncom
 export const selectChatCallSignal = (state: RootState) => state.chat.callSignal
 export const selectChatCallModelType = (state: RootState) => state.chat.callModelType
 
+export const selectChatLastMessages = (state: RootState) => state.chat.lastMessages
+
 
 export const {
   setRoomId,
@@ -243,7 +260,7 @@ export const {
   setAllAsReadMsgNotification,
   setCallRoomId,
   setAllChatRooms,
-  setIncomingCallAndSignal
+  setIncomingCallAndSignal,
 } = chatSlice.actions
 
 export default chatSlice.reducer

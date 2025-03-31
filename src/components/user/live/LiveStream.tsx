@@ -176,7 +176,7 @@ const LiveStream = ({ }: Props) => {
   }, [socket, isStreamStarted])
 
   const handlePrepareLive = () => {
-    socket?.emit(socketEvents.prepareLiveStream, { userId: user?._id })
+    socket?.emit(socketEvents.prepareLiveStream, { userId: user?._id, name: user?.name })
     setPrepareLiveStream(true)
   }
 

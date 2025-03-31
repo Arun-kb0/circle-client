@@ -62,28 +62,37 @@ const ProfilePosts = ({ userId }: Props) => {
 
 
       <InfiniteScroll
-        className='space-y-4 h-64  overflow-y-scroll  scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500'
+        className='space-y-4 h-64 max-w-screen-lg mx-auto overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500'
         scrollableTarget='home'
         dataLength={posts.length}
         next={loadMorePosts}
         hasMore={hasMore}
         loader={
-          <div className='space-y-4'>
+          <div className="p-4 flex flex-wrap justify-start gap-2  mx-auto">
             {Array.from({ length: 5 }).map((_, index) => (
-              <PostSkeltonLoader key={index} />
+              <PostSkeltonLoader
+                key={index}
+                isGridView={true}
+              />
             ))}
           </div>
         }
         height={window.innerHeight - 240}
       >
-        {status === 'success' && posts.map((post) => (
-          post.status === 'active' &&
-          <PostCard
-            key={post._id}
-            post={post}
-            openCommentModel={open}
-          />
-        ))}
+        {status === 'success' &&
+          <div className="p-4 flex flex-wrap justify-start gap-2">
+            {posts.map((post) => (
+              post.status === 'active' &&
+              <PostCard
+                key={post._id}
+                post={post}
+                openCommentModel={open}
+                isGridView={true}
+              />
+            ))
+            }
+          </div>
+        }
       </InfiniteScroll>
     </section>
   )
