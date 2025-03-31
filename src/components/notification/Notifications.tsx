@@ -39,7 +39,7 @@ const Notifications = ({ position, open }: Props) => {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           exit={{ scale: 0 }}
-          className={`${position} z-30 absolute  w-auto max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-800 dark:border-gray-700`}
+          className={`${position} z-30 absolute h-[80vh] overflow-y-scroll scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500 w-auto max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-800 dark:border-gray-700`}
         >
           <div className="flex items-center justify-between mb-4">
             <h5 className="text-lg font-bold leading-none text-gray-900 dark:text-white">Notifications</h5>

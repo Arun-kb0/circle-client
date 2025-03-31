@@ -6,6 +6,8 @@ import { createChatRoomId, joinRoom } from '../../../features/chat/chatApi'
 import { selectUserOnlineUsers } from '../../../features/user/userSlice'
 import Avatar from '../../basic/Avatar'
 import { selectChatLastMessages } from '../../../features/chat/chatSlice'
+import moment from 'moment'
+import { MessageType } from '../../../constants/types'
 
 type Props = {
   userId: string,
@@ -23,7 +25,7 @@ const ChatUser = ({ name, image, userId }: Props) => {
   const [isOnline, setIsOnline] = useState<boolean>(() => {
     return Boolean(onlineUsers.find(id => id === userId))
   })
-  const [userLastMessage, setUserLastMessage] = useState('')
+  const [userLastMessage, setUserLastMessage] = useState<MessageType | null>(null)
 
   useEffect(() => {
     setIsOnline(Boolean(onlineUsers.find(id => id === userId)))
@@ -32,10 +34,10 @@ const ChatUser = ({ name, image, userId }: Props) => {
   useEffect(() => {
     if (lastMessages.length === 0 || !user) return
     const roomId = createChatRoomId(userId, user?._id)
-    const foundMessage = lastMessages.find(item => item.roomId === roomId) 
+    const foundMessage = lastMessages.find(item => item.roomId === roomId)
     if (!foundMessage) return
-    const messageString = foundMessage.mediaType === 'text' ? foundMessage.message : foundMessage.mediaType.toUpperCase() 
-    setUserLastMessage(messageString)
+    const messageString = foundMessage.mediaType === 'text' ? foundMessage.message : foundMessage.mediaType.toUpperCase()
+    setUserLastMessage({ ...foundMessage, message: messageString })
   }, [lastMessages])
 
   const handleJoinRoom = () => {
@@ -63,7 +65,12 @@ const ChatUser = ({ name, image, userId }: Props) => {
       </div>
       <div className="flex-1 justify-center min-w-0 ms-4">
         <p className="capitalize font-medium text-gray-900 truncate dark:text-white"> {name} </p>
-        <p className="font-medium text-gray-900 truncate dark:text-gray-400"> {userLastMessage} </p>
+        {userLastMessage &&
+          <div className='flex gap-1 flex-wrap justify-between'>
+            <p className="font-medium text-xs truncate dark:text-gray-400"> {`${userLastMessage.authorId === user?._id ? "You" : userLastMessage.authorName}  ${userLastMessage.message}`} </p>
+            <p className="text-xs truncate text-green-600"> {moment(userLastMessage.createdAt).fromNow()} </p>
+          </div>
+        }
       </div>
     </section>
   )
