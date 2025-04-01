@@ -23,9 +23,16 @@ const AudioVisualizer = ({ audioBlob }: Props) => {
       barGap: 0,
     })
 
+    // return () => {
+    //   waveSurferRef.current?.destroy();
+    // }
+
     return () => {
-      waveSurferRef.current?.destroy();
+      if (waveSurferRef.current && waveSurferRef.current.isPlaying()) {
+        waveSurferRef.current.destroy();
+      }
     }
+
   }, [])
 
   useEffect(() => {

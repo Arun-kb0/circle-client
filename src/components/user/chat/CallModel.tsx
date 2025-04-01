@@ -103,12 +103,30 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
         audio: true
       })
       .then((localStream) => {
+        console.log('localStream true')
         setStream(localStream)
         const audioOnlyStream = new MediaStream(localStream.getAudioTracks())
         setAudioLocalStream(audioOnlyStream)
-        if (myVideo.current) {
-          myVideo.current.srcObject = localStream;
-        }
+        console.log('audio stream set true')
+        // * working code
+        // if (myVideo.current) {
+        //   console.log('myVideo.current true')
+        //   myVideo.current.srcObject = localStream;
+        // }
+        
+        // * Function to assign stream to the video element once it's available.
+        const assignVideoStream = () => {
+          if (myVideo.current) {
+            console.log('myVideo.current is available, assigning stream.');
+            myVideo.current.srcObject = localStream;
+          } else {
+            console.warn('myVideo.current not available yet, retrying...');
+            // Retry on the next animation frame
+            requestAnimationFrame(assignVideoStream);
+          }
+        };
+
+        assignVideoStream();
       })
       .catch((err) => console.error("Error accessing media devices:", err))
 
@@ -277,6 +295,16 @@ const CallModel = ({ handleClose, callModelType }: Props) => {
       socket?.off(socketEvents.callEnded)
     }
   }, [])
+
+  // * consoles 
+  useEffect(() => {
+    console.log('stream')
+    console.log(stream)
+    console.log('myVideo')
+    console.log(myVideo?.current?.srcObject)
+    console.log('audioLocalBlob')
+    console.log(audioLocalBlob)
+  },[stream,])
 
   return (
     <BackdropVerifyOtp onClick={handleClose}>
