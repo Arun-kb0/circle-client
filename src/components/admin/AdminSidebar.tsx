@@ -35,7 +35,7 @@ const AdminSidebar = () => {
         <ul className="space-y-2 font-medium">
           <li>
             <SpringButton>
-              <Link to='/admin/' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link to='/admin/' className={`${location.pathname === '/admin/' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
                 <LuLayoutDashboard size={22} />
                 <span className="ms-3 capitalize">dashboard</span>
               </Link>
@@ -43,7 +43,7 @@ const AdminSidebar = () => {
           </li>
           <li>
             <SpringButton>
-              <Link to='/admin/user' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link to='/admin/user' className={`${location.pathname === '/admin/user' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
                 <HiOutlineUserGroup size={22} />
                 <span className="ms-3">user</span>
               </Link>
@@ -51,7 +51,7 @@ const AdminSidebar = () => {
           </li>
           <li>
             <SpringButton>
-              <Link to='/admin/post' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link to='/admin/post' className={`${location.pathname === '/admin/post' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
                 <BsFileEarmarkPost size={22} />
                 <span className="ms-3">post</span>
               </Link>
@@ -59,7 +59,7 @@ const AdminSidebar = () => {
           </li>
           <li>
             <SpringButton>
-              <Link to='/admin/report' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link to='/admin/report' className={`${location.pathname === '/admin/report' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
                 <TbReportAnalytics size={22} />
                 <span className="ms-3">Report</span>
               </Link>
@@ -67,7 +67,7 @@ const AdminSidebar = () => {
           </li>
           <li>
             <SpringButton>
-              <Link to='/admin/subscription' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link to='/admin/subscription' className={`${location.pathname === '/admin/subscription' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
                 <LuUserRoundPlus size={22} />
                 <span className="ms-3">Subscriptions</span>
               </Link>
@@ -75,7 +75,7 @@ const AdminSidebar = () => {
           </li>
           <li>
             <SpringButton>
-              <Link to='/admin/transaction-wallet' className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <Link to='/admin/transaction-wallet' className={`${location.pathname === '/admin/transaction-wallet' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
                 <LuUserRoundPlus size={22} />
                 <span className="ms-3">wallet transactions</span>
               </Link>
