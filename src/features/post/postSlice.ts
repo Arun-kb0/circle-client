@@ -289,7 +289,7 @@ const postSlice = createSlice({
         state.postStatus = 'success'
         const { postId } = action.payload
         state.posts = state.posts.filter(post => post._id !== postId)
-
+        state.userCreatedPosts = state.userCreatedPosts.filter(post => post._id !== postId)
       })
       .addCase(deletePost.rejected, (state, action) => {
         state.postStatus = 'failed'

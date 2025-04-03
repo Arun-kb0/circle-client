@@ -219,8 +219,6 @@ const Profile = ({ user }: Props) => {
         </div>
       </section>
 
-
-
       {/* user data */}
       <section className='w-full flex justify-center'>
         {activeSection === 'posts' && <ProfilePosts userId={user._id} />}
