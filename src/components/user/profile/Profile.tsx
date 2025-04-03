@@ -200,24 +200,26 @@ const Profile = ({ user }: Props) => {
 
       </section>
 
-
-      {/* profile buttons */}
-      <div className='flex justify-center'>
-        <section className="inline-flex rounded-md shadow-sm" role="group">
-          <button onClick={() => handleSectionClick('posts')} className="px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-900 rounded-s-lg hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:bg-gray-700">
-            Post
+      {/* profile btns */}
+      <section  className="flex justify-center">
+        <div className="flex">
+          <button onClick={() => handleSectionClick("posts")} className={`${activeSection === 'posts' ? 'border-teal-300' : ''} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 border-transparent hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`}>
+            Posts
           </button>
-          <button onClick={() => handleSectionClick('about')} className="px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-900 hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:bg-gray-700">
+          <button onClick={() => handleSectionClick("about")} className={`${activeSection === 'about' ? 'border-teal-300' : ''} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 border-transparent hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`}>
             About
           </button>
-          <button onClick={() => handleSectionClick('followers')} className="px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-900  hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:bg-gray-700">
+          <button onClick={() => handleSectionClick("followers")} className={`${activeSection === 'followers' ? 'border-teal-300' : ''} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 border-transparent hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`}>
             Followers
           </button>
-          <button onClick={() => handleSectionClick('following')} className="px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-900 rounded-e-lg hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:bg-gray-700">
+          <button
+            onClick={() => handleSectionClick("following")} className={`${activeSection === 'following' ? 'border-teal-300' : ''} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 border-transparent hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`} >
             Following
           </button>
-        </section>
-      </div>
+        </div>
+      </section>
+
+
 
       {/* user data */}
       <section className='w-full flex justify-center'>

@@ -125,7 +125,7 @@ const PostCard = ({ post, openCommentModel, isGridView = false }: Props) => {
     <motion.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
-      className={`${isGridView ? 'w-60' : 'sm:w-[50vw] w-[90vw]'} nav-bg-color rounded-lg shadow overflow-hidden`}
+      className={`${isGridView ? 'w-60 h-auto' : 'sm:w-[50vw] w-[90vw]'} nav-bg-color rounded-lg shadow overflow-hidden`}
     >
       <div className="flex items-center justify-between m-2 relative" >
         <div className='flex justify-start items-center'>

@@ -226,13 +226,12 @@ const postSlice = createSlice({
       .addCase(getUserCreatedPosts.fulfilled, (state, action: PayloadAction<PostPaginationRes>) => {
         state.userCreatedPostStatus = 'success'
         const { posts, numberOfPages, currentPage, likes } = action.payload
-        const postIds = new Set(posts.map(post => post._id))
-        const updatedPosts = state.userCreatedPosts.filter(post => !postIds.has(post._id))
-        state.userCreatedPosts = [...posts, ...updatedPosts]
+        const postIds = new Set(state.userCreatedPosts?.map(post => post._id))
+        const newPosts = posts.filter(post => !postIds.has(post._id))
+        state.userCreatedPosts = [...state.userCreatedPosts, ...newPosts]
         state.userCreatedPostsNumberOfPages = numberOfPages
         state.userCreatedPostsCurrentPage = currentPage
         state.likes = [...state.likes, ...likes]
-
       })
       .addCase(getUserCreatedPosts.rejected, (state, action) => {
         state.userCreatedPostStatus = 'failed'
