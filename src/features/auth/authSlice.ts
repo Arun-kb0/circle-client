@@ -244,8 +244,6 @@ const authSlice = createSlice({
       })
 
       .addCase(logout.fulfilled, () => {
-        localStorage.clear()
-        sessionStorage.clear()
         return initialState
       })
 

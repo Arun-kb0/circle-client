@@ -122,6 +122,8 @@ export const logout = createAsyncThunk('/auth/logout', async (_, { }) => {
     const res = await axiosInstance.get('/auth/logout', {
       withCredentials: true
     })
+    localStorage.clear()
+    sessionStorage.clear()
     // dispatch(resetStore())
     return res.data
   } catch (error) {

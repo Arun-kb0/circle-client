@@ -128,6 +128,10 @@ const Profile = ({ user }: Props) => {
     setSubscriptionAmount(plan.monthly)
   }, [plan])
 
+  useEffect(() => {
+    console.log('active section = ',activeSection)
+  },[activeSection])
+
   return (
     <main className='space-y-8'>
       {/* profile image */}
@@ -203,17 +207,16 @@ const Profile = ({ user }: Props) => {
       {/* profile btns */}
       <section  className="flex justify-center">
         <div className="flex">
-          <button onClick={() => handleSectionClick("posts")} className={`${activeSection === 'posts' ? 'border-teal-300' : ''} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 border-transparent hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`}>
+          <button onClick={() => handleSectionClick("posts")} className={`${activeSection === 'posts' ? 'border-teal-300' : 'border-transparent'} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`}>
             Posts
           </button>
-          <button onClick={() => handleSectionClick("about")} className={`${activeSection === 'about' ? 'border-teal-300' : ''} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 border-transparent hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`}>
+          <button onClick={() => handleSectionClick("about")} className={`${activeSection === 'about' ? 'border-teal-300' : 'border-transparent'} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`}>
             About
           </button>
-          <button onClick={() => handleSectionClick("followers")} className={`${activeSection === 'followers' ? 'border-teal-300' : ''} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 border-transparent hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`}>
+          <button onClick={() => handleSectionClick("followers")} className={`${activeSection === 'followers' ? 'border-teal-300' : 'border-transparent'} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`}>
             Followers
           </button>
-          <button
-            onClick={() => handleSectionClick("following")} className={`${activeSection === 'following' ? 'border-teal-300' : ''} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 border-transparent hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`} >
+          <button onClick={() => handleSectionClick("following")} className={`${activeSection === 'following' ? 'border-teal-300' : 'border-transparent'} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`} >
             Following
           </button>
         </div>

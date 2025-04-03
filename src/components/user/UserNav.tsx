@@ -65,7 +65,6 @@ const UserNav = ({  }: Props) => {
     {
       handler: async () => {
         await dispatch(logout()).unwrap()
-        navigate('/login')
       },
       name: 'logout'
     }
