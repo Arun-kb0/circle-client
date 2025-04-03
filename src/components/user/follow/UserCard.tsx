@@ -63,7 +63,7 @@ const UserCard = ({ userId, name, image }: Props) => {
         </div>
       </div>
 
-      <div className="flex flex-col items-center pb-10">
+      <div className="flex flex-col items-center pb-6">
         <div className='mb-3'>
           <Avatar
             image={image}
@@ -75,13 +75,13 @@ const UserCard = ({ userId, name, image }: Props) => {
 
         <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">{name}</h5>
         {isFollowing
-          ? <div className="flex mt-4 md:mt-6">
-            <button onClick={handleUnFollow} className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" >unfollow</button>
-            <button onClick={handleMessage} className="py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">message</button>
+          ? <div className="mt-4 md:mt-6 space-y-2">
+            <button onClick={handleUnFollow} className="capitalize w-full items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" >unfollow</button>
+            <button onClick={handleMessage} className="capitalize w-full py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">message</button>
           </div>
-          : <div className="flex mt-4 md:mt-6">
-            <button onClick={handleFollow} className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">follow</button>
-            <button onClick={handleRemove} className="py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">remove</button>
+          : <div className="mt-4 md:mt-6 space-y-2">
+            <button onClick={handleFollow} className="capitalize w-full items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">follow</button>
+            <button onClick={handleRemove} className="capitalize w-full py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">remove</button>
           </div>
         }
 
