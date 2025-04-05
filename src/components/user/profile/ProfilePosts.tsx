@@ -69,7 +69,7 @@ const ProfilePosts = ({ userId }: Props) => {
         hasMore={hasMore}
         loader={
           status === 'loading' &&
-          <div className="p-4 flex flex-wrap justify-start gap-2  mx-auto">
+          <div className="p-4 flex flex-wrap justify-center gap-2  mx-auto">
             {Array.from({ length: 5 }).map((_, index) => (
               <PostSkeltonLoader
                 key={index}

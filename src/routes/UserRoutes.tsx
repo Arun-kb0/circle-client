@@ -23,6 +23,7 @@ import OtpModel from '../pages/OtpModel'
 import ResetPassword from '../pages/ResetPassword'
 import PaymentSuccessPage from '../pages/user/PaymentSuccessPage'
 import PaymentFailedPage from '../pages/user/PaymentFailedPage'
+import BlockedUsers from '../pages/user/BlockedUsers'
 
 type Props = {
   user: UserType | undefined
@@ -54,6 +55,7 @@ const UserRoutes = ({ user }: Props) => {
         <Route path='/view-live' element={<ViewLivePage />} />
         <Route path='/wallet' element={<WalletPage />} />
         <Route path='/saved' element={<SavedPostsPage />} />
+        <Route path='/blocked-users' element={<BlockedUsers />} />
       </Route>
       
       <Route path="*" element={<NotFoundPage />} />

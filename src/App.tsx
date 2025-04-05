@@ -17,7 +17,7 @@ import socketEvents from './constants/socketEvents'
 import SocketIoClient from './config/SocketIoClient'
 import { UserRoomNotificationType } from './constants/types'
 import { setCallNotificationState } from './features/notification/notificationSlice'
-import { getFollowers } from './features/user/userApi'
+import { getFollowers, getUserToUserBlockedAccounts } from './features/user/userApi'
 import { Socket } from 'socket.io-client'
 import {
   setNotificationSocketId, setOnlineUsers, setSingleNotification,
@@ -49,6 +49,7 @@ function App() {
   useEffect(() => {
     if (!user) return
     dispatch(getSubscriptions(1))
+    dispatch(getUserToUserBlockedAccounts(1))
     const newSocket = SocketIoClient.getInstance(user._id)
     setSocket(newSocket)
     const newNotificationSocket = SocketIoClient.getNotificationInstance(user._id)

@@ -1,11 +1,18 @@
-import {  createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { CountByDataType, LineChartDataType, NotificationDataType, PaginationNotification, PaginationUsers, PieChartType, StateType, UsersCountTypes, UserType } from "../../constants/types"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import {
+  CountByDataType, LineChartDataType, NotificationDataType,
+  PaginationNotification, PaginationUserBlockedAccounts,
+  PaginationUsers, PieChartType, StateType,
+  UserBlockedAccountsType, UsersCountTypes, UserType
+} from "../../constants/types"
 import {
   blockUser, followUser, getAllUsers, getFollowers,
-  getFollowing,
-  getLiveUsers,
-  getNotifications,
-  getSuggestedPeople, getUser, getUsersCount, getUsersCountByDateDetails, readNotifications, unblockUser, unFollow
+  getFollowing, getLiveUsers, getNotifications,
+  getSuggestedPeople, getUser, getUsersCount,
+  getUsersCountByDateDetails, getUserToUserBlockedAccounts, readNotifications,
+  unblockUser, unFollow,
+  userToUserBlock,
+  userToUserUnblock
 } from "./userApi"
 import { RootState } from "../../app/store"
 
@@ -53,6 +60,11 @@ type UserStateType = {
 
   unreadNotificationsCount: number
   userNavOpen: boolean
+
+  userBlockedAccounts: UserBlockedAccountsType[]
+  userBlockedAccountNumberOfPages: number
+  userBlockedAccountsCurrentPage: number
+  userBlockedAccountsStatus: StateType
 }
 
 const initialState: UserStateType = {
@@ -92,7 +104,12 @@ const initialState: UserStateType = {
   notificationCurrentPages: 0,
 
   unreadNotificationsCount: 0,
-  userNavOpen: true
+  userNavOpen: true,
+
+  userBlockedAccounts: [],
+  userBlockedAccountNumberOfPages: 0,
+  userBlockedAccountsCurrentPage: 0,
+  userBlockedAccountsStatus: "idle"
 }
 
 const userSlice = createSlice({
@@ -346,6 +363,48 @@ const userSlice = createSlice({
       .addCase(getNotifications.rejected, (state, action) => {
         state.error = action.error.message
       })
+
+      // * user to user blocking
+      .addCase(userToUserBlock.pending, (state) => {
+        state.userBlockedAccountsStatus = 'loading'
+      })
+      .addCase(userToUserBlock.fulfilled, (state, action: PayloadAction<{ blockedUser: UserBlockedAccountsType }>) => {
+        state.userBlockedAccountsStatus = 'success'
+        state.userBlockedAccounts.push(action.payload.blockedUser)
+      })
+      .addCase(userToUserBlock.rejected, (state, action) => {
+        state.userBlockedAccountsStatus = 'failed'
+        state.error = action.error.message
+      })
+
+      .addCase(userToUserUnblock.pending, (state) => {
+        state.userBlockedAccountsStatus = 'loading'
+      })
+      .addCase(userToUserUnblock.fulfilled, (state, action: PayloadAction<{ blockedUser: UserBlockedAccountsType }>) => {
+        state.userBlockedAccountsStatus = 'success'
+        state.userBlockedAccounts.push(action.payload.blockedUser)
+      })
+      .addCase(userToUserUnblock.rejected, (state, action) => {
+        state.userBlockedAccountsStatus = 'failed'
+        state.error = action.error.message
+      })
+
+      .addCase(getUserToUserBlockedAccounts.pending, (state) => {
+        state.userBlockedAccountsStatus = 'loading'
+      })
+      .addCase(getUserToUserBlockedAccounts.fulfilled, (state, action: PayloadAction<PaginationUserBlockedAccounts>) => {
+        state.userBlockedAccountsStatus = 'success'
+        const { blockedUsers, numberOfPages, currentPage } = action.payload
+        const existingUserIds = new Set(state.userBlockedAccounts.map(user => user.blockedUserId))
+        const newUsers = blockedUsers.filter(user => !existingUserIds.has(user.blockedUserId))
+        state.userBlockedAccounts = [...state.userBlockedAccounts, ...newUsers]
+        state.userBlockedAccountsCurrentPage = currentPage
+        state.userBlockedAccountNumberOfPages = numberOfPages
+      })
+      .addCase(getUserToUserBlockedAccounts.rejected, (state, action) => {
+        state.userBlockedAccountsStatus = 'failed'
+        state.error = action.error.message
+      })
   }
 })
 
@@ -393,6 +452,11 @@ export const selectUserNotificationPage = (state: RootState) => state.user.notif
 export const selectUserUnreadNotificationsCount = (state: RootState) => state.user.unreadNotificationsCount
 
 export const selectUserNavOpen = (state: RootState) => state.user.userNavOpen
+
+export const selectUserBlockedAccounts = (state: RootState) => state.user.userBlockedAccounts
+export const selectUserBlockedAccountsNumberOfPages = (state: RootState) => state.user.userBlockedAccountNumberOfPages
+export const selectUserBlockedAccountsCurrentPage = (state: RootState) => state.user.userBlockedAccountsCurrentPage
+export const selectUserBlockedAccountsStatus = (state: RootState) => state.user.userBlockedAccountsStatus
 
 
 export const {

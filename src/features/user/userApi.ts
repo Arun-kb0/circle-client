@@ -286,6 +286,67 @@ export const readNotifications = createAsyncThunk('/user/read-notifications', as
   }
 })
 
+export const userToUserBlock = createAsyncThunk('/user/user-to-user-block', async (userId: string, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const currentUser = state.auth.user
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const body = { blockerUserId: currentUser?._id, blockedUserId: userId }
+    const res = await axiosPrivate.post('/user/user-blocked-create', body)
+    removeInterceptors()
+    console.log("user to user block")
+    console.log(res.data)
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+export const userToUserUnblock = createAsyncThunk('/user/user-to-user-unblock', async (userId: string, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const currentUser = state.auth.user
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error(' no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const params = { blockerUserId: currentUser?._id, blockedUserId: userId }
+    const res = await axiosPrivate.delete('/user/user-blocked-delete', { params })
+    removeInterceptors()
+    console.log("user to user unblock")
+    console.log(res.data)
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+export const getUserToUserBlockedAccounts = createAsyncThunk('/user/get-user-blocked-users', async (page: number, { dispatch, getState }) => {
+  try {
+    const state = getState() as RootState
+    const accessToken = state.auth.accessToken
+    const currentUser = state.auth.user
+    const dispatchFunction = dispatch as AppDispatch
+    if (!accessToken) throw new Error('no accessToken found ')
+    const removeInterceptors = await configureAxios(dispatchFunction, accessToken)
+    const params = { blockerUserId: currentUser?._id, page }
+    const res = await axiosPrivate.get('/user/user-blocked-users', { params })
+    removeInterceptors()
+    console.log("user to user unblock")
+    console.log(res.data)
+    return res.data
+  } catch (error) {
+    console.log(error)
+    return errorHandler(error)
+  }
+})
+
+
 
 
 

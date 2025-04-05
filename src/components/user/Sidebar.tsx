@@ -10,6 +10,7 @@ import { clearFollowers, clearFollowing, selectUserNavOpen } from '../../feature
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../app/store';
 import { clearUserCreatedPosts } from '../../features/post/postSlice';
+import { RiUserForbidLine } from "react-icons/ri";
 
 
 const Sidebar = () => {
@@ -87,29 +88,20 @@ const Sidebar = () => {
               </Link>
             </SpringButton>
           </li>
-          {/* ! add this routes if have time */}
-          {/* <li>
-            <SpringButton>
-              <a className={`${location.pathname === '/profile' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
-                <HiOutlineGift size={22} />
-                <span className="ms-3">Birthday</span>
-              </a>
-            </SpringButton>
-          </li>
-          <li>
-            <SpringButton>
-              <a className={`${location.pathname === '/profile' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
-                <PiArticleBold size={22} />
-                <span className="ms-3">Global Feed</span>
-              </a>
-            </SpringButton>
-          </li> */}
           <li>
             <SpringButton>
               <button onClick={handleNavigateToChat} className={`${location.pathname === '/chat' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
                 <TbMessageCircle size={22} />
-                <span className="ms-3">Messaging</span>
+                <span className="ms-3">Chat</span>
               </button>
+            </SpringButton>
+          </li>
+          <li>
+            <SpringButton>
+              <Link to='/blocked-users' className={`${location.pathname === '/blocked-users' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
+                <RiUserForbidLine size={22} />
+                <span className="ms-3">Blocked</span>
+              </Link>
             </SpringButton>
           </li>
 

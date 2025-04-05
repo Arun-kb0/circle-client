@@ -24,6 +24,7 @@ import { useNavigate } from 'react-router-dom';
 import Avatar from '../../basic/Avatar';
 import { CiBookmark, CiBookmarkCheck } from 'react-icons/ci';
 import { toast } from 'react-toastify';
+import { selectUserBlockedAccounts } from '../../../features/user/userSlice';
 
 
 type Props = {
@@ -38,14 +39,18 @@ const PostCard = ({ post, openCommentModel, isGridView = false }: Props) => {
   const likes = useSelector(selectPostLikes)
   const user = useSelector(selectAuthUser)
   const savedPosts = useSelector(selectPostSavedPosts)
-  // const reports = useSelector(selectPostReports)
+  const currentUser = useSelector(selectAuthUser)
+  const userBlockedAccounts = useSelector(selectUserBlockedAccounts)
 
   const [isSavedPost, setIsSavedPost] = useState<boolean>(() => {
     return Boolean(savedPosts.find(item => item._id === post._id))
   })
-  // const [isReportedPost, setIsReportedPost] = useState<boolean>(() => {
-  //   return Boolean(reports.find(item => item.contentType === 'post' && item.contentId === post._id))
-  // })
+  const [isBlockedAccountPost] = useState<boolean>(() => {
+    return currentUser?._id === post.authorId
+      ? false
+      : Boolean(userBlockedAccounts.find(item => item.blockedUserId === post.authorId))
+  })
+
   const [openPostDropdown, setOpenPostDropdown] = useState(false)
 
   const userPostDropdownElements: DropDownElementsType[] = [
@@ -119,6 +124,10 @@ const PostCard = ({ post, openCommentModel, isGridView = false }: Props) => {
       postId: post._id
     }))
     setIsSavedPost(prev => !prev)
+  }
+
+  if (isBlockedAccountPost) {
+    return (<></>);
   }
 
   return (

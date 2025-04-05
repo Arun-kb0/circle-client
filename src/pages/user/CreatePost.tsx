@@ -133,13 +133,6 @@ const CreatePost = () => {
   }, [images, imageFiles])
 
 
-  useEffect(() => {
-    console.log('image files array = ')
-    console.log(imageFiles)
-    console.log('image urls array = ')
-    console.log(images)
-  }, [imageFiles, images])
-
   return (
     <main className='main-section justify-center relative h-screen overflow-y-auto' >
       <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`}>

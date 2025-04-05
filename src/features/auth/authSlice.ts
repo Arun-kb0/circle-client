@@ -34,6 +34,7 @@ const showNavRoutes = [
   '/view-live',
   '/wallet',
   '/saved',
+  '/blocked-users',
 
   // Protected admin routes
   '/admin/',

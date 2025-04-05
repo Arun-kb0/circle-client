@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import ProfilePosts from './ProfilePosts'
 import ProfileAbout from './ProfileAbout'
-import { RadioInputDataType, SubscriptionsType, UserType } from '../../../constants/types'
+import { DropDownElementsType, RadioInputDataType, SubscriptionsType, UserType } from '../../../constants/types'
 import FollowingPage from '../../../pages/user/FollowingPage'
 import Followers from './Followers'
 import SpringButton from '../../basic/SpringButton'
@@ -22,6 +22,9 @@ import PaymentSuccess from '../../basic/PaymentSuccess'
 import PaymentFailed from '../../basic/PaymentFailed'
 import Avatar from '../../basic/Avatar'
 import RadioInputs from '../../basic/RadioInputs'
+import { IoIosMore } from 'react-icons/io'
+import DropDown from '../../basic/DropDown'
+import { userToUserBlock } from '../../../features/user/userApi'
 
 type Props = {
   user: UserType
@@ -40,6 +43,7 @@ const Profile = ({ user }: Props) => {
     return Boolean(subscriptions.find(item => item.status === 'active' && item.subscriberToUserId === user._id))
   })
   const [showPayBtns, setShowPayBtns] = useState<boolean>(false)
+  const [openProfileDropdown, setOpenProfileDropdown] = useState<boolean>(false)
 
   const handleSectionClick = (section: "posts" | "about" | "following" | "followers") => {
     if (activeSection === section) return
@@ -128,14 +132,20 @@ const Profile = ({ user }: Props) => {
     setSubscriptionAmount(plan.monthly)
   }, [plan])
 
-  useEffect(() => {
-    console.log('active section = ',activeSection)
-  },[activeSection])
+  const dropDownElements: DropDownElementsType[] = [
+    {
+      handler: () => {
+        dispatch(userToUserBlock(user?._id))
+        setOpenProfileDropdown(false)
+      },
+      name: 'Block'
+    }
+  ]
 
   return (
     <main className='space-y-8'>
       {/* profile image */}
-      <section className='flex justify-start w-full'>
+      <section className='flex justify-center w-full'>
         <div className="relative">
           <Avatar
             image={user.image?.url}
@@ -147,9 +157,9 @@ const Profile = ({ user }: Props) => {
           <span className="top-10 left-7 absolute  w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
         </div>
 
-        <div className='px-10 flex justify-center items-center capitalize text-2xl font-semibold'>
+        <div className='px-10 flex justify-center items-center capitalize md:text-2xl sm:text-lg text-sm font-semibold'>
           <div className='space-y-4'>
-            <h5 className=''>{user?.name}</h5>
+            <h5 className='sm:p-0 pl-10'>{user?.name}</h5>
             <div className='flex flex-wrap gap-3 justify-center items-center'>
               <p>Following {user?.followerCount}</p>
               <p>Followers {user?.followeeCount}</p>
@@ -205,7 +215,7 @@ const Profile = ({ user }: Props) => {
       </section>
 
       {/* profile btns */}
-      <section  className="flex justify-center">
+      <section className="flex justify-center items-center">
         <div className="flex">
           <button onClick={() => handleSectionClick("posts")} className={`${activeSection === 'posts' ? 'border-teal-300' : 'border-transparent'} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`}>
             Posts
@@ -219,6 +229,20 @@ const Profile = ({ user }: Props) => {
           <button onClick={() => handleSectionClick("following")} className={`${activeSection === 'following' ? 'border-teal-300' : 'border-transparent'} md:px-8 px-4 py-2 text-md font-medium text-gray-100 bg-transparent border-b-2 hover:bg-gray-800 hover:text-white hover:border-gray-900 transition duration-150 ease-in-out focus:outline-none`} >
             Following
           </button>
+
+          <div className='relative'>
+            {currentUser?._id !== user._id &&
+              <button className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600" onClick={() => setOpenProfileDropdown(prev => !prev)} >
+                <IoIosMore size={17} />
+              </button>
+            }
+            <DropDown
+              open={openProfileDropdown}
+              elements={dropDownElements}
+              position='right-0 top-10'
+            />
+          </div>
+
         </div>
       </section>
 
