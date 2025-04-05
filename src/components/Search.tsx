@@ -27,7 +27,7 @@ const Search = ({ handleSearch }: Props) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto md:w-[500px] sm:w-60">
+    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto md:w-[500px] sm:w-60 w-auto">
       <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
         Search
       </label>
