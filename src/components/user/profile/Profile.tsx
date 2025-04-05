@@ -24,7 +24,8 @@ import Avatar from '../../basic/Avatar'
 import RadioInputs from '../../basic/RadioInputs'
 import { IoIosMore } from 'react-icons/io'
 import DropDown from '../../basic/DropDown'
-import { userToUserBlock } from '../../../features/user/userApi'
+import { userToUserBlock, userToUserUnblock } from '../../../features/user/userApi'
+import { selectUserBlockedAccounts } from '../../../features/user/userSlice'
 
 type Props = {
   user: UserType
@@ -36,11 +37,16 @@ const Profile = ({ user }: Props) => {
   const currentUser = useSelector(selectAuthUser)
   const subscriptions = useSelector(selectPaymentSubscriptions)
   const plan = useSelector(selectPaymentUserSubscriptionPlan)
+  const userBlockedAccounts = useSelector(selectUserBlockedAccounts)
+
   const [activeSection, setActiveSection] = useState<"posts" | "about" | "following" | "followers" | null>('posts')
   const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionsType['plan']>('monthly')
   const [subscriptionAmount, setSubscriptionAmount] = useState(200)
   const [isSubscribed, setIsSubscribed] = useState<boolean>(() => {
     return Boolean(subscriptions.find(item => item.status === 'active' && item.subscriberToUserId === user._id))
+  })
+  const [isBlockedAccountUser, setIsBlockedAccountUser] = useState<boolean>(() => {
+    return Boolean(userBlockedAccounts.find(item => item.blockedUserId === user?._id))
   })
   const [showPayBtns, setShowPayBtns] = useState<boolean>(false)
   const [openProfileDropdown, setOpenProfileDropdown] = useState<boolean>(false)
@@ -135,10 +141,13 @@ const Profile = ({ user }: Props) => {
   const dropDownElements: DropDownElementsType[] = [
     {
       handler: () => {
-        dispatch(userToUserBlock(user?._id))
+        isBlockedAccountUser
+          ? dispatch(userToUserUnblock(user?._id))
+          : dispatch(userToUserBlock(user?._id))
+        setIsBlockedAccountUser(prev => !prev)
         setOpenProfileDropdown(false)
       },
-      name: 'Block'
+      name: isBlockedAccountUser ? 'Unblock' : 'Block',
     }
   ]
 

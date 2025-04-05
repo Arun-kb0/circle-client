@@ -369,6 +369,7 @@ const userSlice = createSlice({
         state.userBlockedAccountsStatus = 'loading'
       })
       .addCase(userToUserBlock.fulfilled, (state, action: PayloadAction<{ blockedUser: UserBlockedAccountsType }>) => {
+        if (!action.payload) return
         state.userBlockedAccountsStatus = 'success'
         state.userBlockedAccounts.push(action.payload.blockedUser)
       })
@@ -381,8 +382,10 @@ const userSlice = createSlice({
         state.userBlockedAccountsStatus = 'loading'
       })
       .addCase(userToUserUnblock.fulfilled, (state, action: PayloadAction<{ blockedUser: UserBlockedAccountsType }>) => {
+        if (!action.payload) return
         state.userBlockedAccountsStatus = 'success'
-        state.userBlockedAccounts.push(action.payload.blockedUser)
+        const { blockedUser } = action.payload
+        state.userBlockedAccounts = state.userBlockedAccounts.filter(item => item.blockedUserId !== blockedUser.blockedUserId)
       })
       .addCase(userToUserUnblock.rejected, (state, action) => {
         state.userBlockedAccountsStatus = 'failed'

@@ -28,7 +28,6 @@ const UserCard = ({ userId, name, image, componentType }: Props) => {
 
   const handleFollow = () => { dispatch(followUser(userId)) }
   const handleUnFollow = () => { dispatch(unFollow(userId)) }
-  const handleRemove = () => { }
   const handleMessage = () => { }
 
   const [isBlockedAccountUser] = useState<boolean>(() => {
