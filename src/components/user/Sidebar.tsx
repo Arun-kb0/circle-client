@@ -39,68 +39,68 @@ const Sidebar = () => {
   return (
     <aside id="logo-sidebar" className={`nav-bg-color fixed top-14 left-0 z-40 lg:w-2/12 md:w-3/12 sm:w-3/12 h-screen pt-8 transition-transform duration-300 transform ${navOpen ? 'translate-x-0' : '-translate-x-full'}`} aria-label="Sidebar">
       <div className="h-full px-3 pb-4 overflow-y-auto ">
-        <ul className="space-y-2 font-medium">
+        <ul className="space-y-6 font-medium">
           <li>
             <SpringButton>
-              <Link to='/profile' className={`${location.pathname === '/profile' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
-                <FaRegUser size={22} />
-                <span className="ms-3">Profile</span>
+              <Link to='/profile' className={`${location.pathname === '/profile' ? 'sidebar-item-active' : 'sidebar-item-inactive'} sidebar-item group`}>
+                <FaRegUser size={22} className='sidebar-item-icon group-hover:text-white'  />
+                <span className="sidebar-item-text group-hover:text-white">Profile</span>
               </Link>
             </SpringButton>
           </li>
           <li>
             <SpringButton>
-              <button onClick={handleNavigateToFollowing} className={`${location.pathname === '/following' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
-                <HiOutlineUsers size={22} />
-                <span className="ms-3">Following</span>
+              <button onClick={handleNavigateToFollowing} className={`${location.pathname === '/following' ? 'sidebar-item-active' : 'sidebar-item-inactive'} sidebar-item group`}>
+                <HiOutlineUsers size={22} className='sidebar-item-icon group-hover:text-white' />
+                <span className="sidebar-item-text group-hover:text-white">Following</span>
               </button>
             </SpringButton>
           </li>
           <li>
             <SpringButton>
-              <Link to='/follow-people' className={`${location.pathname === '/follow-people' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
-                <LuUserRoundPlus size={22} />
-                <span className="ms-3">Follow</span>
+              <Link to='/follow-people' className={`${location.pathname === '/follow-people' ? 'sidebar-item-active' : 'sidebar-item-inactive'} sidebar-item group`}>
+                <LuUserRoundPlus size={22} className='sidebar-item-icon group-hover:text-white' />
+                <span className="sidebar-item-text group-hover:text-white">Follow</span>
               </Link>
             </SpringButton>
           </li>
           <li>
             <SpringButton>
-              <Link to='/view-live' className={`${location.pathname === '/view-live' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
-                <CgMediaLive size={22} />
-                <span className="ms-3">View live</span>
+              <Link to='/view-live' className={`${location.pathname === '/view-live' ? 'sidebar-item-active' : 'sidebar-item-inactive'} sidebar-item group`}>
+                <CgMediaLive size={22} className='sidebar-item-icon group-hover:text-white' />
+                <span className="sidebar-item-text group-hover:text-white">View live</span>
               </Link>
             </SpringButton>
           </li>
           <li>
             <SpringButton>
-              <Link to='/saved' className={`${location.pathname === '/saved' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
-                <IoBookmarkOutline size={22} />
-                <span className="ms-3">Saved</span>
+              <Link to='/saved' className={`${location.pathname === '/saved' ? 'sidebar-item-active' : 'sidebar-item-inactive'} sidebar-item group`}>
+                <IoBookmarkOutline size={22} className='sidebar-item-icon group-hover:text-white' />
+                <span className="sidebar-item-text group-hover:text-white">Saved</span>
               </Link>
             </SpringButton>
           </li>
           <li>
             <SpringButton>
-              <Link to='/wallet' className={`${location.pathname === '/wallet' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
-                <IoWalletOutline size={22} />
-                <span className="ms-3">Wallet</span>
+              <Link to='/wallet' className={`${location.pathname === '/wallet' ? 'sidebar-item-active' : 'sidebar-item-inactive'} sidebar-item group`}>
+                <IoWalletOutline size={22} className='sidebar-item-icon group-hover:text-white' />
+                <span className="sidebar-item-text group-hover:text-white">Wallet</span>
               </Link>
             </SpringButton>
           </li>
           <li>
             <SpringButton>
-              <button onClick={handleNavigateToChat} className={`${location.pathname === '/chat' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
-                <TbMessageCircle size={22} />
-                <span className="ms-3">Chat</span>
+              <button onClick={handleNavigateToChat} className={`${location.pathname === '/chat' ? 'sidebar-item-active' : 'sidebar-item-inactive'} sidebar-item group`}>
+                <TbMessageCircle size={22} className='sidebar-item-icon group-hover:text-white' />
+                <span className="sidebar-item-text group-hover:text-white">Chat</span>
               </button>
             </SpringButton>
           </li>
           <li>
             <SpringButton>
-              <Link to='/blocked-users' className={`${location.pathname === '/blocked-users' ? 'bg-gray-700' : "hover:bg-gray-700"} flex w-full items-center p-2 rounded-lg text-white group`}>
-                <RiUserForbidLine size={22} />
-                <span className="ms-3">Blocked</span>
+              <Link to='/blocked-users' className={`${location.pathname === '/blocked-users' ? 'sidebar-item-active' : 'sidebar-item-inactive'} sidebar-item group`}>
+                <RiUserForbidLine size={22} className='sidebar-item-icon group-hover:text-white' />
+                <span className="sidebar-item-text group-hover:text-white">Blocked</span>
               </Link>
             </SpringButton>
           </li>
@@ -108,6 +108,7 @@ const Sidebar = () => {
         </ul>
       </div>
     </aside>
+
   )
 }
 
