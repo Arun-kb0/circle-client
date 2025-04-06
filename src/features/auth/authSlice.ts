@@ -46,17 +46,6 @@ const showNavRoutes = [
   '/admin/transaction-wallet',
 ]
 
-const getUserFromLocalStorage = (): UserType | undefined => {
-  const user = localStorage.getItem('user')
-  if (!user) return undefined
-  try {
-    return JSON.parse(user)
-  } catch (error) {
-    console.error("Failed to parse user from localStorage:", error)
-    return undefined
-  }
-}
-
 
 type AuthStateType = {
   otpId: string | undefined
@@ -71,13 +60,33 @@ type AuthStateType = {
   error: string | undefined
   friendsRoomId: string | null
   showNavbar: boolean
+  lastVisitedRoute: string | undefined
+  // ! use this state with login cases in extra reducers
+  authStatus: 'bootstrapping' | 'authenticated' | 'unauthenticated' 
 }
 
-const initialState: AuthStateType = {
+// const initialState: AuthStateType = {
+//   otpId: undefined,
+//   mailToVerify: undefined,
+//   user: undefined,
+//   accessToken: undefined,
+//   status: 'idle',
+//   error: undefined,
+
+//   resetPwd: undefined,
+//   resetPwdEmail: undefined,
+//   resetPwdOtpId: undefined,
+//   resetPwdStatus: 'idle',
+//   friendsRoomId: null,
+//   showNavbar: false,
+//   lastVisitedRoute: localStorage.getItem('lastVisitedRoute') || undefined
+// }
+
+const getInitialState = (): AuthStateType => ({
   otpId: undefined,
   mailToVerify: undefined,
-  user: getUserFromLocalStorage(),
-  accessToken: localStorage.getItem('accessToken') || undefined,
+  user: undefined,
+  accessToken: undefined,
   status: 'idle',
   error: undefined,
 
@@ -86,8 +95,12 @@ const initialState: AuthStateType = {
   resetPwdOtpId: undefined,
   resetPwdStatus: 'idle',
   friendsRoomId: null,
-  showNavbar: false
-}
+  showNavbar: false,
+  lastVisitedRoute: localStorage.getItem('lastVisitedRoute') || undefined,
+  authStatus: 'bootstrapping'
+})
+
+const initialState = getInitialState()
 
 const authSlice = createSlice({
   name: 'auth',
@@ -105,9 +118,15 @@ const authSlice = createSlice({
     setShowNavbar: (state, action: PayloadAction<string>) => {
       if (showNavRoutes.includes(action.payload)) {
         state.showNavbar = true
+        state.lastVisitedRoute = action.payload
+        localStorage.setItem('lastVisitedRoute', action.payload)
       } else {
         state.showNavbar = false
       }
+    },
+
+    setAuthStatus: (state, action: PayloadAction<typeof initialState.authStatus>) => {
+      state.authStatus = action.payload
     }
 
   },
@@ -123,12 +142,12 @@ const authSlice = createSlice({
         const { user, accessToken } = action.payload
         state.accessToken = accessToken
         state.user = user
-        localStorage.setItem('accessToken', accessToken)
-        localStorage.setItem('user', JSON.stringify(user))
+        state.authStatus = "authenticated"
       })
       .addCase(googleOauthLogin.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message
+        state.authStatus = "unauthenticated"
       })
 
       .addCase(login.pending, (state) => {
@@ -140,12 +159,12 @@ const authSlice = createSlice({
         state.accessToken = accessToken
         state.user = user
         state.friendsRoomId = friendsRoomId
-        localStorage.setItem('accessToken', accessToken)
-        localStorage.setItem('user', JSON.stringify(user))
+        state.authStatus = "authenticated"
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message
+        state.authStatus = "unauthenticated"
       })
 
       .addCase(signup.pending, (state) => {
@@ -170,12 +189,12 @@ const authSlice = createSlice({
         const { accessToken, user } = action.payload
         state.accessToken = accessToken
         state.user = user
-        localStorage.setItem('accessToken', accessToken)
-        localStorage.setItem('user', JSON.stringify(user))
+        state.authStatus = "authenticated"
       })
       .addCase(verifyEmail.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message
+        state.authStatus = "unauthenticated"
       })
 
       .addCase(resendOtp.pending, (state) => {
@@ -230,22 +249,29 @@ const authSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(refresh.pending, (state) => {
+        state.status = 'loading'
+        state.authStatus = "bootstrapping"
+      })
       .addCase(refresh.fulfilled, (state, action: PayloadAction<AuthenticationResponseType>) => {
         state.status = 'success'
+        state.authStatus = "bootstrapping"
         const { user, accessToken, friendsRoomId } = action.payload
         state.accessToken = accessToken
         state.user = user
         state.friendsRoomId = friendsRoomId
-        localStorage.setItem('accessToken', accessToken)
-        localStorage.setItem('user', JSON.stringify(user))
+        state.authStatus = "authenticated"
       })
       .addCase(refresh.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message
+        state.authStatus = "unauthenticated"
       })
 
       .addCase(logout.fulfilled, () => {
-        return initialState
+        const state = getInitialState()
+        state.authStatus = 'unauthenticated'
+        return state
       })
 
       .addCase(uploadProfileImage.pending, (state) => {
@@ -268,13 +294,12 @@ const authSlice = createSlice({
         const { user, accessToken } = action.payload
         state.accessToken = accessToken
         state.user = user
-        localStorage.setItem('accessToken', accessToken)
-        localStorage.setItem('user', JSON.stringify(user))
+        state.authStatus = "authenticated"
       })
-
       .addCase(adminLogin.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message
+        state.authStatus = "unauthenticated"
       })
 
       .addCase(adminSignup.pending, (state) => {
@@ -285,12 +310,12 @@ const authSlice = createSlice({
         const { user, accessToken } = action.payload
         state.accessToken = accessToken
         state.user = user
-        localStorage.setItem('accessToken', accessToken)
-        localStorage.setItem('user', JSON.stringify(user))
+        state.authStatus = "authenticated"
       })
       .addCase(adminSignup.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message
+        state.authStatus = "unauthenticated"
       })
   }
 })
@@ -304,6 +329,9 @@ export const selectAuthResetStatus = (state: RootState) => state.auth.resetPwdSt
 export const selectAuthFriendsRoomId = (state: RootState) => state.auth.friendsRoomId
 
 export const selectAuthShowNavbar = (state: RootState) => state.auth.showNavbar
+
+export const selectAuthLastVisitedRoute = (state: RootState) => state.auth.lastVisitedRoute
+export const selectAuthAuthStatus = (state: RootState) => state.auth.authStatus
 
 export const {
   setAuthUser,

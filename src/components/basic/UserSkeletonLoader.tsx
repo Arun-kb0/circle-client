@@ -1,7 +1,7 @@
 
 const UserSkeletonLoader = () => {
   return (
-    <article className="max-w-sm w-52 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 animate-pulse">
+    <article className="max-w-sm w-52 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-900 dark:border-gray-800 animate-pulse">
       <div className="flex justify-end px-4 pt-4">
         <div className="w-6 h-6 bg-gray-300 dark:bg-gray-700 rounded"></div>
       </div>

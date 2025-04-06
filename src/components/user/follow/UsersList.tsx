@@ -19,7 +19,7 @@ const UsersList = ({ users, loadMorePosts, hasMore }: Props) => {
       next={loadMorePosts}
       hasMore={hasMore}
       loader={ 
-        <div className=''>
+        <div className='p-4 flex flex-wrap sm:justify-start justify-center gap-3'>
           {Array.from({ length: 5 }).map((_, index) => (
             <UserSkeletonLoader key={index} />
           ))}

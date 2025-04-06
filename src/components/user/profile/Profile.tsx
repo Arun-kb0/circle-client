@@ -26,6 +26,7 @@ import { IoIosMore } from 'react-icons/io'
 import DropDown from '../../basic/DropDown'
 import { userToUserBlock, userToUserUnblock } from '../../../features/user/userApi'
 import { selectUserBlockedAccounts } from '../../../features/user/userSlice'
+import CountUp from 'react-countup'
 
 type Props = {
   user: UserType
@@ -170,8 +171,21 @@ const Profile = ({ user }: Props) => {
           <div className='space-y-4'>
             <h5 className='sm:p-0 pl-10'>{user?.name}</h5>
             <div className='flex flex-wrap gap-3 justify-center items-center'>
-              <p>Following {user?.followerCount}</p>
-              <p>Followers {user?.followeeCount}</p>
+              <p>Following: { }
+                <CountUp
+                  end={user?.followerCount || 0}
+                  duration={2}
+                  separator=","
+                />
+              </p>
+              <p>Followers : { }
+                <CountUp
+                  end={user?.followeeCount || 0}
+                  duration={2}
+                  separator=","
+                />
+              </p>
+
 
               {currentUser?._id !== user._id &&
                 <div>
@@ -239,7 +253,7 @@ const Profile = ({ user }: Props) => {
             Following
           </button>
 
-          <div className='relative'>
+          <div className='relative mx-1'>
             {currentUser?._id !== user._id &&
               <button className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600" onClick={() => setOpenProfileDropdown(prev => !prev)} >
                 <IoIosMore size={17} />
