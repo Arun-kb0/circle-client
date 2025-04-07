@@ -27,7 +27,7 @@ const Wallet = () => {
     dispatch(getUserWallet())
     if (transactions.length !== 0) return
     dispatch(getTransactions(1))
-  }, [dispatch, transactions?.length])
+  }, [])
 
   useEffect(() => {
     setHasMore(page <= numberOfPages)
@@ -39,7 +39,7 @@ const Wallet = () => {
   }
 
   return (
-    <article className='sm:w-[50vw] w-[90vw] space-y-6 ' >
+    <article className='sm:w-[50vw] w-[90vw] space-y-6' >
 
       <section
         style={{ backgroundImage: `url(${walletBgImage})` }}
@@ -62,14 +62,14 @@ const Wallet = () => {
                 duration={2}
                 separator=","
               />
-              {" " + wallet?.currency}
+              {" " + wallet?.currency || ''}
             </h5>
           </div>
         </div>
       </section>
 
       <InfiniteScroll
-        className='space-y-4 h-64 overflow-y-auto'
+        className='space-y-4 h-64 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-500'
         scrollableTarget='home'
         dataLength={transactions.length}
         next={loadMorePosts}

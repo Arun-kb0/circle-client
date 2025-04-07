@@ -9,7 +9,7 @@ type Props = {
 const Transaction = ({ transaction }: Props) => {
   return (
 
-    <div className="flex items-start gap-2.5 p-3 nav-bg-color lg:w-[50vw] rounded-lg shadow overflow-hidden ">
+    <div className="flex items-start gap-2.5 p-3 nav-bg-color rounded-lg shadow overflow-hidden ">
       <Avatar
         image={transaction.userImage}
         alt={transaction.userName}

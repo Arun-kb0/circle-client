@@ -67,6 +67,7 @@ type UserStateType = {
   notifications: NotificationDataType[]
   notificationNumberOfPages: number
   notificationCurrentPages: number
+  notificationsStatus: StateType
 
   unreadNotificationsCount: number
   userNavOpen: boolean
@@ -114,6 +115,7 @@ const getInitialState = (): UserStateType => ({
   notifications: [],
   notificationNumberOfPages: 0,
   notificationCurrentPages: 0,
+  notificationsStatus: 'idle',
 
   unreadNotificationsCount: 0,
   userNavOpen: true,
@@ -381,7 +383,11 @@ const userSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(getNotifications.pending, (state) => {
+        state.notificationsStatus = 'loading'
+      })
       .addCase(getNotifications.fulfilled, (state, action: PayloadAction<PaginationNotification>) => {
+        state.notificationsStatus = 'success'
         const { notifications, currentPage, numberOfPages } = action.payload
         const idsSet = new Set(state.notifications.map(item => item._id))
         const uniqueNotifications = notifications.filter(item => !idsSet.has(item._id))
@@ -390,6 +396,7 @@ const userSlice = createSlice({
         state.notificationNumberOfPages = numberOfPages
       })
       .addCase(getNotifications.rejected, (state, action) => {
+        state.notificationsStatus = 'failed'
         state.error = action.error.message
       })
 
@@ -481,6 +488,7 @@ export const selectUserNotificationSocketId = (state: RootState) => state.user.n
 export const selectUserNotifications = (state: RootState) => state.user.notifications
 export const selectUserNotificationNumberOfPages = (state: RootState) => state.user.notificationNumberOfPages
 export const selectUserNotificationPage = (state: RootState) => state.user.notificationCurrentPages
+export const selectUserNotificationsStatus = (state: RootState) => state.user.notificationsStatus
 export const selectUserUnreadNotificationsCount = (state: RootState) => state.user.unreadNotificationsCount
 
 export const selectUserNavOpen = (state: RootState) => state.user.userNavOpen
