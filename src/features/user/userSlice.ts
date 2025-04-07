@@ -1,14 +1,31 @@
-import {  createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { CountByDataType, LineChartDataType, NotificationDataType, PaginationNotification, PaginationUsers, PieChartType, StateType, UsersCountTypes, UserType } from "../../constants/types"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import {
+  CountByDataType, LineChartDataType, NotificationDataType,
+  PaginationNotification, PaginationUserBlockedAccounts,
+  PaginationUsers, PieChartType, StateType,
+  UserBlockedAccountsType, UsersCountTypes, UserType
+} from "../../constants/types"
 import {
   blockUser, followUser, getAllUsers, getFollowers,
-  getFollowing,
-  getLiveUsers,
-  getNotifications,
-  getSuggestedPeople, getUser, getUsersCount, getUsersCountByDateDetails, readNotifications, unblockUser, unFollow
+  getFollowing, getLiveUsers, getNotifications,
+  getSuggestedPeople, getUser, getUsersCount,
+  getUsersCountByDateDetails, getUserToUserBlockedAccounts, readNotifications,
+  unblockUser, unFollow,
+  userToUserBlock,
+  userToUserUnblock
 } from "./userApi"
 import { RootState } from "../../app/store"
 
+
+const getOtherUserFromSession = (): UserType | undefined => {
+  try {
+    const user = sessionStorage.getItem('otherUser')
+    if (!user) return undefined
+    return JSON.parse(user)
+  } catch (error) {
+    return undefined
+  }
+}
 
 type UserStateType = {
   users: UserType[] | []
@@ -50,12 +67,20 @@ type UserStateType = {
   notifications: NotificationDataType[]
   notificationNumberOfPages: number
   notificationCurrentPages: number
+  notificationsStatus: StateType
 
   unreadNotificationsCount: number
   userNavOpen: boolean
+
+  userBlockedAccounts: UserBlockedAccountsType[]
+  userBlockedAccountNumberOfPages: number
+  userBlockedAccountsCurrentPage: number
+  userBlockedAccountsStatus: StateType
+
+  currentUserFollowingIds: string[]
 }
 
-const initialState: UserStateType = {
+const getInitialState = (): UserStateType => ({
   users: [],
   usersCurrentPage: undefined,
   usersNumberOfPages: undefined,
@@ -90,15 +115,26 @@ const initialState: UserStateType = {
   notifications: [],
   notificationNumberOfPages: 0,
   notificationCurrentPages: 0,
+  notificationsStatus: 'idle',
 
   unreadNotificationsCount: 0,
-  userNavOpen: true
-}
+  userNavOpen: true,
+
+  userBlockedAccounts: [],
+  userBlockedAccountNumberOfPages: 0,
+  userBlockedAccountsCurrentPage: 0,
+  userBlockedAccountsStatus: "idle",
+  currentUserFollowingIds: [],
+
+  otherUser: getOtherUserFromSession()
+})
 
 const userSlice = createSlice({
   name: 'user',
-  initialState,
+  initialState: getInitialState(),
   reducers: {
+    setUserSliceToInitialState: () => getInitialState(),
+
     clearFollowers: (state) => {
       state.followCurrentPage = 0
       state.usersNumberOfPages = 0
@@ -146,8 +182,15 @@ const userSlice = createSlice({
         state.followingPeople = state.followingPeople.filter(item => item._id !== userId);
         state.followingPeople.unshift(foundUser);
       }
-    }
+    },
 
+    setCurrentUserFollowingIds: (state, action: PayloadAction<PaginationUsers>) => {
+      const { users } = action.payload
+      console.log('current user following ids ')
+      console.log(users)
+      const userIds = users.map(item => item._id)
+      state.currentUserFollowingIds = Array.from(new Set([...state.currentUserFollowingIds, ...userIds]))
+    },
   },
 
   extraReducers: (builder) => {
@@ -197,6 +240,7 @@ const userSlice = createSlice({
         const updatedUsers = state.suggestedPeople.filter(item => item._id !== user._id)
         state.suggestedPeople = updatedUsers
         state.followingPeople.unshift(user)
+        state.currentUserFollowingIds = Array.from(new Set([...state.currentUserFollowingIds, user._id]))
       })
       .addCase(followUser.rejected, (state, action) => {
         state.error = action.error.message
@@ -207,6 +251,7 @@ const userSlice = createSlice({
         const updatedUsers = state.followingPeople.filter(item => item._id !== user._id)
         state.followingPeople = updatedUsers
         state.suggestedPeople.unshift(user)
+        state.currentUserFollowingIds = state.currentUserFollowingIds.filter(item => item !== user._id)
       })
       .addCase(unFollow.rejected, (state, action) => {
         state.error = action.error.message
@@ -254,11 +299,11 @@ const userSlice = createSlice({
         const { users, numberOfPages, currentPage, currentUser } = action.payload
         const existingUserIds = new Set(state.suggestedPeople.map(user => user._id));
         existingUserIds.add(currentUser._id)
-        state.followers.map(user => existingUserIds.add(user._id))
+        state.currentUserFollowingIds.map(id => existingUserIds.add(id))
         const newUsers = users.filter(user => !existingUserIds.has(user._id));
         state.suggestedPeople.push(...newUsers)
         state.suggestedNumberOfPages = numberOfPages
-        state.suggestedCurrentPage = currentPage
+        state.suggestedCurrentPage = currentPage;
       })
       .addCase(getSuggestedPeople.rejected, (state, action) => {
         state.suggestedPeopleStatus = 'failed'
@@ -266,7 +311,10 @@ const userSlice = createSlice({
       })
 
       .addCase(getUser.fulfilled, (state, action) => {
+        if (!action.payload) return
+        const { user } = action.payload
         state.otherUser = action.payload.user
+        sessionStorage.setItem('otherUser', JSON.stringify(user))
       })
       .addCase(getUser.rejected, (state, action) => {
         state.error = action.error.message
@@ -335,7 +383,11 @@ const userSlice = createSlice({
         state.error = action.error.message
       })
 
+      .addCase(getNotifications.pending, (state) => {
+        state.notificationsStatus = 'loading'
+      })
       .addCase(getNotifications.fulfilled, (state, action: PayloadAction<PaginationNotification>) => {
+        state.notificationsStatus = 'success'
         const { notifications, currentPage, numberOfPages } = action.payload
         const idsSet = new Set(state.notifications.map(item => item._id))
         const uniqueNotifications = notifications.filter(item => !idsSet.has(item._id))
@@ -344,6 +396,52 @@ const userSlice = createSlice({
         state.notificationNumberOfPages = numberOfPages
       })
       .addCase(getNotifications.rejected, (state, action) => {
+        state.notificationsStatus = 'failed'
+        state.error = action.error.message
+      })
+
+      // * user to user blocking
+      .addCase(userToUserBlock.pending, (state) => {
+        state.userBlockedAccountsStatus = 'loading'
+      })
+      .addCase(userToUserBlock.fulfilled, (state, action: PayloadAction<{ blockedUser: UserBlockedAccountsType }>) => {
+        if (!action.payload) return
+        state.userBlockedAccountsStatus = 'success'
+        state.userBlockedAccounts.push(action.payload.blockedUser)
+      })
+      .addCase(userToUserBlock.rejected, (state, action) => {
+        state.userBlockedAccountsStatus = 'failed'
+        state.error = action.error.message
+      })
+
+      .addCase(userToUserUnblock.pending, (state) => {
+        state.userBlockedAccountsStatus = 'loading'
+      })
+      .addCase(userToUserUnblock.fulfilled, (state, action: PayloadAction<{ blockedUser: UserBlockedAccountsType }>) => {
+        if (!action.payload) return
+        state.userBlockedAccountsStatus = 'success'
+        const { blockedUser } = action.payload
+        state.userBlockedAccounts = state.userBlockedAccounts.filter(item => item.blockedUserId !== blockedUser.blockedUserId)
+      })
+      .addCase(userToUserUnblock.rejected, (state, action) => {
+        state.userBlockedAccountsStatus = 'failed'
+        state.error = action.error.message
+      })
+
+      .addCase(getUserToUserBlockedAccounts.pending, (state) => {
+        state.userBlockedAccountsStatus = 'loading'
+      })
+      .addCase(getUserToUserBlockedAccounts.fulfilled, (state, action: PayloadAction<PaginationUserBlockedAccounts>) => {
+        state.userBlockedAccountsStatus = 'success'
+        const { blockedUsers, numberOfPages, currentPage } = action.payload
+        const existingUserIds = new Set(state.userBlockedAccounts.map(user => user.blockedUserId))
+        const newUsers = blockedUsers.filter(user => !existingUserIds.has(user.blockedUserId))
+        state.userBlockedAccounts = [...state.userBlockedAccounts, ...newUsers]
+        state.userBlockedAccountsCurrentPage = currentPage
+        state.userBlockedAccountNumberOfPages = numberOfPages
+      })
+      .addCase(getUserToUserBlockedAccounts.rejected, (state, action) => {
+        state.userBlockedAccountsStatus = 'failed'
         state.error = action.error.message
       })
   }
@@ -390,10 +488,17 @@ export const selectUserNotificationSocketId = (state: RootState) => state.user.n
 export const selectUserNotifications = (state: RootState) => state.user.notifications
 export const selectUserNotificationNumberOfPages = (state: RootState) => state.user.notificationNumberOfPages
 export const selectUserNotificationPage = (state: RootState) => state.user.notificationCurrentPages
+export const selectUserNotificationsStatus = (state: RootState) => state.user.notificationsStatus
 export const selectUserUnreadNotificationsCount = (state: RootState) => state.user.unreadNotificationsCount
 
 export const selectUserNavOpen = (state: RootState) => state.user.userNavOpen
 
+export const selectUserBlockedAccounts = (state: RootState) => state.user.userBlockedAccounts
+export const selectUserBlockedAccountsNumberOfPages = (state: RootState) => state.user.userBlockedAccountNumberOfPages
+export const selectUserBlockedAccountsCurrentPage = (state: RootState) => state.user.userBlockedAccountsCurrentPage
+export const selectUserBlockedAccountsStatus = (state: RootState) => state.user.userBlockedAccountsStatus
+
+export const selectUserCurrentUserFollowingIds = (state: RootState) => state.user.currentUserFollowingIds
 
 export const {
   clearFollowers,
@@ -404,7 +509,9 @@ export const {
   setNotifications,
   setSingleNotification,
   setUserNavOpen,
-  sortFollowingUser
+  sortFollowingUser,
+  setCurrentUserFollowingIds,
+  setUserSliceToInitialState
 } = userSlice.actions
 
 export default userSlice.reducer

@@ -37,13 +37,13 @@ const LiveUserCard = ({ userId, name, image, handleViewLive }: Props) => {
 
   return (
     <div className=" max-w-sm w-52 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
-      <div className="flex flex-col items-center pb-10">
+      <div className="flex flex-col items-center justify-center py-5">
         <div className='p-2' >
           <Avatar
             image={image}
             alt={name}
             userId={userId}
-            size={24}
+            size={75}
           />
         </div>
         <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">{name}</h5>

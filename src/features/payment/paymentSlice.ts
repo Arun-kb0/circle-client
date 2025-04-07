@@ -4,10 +4,12 @@ import {
   PaginationTransactionsFiltered,
   StateType, SubscriptionPagination, SubscriptionsType,
   SubscriptionWithUserType,
-  TransactionPagination, TransactionType, TransactionWithUsersType, UserSubscriptionPlanType, WalletType
+  TransactionPagination, TransactionType, TransactionWithUsersType,
+  UserSubscriptionPlanType, WalletType
 } from "../../constants/types"
 import {
- getFilteredSubscriptions, getFilteredTransactions, getSubscriptions, getTransactions,
+  getFilteredSubscriptions, getFilteredTransactions,
+  getSubscriptions, getTransactions,
   getUserSubscriptionPlan,
   getUserWallet, setUserSubscriptionPlan, subscribeWithWallet
 } from "./paymentApi"
@@ -38,7 +40,7 @@ type PaymentState = {
   userSubscriptionPlan: UserSubscriptionPlanType | null
 }
 
-const initialState: PaymentState = {
+const getInitialState = ():PaymentState =>  ({
   subscriptions: [],
   subscriptionsNumberOfPage: 0,
   subscriptionsCurrentPage: 0,
@@ -60,12 +62,13 @@ const initialState: PaymentState = {
   transactionsFilteredCurrentPge: 0,
   transactionsFilteredStatus: "failed",
   userSubscriptionPlan: null
-}
+})
 
 const paymentSlice = createSlice({
   name: 'payment',
-  initialState,
+  initialState: getInitialState(),
   reducers: {
+    setPaymentSliceToInitialState: () => getInitialState(),
 
     resetPaymentStatus: (state) => {
       state.paymentStatus = 'idle'
@@ -226,7 +229,8 @@ export const selectPaymentUserSubscriptionPlan = (state: RootState) => state.pay
 
 export const {
   resetPaymentStatus,
-  clearUserSubscriptionPlan
+  clearUserSubscriptionPlan,
+  setPaymentSliceToInitialState
 } = paymentSlice.actions
 
 

@@ -65,7 +65,6 @@ const UserNav = ({  }: Props) => {
     {
       handler: async () => {
         await dispatch(logout()).unwrap()
-        navigate('/login')
       },
       name: 'logout'
     }
@@ -106,8 +105,8 @@ const UserNav = ({  }: Props) => {
 
   return (
     <nav className="fixed top-0 z-50 w-full nav-bg-color">
-      <div className="px-3 py-3 lg:px-5 lg:pl-3">
-        <div className="flex items-center justify-between">
+      <div className="sm:px-3 px-1 py-3 lg:px-5 lg:pl-3">
+        <div className="flex items-center sm:justify-between justify-start">
 
           <div className="flex items-center">
             <button onClick={handleUserNavOpen} className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
@@ -151,7 +150,7 @@ const UserNav = ({  }: Props) => {
               }
             </div>
 
-            <div className="flex items-center ms-3 relative">
+            <div className="flex items-center sm:ms-3 relative">
               <div>
                 <button onClick={() => setNotificationDropDown(prev => !prev)} className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
                   <SpringButton>
@@ -174,7 +173,7 @@ const UserNav = ({  }: Props) => {
                   <SpringButton>
                     <BadgeButton
                       count={unreadMsgNotificationCount}
-                      icon={<AiOutlineMessage className='text-gray-200 ' size={23} />}
+                      icon={<AiOutlineMessage className='text-gray-200' size={23} />}
                     />
                   </SpringButton>
                 </Link>
@@ -190,6 +189,7 @@ const UserNav = ({  }: Props) => {
                       image={user?.image?.url}
                       alt={user?.name}
                       disableNavigation={true}
+                      size={32}
                     />
                   </SpringButton>
                 </button>

@@ -28,7 +28,10 @@ const FollowingPage = ({ userId }: Props) => {
   const userNavOpen = useSelector(selectUserNavOpen)
   
   const [hasMore, setHasMore] = useState<boolean>(() => page < numberOfPages);
-  const [isUserProfile] = useState(location.pathname === '/profile')
+  const [isUserProfile] = useState(() => {
+    return location.pathname === '/profile' || location.pathname === '/user-profile'
+    ? true : false
+  })
 
   useEffect(() => {
     if (followingUsers.length === 0) {
@@ -43,11 +46,14 @@ const FollowingPage = ({ userId }: Props) => {
     setHasMore(newPage < numberOfPages)
   }
 
+  useEffect(() => {
+    console.log('isUserProfile following page ',isUserProfile)
+  },[isUserProfile])
 
   return (
     <main className='main-section justify-center relative overflow-y-auto' >
-      <div className={`p-4 ${userNavOpen ? 'sm:ml-64 ' : ''}`}>
-        <div className="p-4 mt-14">
+      <div className={`p-4 ${userNavOpen && !isUserProfile ? 'sm:ml-64 ' : ''}`}>
+        <div className={`${isUserProfile ? "" : "p-4 mt-14"}`}>
 
           {!isUserProfile && <PageTitle firstWord='' secondWord='Following' />}
 

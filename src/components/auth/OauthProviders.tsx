@@ -30,7 +30,7 @@ const OauthProviders = () => {
         <span className='bg-gray-400 h-0.5 w-full rounded'></span>
       </div>
 
-      <div className='flex justify-start items-center '>
+      <div className='flex justify-center items-center '>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <GoogleLogin
             type='icon'

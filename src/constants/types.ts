@@ -343,3 +343,19 @@ export type UserSubscriptionPlanType = {
   createdAt: string
   updatedAt: string
 }
+
+export type UserBlockedAccountsType = {
+  _id: string
+  blockedUserId: string
+  blockerUserId: string
+  createdAt: string
+  updatedAt: string
+  blockedUserName: string
+  blockedUserImage: string
+}
+
+export type PaginationUserBlockedAccounts = {
+  numberOfPages: number,
+  currentPage: number,
+  blockedUsers: UserBlockedAccountsType[],
+}

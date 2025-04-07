@@ -68,7 +68,8 @@ const ProfilePosts = ({ userId }: Props) => {
         next={loadMorePosts}
         hasMore={hasMore}
         loader={
-          <div className="p-4 flex flex-wrap justify-start gap-2  mx-auto">
+          status === 'loading' &&
+          <div className="p-4 flex flex-wrap justify-center gap-2  mx-auto">
             {Array.from({ length: 5 }).map((_, index) => (
               <PostSkeltonLoader
                 key={index}
@@ -80,7 +81,7 @@ const ProfilePosts = ({ userId }: Props) => {
         height={window.innerHeight - 240}
       >
         {status === 'success' &&
-          <div className="p-4 flex flex-wrap justify-start gap-2">
+          <div className="p-4 flex flex-wrap justify-center gap-2">
             {posts.map((post) => (
               post.status === 'active' &&
               <PostCard

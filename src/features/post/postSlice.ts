@@ -15,7 +15,8 @@ import {
 import { RootState } from '../../app/store'
 import {
   CountByDataType, FeedCountsType,
-  LineChartDataType, PaginationReportFiltered, PaginationSavedPost, ReportAdminType, ReportType, SavedType, StateType,
+  LineChartDataType, PaginationReportFiltered, PaginationSavedPost,
+  ReportAdminType, ReportType, SavedType, StateType,
   UserType
 } from '../../constants/types'
 
@@ -88,7 +89,7 @@ type PostStateType = {
   searchStatus: StateType
 }
 
-const initialState: PostStateType = {
+const getInitialState = ():PostStateType => ({
   selectedPost: null,
   posts: [],
   postNumberOfPages: 5,
@@ -150,13 +151,14 @@ const initialState: PostStateType = {
   searchNumberOfPages: 0,
   searchCurrentPage: 0,
   searchStatus: 'idle',
-}
+})
 
 const postSlice = createSlice({
   name: 'post',
-  initialState,
+  initialState: getInitialState(),
   reducers: {
-
+    setPostSliceToInitialState : () => getInitialState(),
+    
     selectPost: (state, action: PayloadAction<PostType>) => {
       state.selectedPost = action.payload
     },
@@ -226,13 +228,12 @@ const postSlice = createSlice({
       .addCase(getUserCreatedPosts.fulfilled, (state, action: PayloadAction<PostPaginationRes>) => {
         state.userCreatedPostStatus = 'success'
         const { posts, numberOfPages, currentPage, likes } = action.payload
-        const postIds = new Set(posts.map(post => post._id))
-        const updatedPosts = state.userCreatedPosts.filter(post => !postIds.has(post._id))
-        state.userCreatedPosts = [...posts, ...updatedPosts]
+        const postIds = new Set(state.userCreatedPosts?.map(post => post._id))
+        const newPosts = posts.filter(post => !postIds.has(post._id))
+        state.userCreatedPosts = [...state.userCreatedPosts, ...newPosts]
         state.userCreatedPostsNumberOfPages = numberOfPages
         state.userCreatedPostsCurrentPage = currentPage
         state.likes = [...state.likes, ...likes]
-
       })
       .addCase(getUserCreatedPosts.rejected, (state, action) => {
         state.userCreatedPostStatus = 'failed'
@@ -290,7 +291,7 @@ const postSlice = createSlice({
         state.postStatus = 'success'
         const { postId } = action.payload
         state.posts = state.posts.filter(post => post._id !== postId)
-
+        state.userCreatedPosts = state.userCreatedPosts.filter(post => post._id !== postId)
       })
       .addCase(deletePost.rejected, (state, action) => {
         state.postStatus = 'failed'
@@ -615,7 +616,8 @@ export const {
   clearUserCreatedPosts,
   setCommentReplayCount,
   setSharePostModelOpen,
-  clearSearchResults
+  clearSearchResults,
+  setPostSliceToInitialState
 } = postSlice.actions
 
 export default postSlice.reducer

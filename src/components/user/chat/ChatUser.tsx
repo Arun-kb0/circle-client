@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selectAuthUser } from '../../../features/auth/authSlice'
 import { AppDispatch } from '../../../app/store'
 import { createChatRoomId, joinRoom } from '../../../features/chat/chatApi'
-import { selectUserOnlineUsers } from '../../../features/user/userSlice'
+import { selectUserBlockedAccounts, selectUserOnlineUsers } from '../../../features/user/userSlice'
 import Avatar from '../../basic/Avatar'
 import { selectChatLastMessages } from '../../../features/chat/chatSlice'
 import moment from 'moment'
@@ -21,9 +21,13 @@ const ChatUser = ({ name, image, userId }: Props) => {
   const user = useSelector(selectAuthUser)
   const onlineUsers = useSelector(selectUserOnlineUsers)
   const lastMessages = useSelector(selectChatLastMessages)
+  const userBlockedAccounts = useSelector(selectUserBlockedAccounts)
 
   const [isOnline, setIsOnline] = useState<boolean>(() => {
     return Boolean(onlineUsers.find(id => id === userId))
+  })
+  const [isBlockedAccountUser] = useState<boolean>(() => {
+    return Boolean(userBlockedAccounts.find(item => item.blockedUserId === userId))
   })
   const [userLastMessage, setUserLastMessage] = useState<MessageType | null>(null)
 
@@ -50,6 +54,8 @@ const ChatUser = ({ name, image, userId }: Props) => {
     }
   }
 
+  if (isBlockedAccountUser) return (<></>)
+  
   return (
     <section className="flex flex-wrap sm:text-sm text-xs items-center justify-center">
       <div className="flex-shrink-0 justify-center">

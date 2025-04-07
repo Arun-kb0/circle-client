@@ -3,11 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+
   *,
-    ::before,
-    ::after {
-      font-family: 'Poppins', sans-serif;
-    }
+  ::before,
+  ::after {
+    font-family: 'Poppins', sans-serif;
+  }
 }
 
 @layer components {
@@ -51,9 +52,10 @@
     align-items: center;
   }
 
-  .nav-bg-color{
-    @apply  backdrop-blur-[20px];
+  .nav-bg-color {
+    @apply backdrop-blur-[20px];
     background-color: rgba(255, 255, 255, 0.074);
+    /* Subtle gray gradient */
   }
 
   /* * normal styles */
@@ -61,6 +63,40 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* * side bar */
+
+  .sidebar-item {
+    @apply flex w-full items-center p-3 rounded-lg transition-all duration-200 ease-in-out;
+  }
+
+  .sidebar-item-active {
+    @apply bg-gray-700/90 text-white shadow-lg;
+  }
+
+  .sidebar-item-inactive {
+    @apply hover:bg-gray-600/80 hover:text-gray-200 shadow-md;
+  }
+
+  .sidebar-item-icon {
+    @apply text-gray-200 transition-colors duration-300 ease-in-out;
+  }
+
+  .sidebar-item-text {
+    @apply ms-4 text-gray-200 font-semibold;
+  }
+
+
+  /* * search bar */
+  .search-bar-input {
+    @apply block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-full bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition ease-in-out duration-200 transform hover:scale-105 focus:scale-105
+  }
+
+  .search-bar-btn {
+    @apply text-white absolute right-2.5 bottom-2.5 bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition ease-in-out duration-200 transform hover:scale-110
+  }
+
+
 
   .scrollbar-hide {
     -ms-overflow-style: none;
@@ -76,8 +112,7 @@
       -15px -15px 30px rgb(18, 17, 17);
     /* background: #212121; */
     /* box-shadow: 15px 15px 30px rgb(25, 25, 25),
-      -15px -15px 30px rgb(60, 60, 60); */
+    -15px -15px 30px rgb(60, 60, 60); */
   }
-
 
 }

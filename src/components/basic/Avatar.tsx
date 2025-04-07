@@ -34,10 +34,10 @@ const Avatar = ({ image, alt, userId, size = 34, disableNavigation = false }: Pr
 
   return (
     <SpringButton>
-      <button onClick={handleProfileNav} className='p-1'>
+      <button onClick={handleProfileNav} className='p-1 rounded-full overflow-hidden flex items-center justify-center'>
         {image
           ? <img
-            className={`rounded-full object-cover`}
+            className="rounded-full object-cover"
             src={image}
             alt={alt}
             style={{ width: size, height: size, borderRadius: '50%' }}

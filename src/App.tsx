@@ -12,12 +12,17 @@ import {
   setIncomingCallAndSignal, setIsInChat, setRoomId
 } from './features/chat/chatSlice'
 import { receiveMessage } from './features/chat/chatApi'
-import { selectAuthFriendsRoomId, selectAuthShowNavbar, selectAuthUser, setShowNavbar } from './features/auth/authSlice'
+import {
+  selectAuthAuthStatus,
+  selectAuthFriendsRoomId,
+  selectAuthShowNavbar, selectAuthUser,
+  setShowNavbar
+} from './features/auth/authSlice'
 import socketEvents from './constants/socketEvents'
 import SocketIoClient from './config/SocketIoClient'
 import { UserRoomNotificationType } from './constants/types'
 import { setCallNotificationState } from './features/notification/notificationSlice'
-import { getFollowers } from './features/user/userApi'
+import { getFollowers, getUserToUserBlockedAccounts } from './features/user/userApi'
 import { Socket } from 'socket.io-client'
 import {
   setNotificationSocketId, setOnlineUsers, setSingleNotification,
@@ -26,6 +31,7 @@ import {
 import { getSubscriptions } from './features/payment/paymentApi'
 import UserRoutes from './routes/UserRoutes'
 import AdminRoutes from './routes/AdminRoutes'
+import LoadingScreen from './pages/LoadingScreen'
 
 function App() {
   const navigate = useNavigate()
@@ -34,6 +40,7 @@ function App() {
   const user = useSelector(selectAuthUser)
   const friendsRoomId = useSelector(selectAuthFriendsRoomId)
   const showNavbar = useSelector(selectAuthShowNavbar)
+  const authStatus = useSelector(selectAuthAuthStatus)
 
   const [socket, setSocket] = useState<Socket | null>(null)
   const [notificationSocket, setNotificationSocket] = useState<Socket | null>(null)
@@ -49,6 +56,7 @@ function App() {
   useEffect(() => {
     if (!user) return
     dispatch(getSubscriptions(1))
+    dispatch(getUserToUserBlockedAccounts(1))
     const newSocket = SocketIoClient.getInstance(user._id)
     setSocket(newSocket)
     const newNotificationSocket = SocketIoClient.getNotificationInstance(user._id)
@@ -125,13 +133,6 @@ function App() {
       console.log(data)
     })
 
-    // ! check this method and implemnt call notification
-    // socket?.on(socketEvents.callUserConnected, (data) => {
-    //   toast('new call')
-    //   dispatch(callUserConnection(data))
-    //   console.log(data)
-    // })
-
     return () => {
       socket?.off(socketEvents.receiveMessage)
       socket?.off(socketEvents.callUserConnected)
@@ -196,6 +197,7 @@ function App() {
     }
   }, [socket])
 
+  if (authStatus === 'bootstrapping') return (<LoadingScreen />)
 
   return (
     <>

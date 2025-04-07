@@ -8,7 +8,8 @@ type Props = {
 const RadioInputs = ({ data, handleInputClick }: Props) => {
 
   return (
-    <div className="flex flex-wrap">
+    <div className="flex justify-center space-y-1">
+      <div className='space-y-1'>
       {data.map(({ id, name, label, value }, index) => (
         <div key={id}  className="flex items-center me-4">
           <input
@@ -29,6 +30,7 @@ const RadioInputs = ({ data, handleInputClick }: Props) => {
         </div>
 
       ))}
+      </div>
     </div>
 
   )
