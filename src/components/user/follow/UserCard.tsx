@@ -1,10 +1,9 @@
 import { useState } from 'react'
-import { MdMoreHoriz } from "react-icons/md";
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../../app/store';
 import { followUser, unFollow, userToUserUnblock } from '../../../features/user/userApi';
 import { useLocation } from 'react-router-dom';
-import { selectUserBlockedAccounts, selectUserFollowing } from '../../../features/user/userSlice';
+import { selectUserBlockedAccounts, selectUserCurrentUserFollowingIds } from '../../../features/user/userSlice';
 import Avatar from '../../basic/Avatar';
 import { selectAuthUser } from '../../../features/auth/authSlice';
 
@@ -18,14 +17,14 @@ type Props = {
 const UserCard = ({ userId, name, image, componentType }: Props) => {
   const dispatch = useDispatch<AppDispatch>()
   const location = useLocation()
-  const followingUsers = useSelector(selectUserFollowing)
+  const followingUsersIds = useSelector(selectUserCurrentUserFollowingIds)
   const userBlockedAccounts = useSelector(selectUserBlockedAccounts)
   const currentUser = useSelector(selectAuthUser)
 
   const [isFollowing] = useState<boolean>(() => {
     if (location.pathname === '/follow-people') return false
     if (location.pathname === '/following') return true
-    return Boolean(followingUsers.findIndex(following => following._id === userId))
+    return Boolean(followingUsersIds.includes(userId))
   })
 
   const handleFollow = () => { dispatch(followUser(userId)) }

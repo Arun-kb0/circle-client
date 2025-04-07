@@ -65,6 +65,8 @@ type UserStateType = {
   userBlockedAccountNumberOfPages: number
   userBlockedAccountsCurrentPage: number
   userBlockedAccountsStatus: StateType
+
+  currentUserFollowingIds: string[]
 }
 
 const initialState: UserStateType = {
@@ -109,7 +111,8 @@ const initialState: UserStateType = {
   userBlockedAccounts: [],
   userBlockedAccountNumberOfPages: 0,
   userBlockedAccountsCurrentPage: 0,
-  userBlockedAccountsStatus: "idle"
+  userBlockedAccountsStatus: "idle",
+  currentUserFollowingIds: []
 }
 
 const userSlice = createSlice({
@@ -163,6 +166,14 @@ const userSlice = createSlice({
         state.followingPeople = state.followingPeople.filter(item => item._id !== userId);
         state.followingPeople.unshift(foundUser);
       }
+    },
+
+    setCurrentUserFollowingIds: (state, action: PayloadAction<PaginationUsers>) => {
+      const { users } = action.payload
+      console.log('current user following ids ')
+      console.log(users)
+      const userIds = users.map(item => item._id)
+      state.currentUserFollowingIds = Array.from(new Set([...state.currentUserFollowingIds, ...userIds]))
     }
 
   },
@@ -214,6 +225,7 @@ const userSlice = createSlice({
         const updatedUsers = state.suggestedPeople.filter(item => item._id !== user._id)
         state.suggestedPeople = updatedUsers
         state.followingPeople.unshift(user)
+        state.currentUserFollowingIds = Array.from(new Set([...state.currentUserFollowingIds, user._id]))
       })
       .addCase(followUser.rejected, (state, action) => {
         state.error = action.error.message
@@ -224,6 +236,7 @@ const userSlice = createSlice({
         const updatedUsers = state.followingPeople.filter(item => item._id !== user._id)
         state.followingPeople = updatedUsers
         state.suggestedPeople.unshift(user)
+        state.currentUserFollowingIds = state.currentUserFollowingIds.filter(item => item !== user._id)
       })
       .addCase(unFollow.rejected, (state, action) => {
         state.error = action.error.message
@@ -271,11 +284,11 @@ const userSlice = createSlice({
         const { users, numberOfPages, currentPage, currentUser } = action.payload
         const existingUserIds = new Set(state.suggestedPeople.map(user => user._id));
         existingUserIds.add(currentUser._id)
-        state.followers.map(user => existingUserIds.add(user._id))
+        state.currentUserFollowingIds.map(id => existingUserIds.add(id))
         const newUsers = users.filter(user => !existingUserIds.has(user._id));
         state.suggestedPeople.push(...newUsers)
         state.suggestedNumberOfPages = numberOfPages
-        state.suggestedCurrentPage = currentPage
+        state.suggestedCurrentPage = currentPage;
       })
       .addCase(getSuggestedPeople.rejected, (state, action) => {
         state.suggestedPeopleStatus = 'failed'
@@ -461,6 +474,7 @@ export const selectUserBlockedAccountsNumberOfPages = (state: RootState) => stat
 export const selectUserBlockedAccountsCurrentPage = (state: RootState) => state.user.userBlockedAccountsCurrentPage
 export const selectUserBlockedAccountsStatus = (state: RootState) => state.user.userBlockedAccountsStatus
 
+export const selectUserCurrentUserFollowingIds = (state: RootState) => state.user.currentUserFollowingIds
 
 export const {
   clearFollowers,
@@ -471,7 +485,8 @@ export const {
   setNotifications,
   setSingleNotification,
   setUserNavOpen,
-  sortFollowingUser
+  sortFollowingUser,
+  setCurrentUserFollowingIds
 } = userSlice.actions
 
 export default userSlice.reducer
