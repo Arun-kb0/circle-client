@@ -61,26 +61,8 @@ type AuthStateType = {
   friendsRoomId: string | null
   showNavbar: boolean
   lastVisitedRoute: string | undefined
-  // ! use this state with login cases in extra reducers
   authStatus: 'bootstrapping' | 'authenticated' | 'unauthenticated' 
 }
-
-// const initialState: AuthStateType = {
-//   otpId: undefined,
-//   mailToVerify: undefined,
-//   user: undefined,
-//   accessToken: undefined,
-//   status: 'idle',
-//   error: undefined,
-
-//   resetPwd: undefined,
-//   resetPwdEmail: undefined,
-//   resetPwdOtpId: undefined,
-//   resetPwdStatus: 'idle',
-//   friendsRoomId: null,
-//   showNavbar: false,
-//   lastVisitedRoute: localStorage.getItem('lastVisitedRoute') || undefined
-// }
 
 const getInitialState = (): AuthStateType => ({
   otpId: undefined,
@@ -336,7 +318,8 @@ export const selectAuthAuthStatus = (state: RootState) => state.auth.authStatus
 export const {
   setAuthUser,
   setAuthAccessToken,
-  setShowNavbar
+  setShowNavbar,
+  setAuthStatus
 } = authSlice.actions
 
 export default authSlice.reducer

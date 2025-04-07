@@ -92,7 +92,6 @@ const UserDetails = ({ user }: Props) => {
   }
 
   useEffect(() => {
-    dispatch(resetPaymentStatus())
     setIsFollowing(Boolean(currentUserFollowingIds.includes(user._id)))
   }, [])
 
@@ -103,6 +102,7 @@ const UserDetails = ({ user }: Props) => {
     } else if (paymentStatus === 'failed') {
       toast(<PaymentFailed />)
     }
+    dispatch(resetPaymentStatus())
   }, [paymentStatus])
 
   const handleRadioBtnClick = (value: string) => {

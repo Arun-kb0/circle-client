@@ -4,10 +4,12 @@ import {
   PaginationTransactionsFiltered,
   StateType, SubscriptionPagination, SubscriptionsType,
   SubscriptionWithUserType,
-  TransactionPagination, TransactionType, TransactionWithUsersType, UserSubscriptionPlanType, WalletType
+  TransactionPagination, TransactionType, TransactionWithUsersType,
+  UserSubscriptionPlanType, WalletType
 } from "../../constants/types"
 import {
- getFilteredSubscriptions, getFilteredTransactions, getSubscriptions, getTransactions,
+  getFilteredSubscriptions, getFilteredTransactions,
+  getSubscriptions, getTransactions,
   getUserSubscriptionPlan,
   getUserWallet, setUserSubscriptionPlan, subscribeWithWallet
 } from "./paymentApi"

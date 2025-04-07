@@ -1,4 +1,4 @@
-import  { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PaymentFailed from '../../components/basic/PaymentFailed'
 
@@ -16,15 +16,9 @@ const PaymentFailedPage = () => {
   }, [])
 
   return (
-    <main className='main-section justify-center relative overflow-hidden ' >
-      <div className="p-4 sm:ml-64" >
-        <div className="p-4 mt-14 flex justify-center items-center">
-
-          <PaymentFailed />
-
-        </div>
-      </div>
-    </main>
+    <div className='main-section flex justify-center items-center'>
+      <PaymentFailed />
+    </div>
   )
 }
 

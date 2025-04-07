@@ -17,6 +17,16 @@ import {
 import { RootState } from "../../app/store"
 
 
+const getOtherUserFromSession = (): UserType | undefined => {
+  try {
+    const user = sessionStorage.getItem('otherUser')
+    if (!user) return undefined
+    return JSON.parse(user)
+  } catch (error) {
+    return undefined
+  }
+}
+
 type UserStateType = {
   users: UserType[] | []
   usersCurrentPage: number | undefined
@@ -69,52 +79,6 @@ type UserStateType = {
   currentUserFollowingIds: string[]
 }
 
-const initialState: UserStateType = {
-  users: [],
-  usersCurrentPage: undefined,
-  usersNumberOfPages: undefined,
-  usersStatus: 'idle',
-  blockStatus: 'idle',
-  followers: [],
-  followStatus: "idle",
-  suggestedPeople: [],
-  suggestedPeopleStatus: "idle",
-  followNumberOfPages: 0,
-  followCurrentPage: 0,
-  suggestedNumberOfPages: 0,
-  suggestedCurrentPage: 0,
-  error: undefined,
-
-  followingPeople: [],
-  followingPeopleStatus: "loading",
-  followingNumberOfPages: 0,
-  followingCurrentPage: 0,
-  onlineUsers: [],
-  socketId: undefined,
-  liveUsers: [],
-
-  totalUsers: 0,
-  totalFemaleUsers: 0,
-  totalMaleUsers: 0,
-  totalOtherUsers: 0,
-  pieChartData: [],
-  userLineChartData: null,
-  notificationSocketId: undefined,
-
-  notifications: [],
-  notificationNumberOfPages: 0,
-  notificationCurrentPages: 0,
-
-  unreadNotificationsCount: 0,
-  userNavOpen: true,
-
-  userBlockedAccounts: [],
-  userBlockedAccountNumberOfPages: 0,
-  userBlockedAccountsCurrentPage: 0,
-  userBlockedAccountsStatus: "idle",
-  currentUserFollowingIds: []
-}
-
 const getInitialState = (): UserStateType => ({
   users: [],
   usersCurrentPage: undefined,
@@ -158,7 +122,9 @@ const getInitialState = (): UserStateType => ({
   userBlockedAccountNumberOfPages: 0,
   userBlockedAccountsCurrentPage: 0,
   userBlockedAccountsStatus: "idle",
-  currentUserFollowingIds: []
+  currentUserFollowingIds: [],
+
+  otherUser: getOtherUserFromSession()
 })
 
 const userSlice = createSlice({
@@ -343,7 +309,10 @@ const userSlice = createSlice({
       })
 
       .addCase(getUser.fulfilled, (state, action) => {
+        if (!action.payload) return
+        const { user } = action.payload
         state.otherUser = action.payload.user
+        sessionStorage.setItem('otherUser', JSON.stringify(user))
       })
       .addCase(getUser.rejected, (state, action) => {
         state.error = action.error.message
