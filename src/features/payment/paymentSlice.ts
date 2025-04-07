@@ -38,7 +38,7 @@ type PaymentState = {
   userSubscriptionPlan: UserSubscriptionPlanType | null
 }
 
-const initialState: PaymentState = {
+const getInitialState = ():PaymentState =>  ({
   subscriptions: [],
   subscriptionsNumberOfPage: 0,
   subscriptionsCurrentPage: 0,
@@ -60,12 +60,13 @@ const initialState: PaymentState = {
   transactionsFilteredCurrentPge: 0,
   transactionsFilteredStatus: "failed",
   userSubscriptionPlan: null
-}
+})
 
 const paymentSlice = createSlice({
   name: 'payment',
-  initialState,
+  initialState: getInitialState(),
   reducers: {
+    setPaymentSliceToInitialState: () => getInitialState(),
 
     resetPaymentStatus: (state) => {
       state.paymentStatus = 'idle'
@@ -226,7 +227,8 @@ export const selectPaymentUserSubscriptionPlan = (state: RootState) => state.pay
 
 export const {
   resetPaymentStatus,
-  clearUserSubscriptionPlan
+  clearUserSubscriptionPlan,
+  setPaymentSliceToInitialState
 } = paymentSlice.actions
 
 

@@ -15,7 +15,8 @@ import {
 import { RootState } from '../../app/store'
 import {
   CountByDataType, FeedCountsType,
-  LineChartDataType, PaginationReportFiltered, PaginationSavedPost, ReportAdminType, ReportType, SavedType, StateType,
+  LineChartDataType, PaginationReportFiltered, PaginationSavedPost,
+  ReportAdminType, ReportType, SavedType, StateType,
   UserType
 } from '../../constants/types'
 
@@ -88,7 +89,7 @@ type PostStateType = {
   searchStatus: StateType
 }
 
-const initialState: PostStateType = {
+const getInitialState = ():PostStateType => ({
   selectedPost: null,
   posts: [],
   postNumberOfPages: 5,
@@ -150,13 +151,14 @@ const initialState: PostStateType = {
   searchNumberOfPages: 0,
   searchCurrentPage: 0,
   searchStatus: 'idle',
-}
+})
 
 const postSlice = createSlice({
   name: 'post',
-  initialState,
+  initialState: getInitialState(),
   reducers: {
-
+    setPostSliceToInitialState : () => getInitialState(),
+    
     selectPost: (state, action: PayloadAction<PostType>) => {
       state.selectedPost = action.payload
     },
@@ -614,7 +616,8 @@ export const {
   clearUserCreatedPosts,
   setCommentReplayCount,
   setSharePostModelOpen,
-  clearSearchResults
+  clearSearchResults,
+  setPostSliceToInitialState
 } = postSlice.actions
 
 export default postSlice.reducer

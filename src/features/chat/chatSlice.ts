@@ -30,7 +30,7 @@ type ChatStateType = {
 }
 
 
-const initialState: ChatStateType = {
+const getInitialState = ():ChatStateType => ({
   roomId: null,
   chatUser: null,
   status: "idle",
@@ -52,12 +52,13 @@ const initialState: ChatStateType = {
   callModelType: undefined,
 
   lastMessages: []
-}
+})
 
 const chatSlice = createSlice({
   name: 'chat',
-  initialState,
+  initialState: getInitialState(),
   reducers: {
+    setChatSliceToInitialState: () => getInitialState(),
 
     setRoomId: (state, action: PayloadAction<{ roomId: string, user: ChatUserType }>) => {
       const { roomId, user } = action.payload
@@ -262,6 +263,7 @@ export const {
   setCallRoomId,
   setAllChatRooms,
   setIncomingCallAndSignal,
+  setChatSliceToInitialState
 } = chatSlice.actions
 
 export default chatSlice.reducer

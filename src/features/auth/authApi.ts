@@ -5,6 +5,10 @@ import { toast } from "react-toastify"
 import { UserType } from "../../constants/types"
 import { RootState } from "../../app/store"
 import SocketIoClient from "../../config/SocketIoClient"
+import { setUserSliceToInitialState } from "../user/userSlice"
+import { setPaymentSliceToInitialState } from "../payment/paymentSlice"
+import { setPostSliceToInitialState } from "../post/postSlice"
+import { setChatSliceToInitialState } from "../chat/chatSlice"
 
 export const googleOauthLogin = createAsyncThunk('/google-oauth-login', async (token: string) => {
   try {
@@ -115,13 +119,20 @@ export const refresh = createAsyncThunk('/auth/refresh', async () => {
   }
 })
 
-export const logout = createAsyncThunk('/auth/logout', async (_, { }) => {
+export const logout = createAsyncThunk('/auth/logout', async (_, {dispatch}) => {
   try {
     SocketIoClient.disconnect()
     SocketIoClient.disconnectNotification()
     const res = await axiosInstance.get('/auth/logout', {
       withCredentials: true
     })
+    // * clearing slices
+    dispatch(setUserSliceToInitialState())
+    dispatch(setUserSliceToInitialState())
+    dispatch(setChatSliceToInitialState())
+    dispatch(setPaymentSliceToInitialState())
+    dispatch(setPostSliceToInitialState())
+
     localStorage.clear()
     sessionStorage.clear()
     // dispatch(resetStore())
