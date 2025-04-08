@@ -93,8 +93,9 @@ export const clearChat = createAsyncThunk('/chat/clear-chat', async (_, { dispat
 type JoinRoomArgsType = { senderId: string, receiverId: string, chatUser: ChatUserType }
 export const joinRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsType) => (dispatch: AppDispatch) => {
   try {
+    SocketIoClient.connect()
     const socket = SocketIoClient.getInstance()
-    if (!socket?.connected) socket?.connect()
+    // if (!socket?.connected) socket?.connect()
     const roomId = senderId < receiverId
       ? `${senderId}-${receiverId}`
       : `${receiverId}-${senderId}`
