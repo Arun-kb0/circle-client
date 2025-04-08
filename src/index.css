@@ -75,7 +75,7 @@
   }
 
   .sidebar-item-inactive {
-    @apply hover:bg-gray-600/80 hover:text-gray-200 shadow-md;
+    @apply hover:bg-gray-600/80 hover:text-gray-200;
   }
 
   .sidebar-item-icon {

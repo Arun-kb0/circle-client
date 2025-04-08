@@ -1,4 +1,4 @@
-import { connect, Socket } from "socket.io-client"
+import { connect, ManagerOptions, Socket } from "socket.io-client"
 
 const SOCKET_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:5001'
 const SOCKET_NOTIFICATION_URL = import.meta.env.VITE_NOTIFICATION_SERVICE || 'http://localhost:8086'
@@ -11,9 +11,13 @@ class SocketIoClient {
   static getInstance(userId?: string) {
     if (!SocketIoClient.instance && userId) {
       SocketIoClient.instance = connect(SOCKET_URL, {
-        reconnectionAttempts: 3,
-        timeout: 10000, // 10 seconds
-        query: { userId }
+        reconnectionAttempts: 10,
+        timeout: 20000, // 20 seconds
+        query: { userId },
+        ...({
+          pingInterval: 25000, // 25 sec
+          pingTimeout: 5000, // 5 sec
+        } as Partial<ManagerOptions>),
       })
 
       SocketIoClient.instance.on('connect', () => {
@@ -29,7 +33,7 @@ class SocketIoClient {
 
   static connect() {
     const socket = SocketIoClient.getInstance()
-    if (!socket?.connected) {
+    if (socket && !socket.connected && !socket.disconnected) {
       socket?.connect()
     }
   }
@@ -44,9 +48,13 @@ class SocketIoClient {
   static getNotificationInstance(userId?: string) {
     if (!SocketIoClient.notificationInstance && userId) {
       SocketIoClient.notificationInstance = connect(SOCKET_NOTIFICATION_URL, {
-        reconnectionAttempts: 3,
-        timeout: 10000, // 10 seconds
-        query: { userId }
+        reconnectionAttempts: 10,
+        timeout: 20000, // 20 seconds
+        query: { userId },
+        ...({
+          pingInterval: 25000, // 25 sec
+          pingTimeout: 5000, // 5 sec
+        } as Partial<ManagerOptions>),
       })
 
       SocketIoClient.notificationInstance.on('connect', () => {
@@ -62,7 +70,7 @@ class SocketIoClient {
 
   static connectNotification() {
     const socket = SocketIoClient.getNotificationInstance()
-    if (!socket?.connected) {
+    if (socket && !socket.connected && !socket.disconnected) {
       socket?.connect()
     }
   }
