@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import BadgeButton from '../basic/BadgeButton';
 import { AiOutlineMessage } from "react-icons/ai";
 import { useDispatch, useSelector } from 'react-redux';
-import { selectChatIsIncomingCall, selectChatUnreadMsgNotification, setIncomingCallAndSignal } from '../../features/chat/chatSlice';
+import { selectChatIsIncomingCall, setIncomingCallAndSignal } from '../../features/chat/chatSlice';
 import DropDown from '../basic/DropDown';
 import { DropDownElementsType } from '../../constants/types';
 import { AppDispatch } from '../../app/store';
@@ -37,7 +37,6 @@ const UserNav = ({  }: Props) => {
   const location = useLocation()
   const user = useSelector(selectAuthUser)
   const isIncomingCall = useSelector(selectChatIsIncomingCall)
-  const unreadMsgNotificationCount = useSelector(selectChatUnreadMsgNotification)
   const unreadNotificationsCount = useSelector(selectUserUnreadNotificationsCount)
   const navOpen = useSelector(selectUserNavOpen)
 
@@ -171,10 +170,7 @@ const UserNav = ({  }: Props) => {
               <div>
                 <Link to='/chat' className="flex text-sm bg rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
                   <SpringButton>
-                    <BadgeButton
-                      count={unreadMsgNotificationCount}
-                      icon={<AiOutlineMessage className='text-gray-200' size={23} />}
-                    />
+                    <AiOutlineMessage className='text-gray-200' size={23} />
                   </SpringButton>
                 </Link>
               </div>
