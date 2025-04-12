@@ -53,16 +53,15 @@ const LiveStreamChat = ({ streamerId, socket }: Props) => {
     setMessages(prev => [...prev, msg])
   }
 
-  useEffect(() => {
-    console.log('messages array useEffect')
-    console.log(messages)
-  }, [messages.length])
-
   return (
     <section className={`absolute sm:top-[38%] top-[30%] md:w-[60vw] w-[90vw] max-w-sm mx-auto h-[53%] bg-transparent bg-opacity-70 rounded-lg shadow-md flex flex-col justify-between`}>
       <div className="flex-1 overflow-y-scroll scrollbar-hide p-4 space-y-3 h-[40%]">
         {messages.map((msg) => (
-          <LiveMessage key={msg.id} message={msg} />
+          <LiveMessage
+            key={msg.id}
+            message={msg}
+            currentUserId={user?._id as string}
+          />
         ))}
       </div>
 
