@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import SocketIoClient from '../../../config/SocketIoClient';
 import socketEvents from '../../../constants/socketEvents';
 import BackdropVerifyOtp from '../../backdrop/BackdropVerifyOtp';
@@ -6,7 +6,8 @@ import { motion } from 'framer-motion'
 import { dropIn } from '../../../constants/animationDropins';
 import { IoClose } from 'react-icons/io5';
 import LiveStreamChat from './LiveStreamChat';
-import { toast } from 'react-toastify';
+import * as mediasoupClient from 'mediasoup-client';
+import { ExtendedTransport } from '../../../constants/mediasoupTyes';
 
 type Props = {
   streamerId: string,
@@ -16,151 +17,169 @@ type Props = {
 
 const ViewLiveModel = ({ handleClose, streamerId }: Props) => {
   const socket = SocketIoClient.getInstance();
-
-  const [remoteStream, setRemoteStream] = useState<MediaStream>(new MediaStream());
-  const [caller, setCaller] = useState(""); // Broadcaster's socket id
-  const [_, setName] = useState("");
-  const [callerSignal, setCallerSignal] = useState<any>(null);
-
   const userVideo = useRef<HTMLVideoElement>(null);
-  const connectionRef = useRef<RTCPeerConnection | null>(null);
-  // Candidate queue for ICE candidates received before remote description is set.
-  const candidateQueueRef = useRef<RTCIceCandidateInit[]>([]);
+  const [, setDevice] = useState<mediasoupClient.Device | null>(null);
+  const [consumerTransport, setConsumerTransport] = useState<mediasoupClient.types.Transport | null>(null);
+  const [, setTransportParams] = useState<mediasoupClient.types.TransportOptions | null>(null);
+  const [consumer, setConsumer] = useState<mediasoupClient.types.Consumer | null>(null);
+  const hasStartedViewing = useRef(false);
 
 
-  const cleanupRemoteStream = useCallback(() => {
-    remoteStream.getTracks().forEach((track) => track.stop());
-  }, [remoteStream]);
-
-  // Create a peer connection (viewer doesn't add local tracks)
-  const createPeerConnection = useCallback(() => {
-    const peerConnection = new RTCPeerConnection();
-
-    // When remote tracks arrive, add them to the remote stream
-    peerConnection.ontrack = (event) => {
-      console.log("Remote track received:", event.track);
-      setRemoteStream((prev) => {
-        const newTracks = [...prev.getTracks(), event.track];
-        return new MediaStream(newTracks);
-      });
-    };
-
-    // Send ICE candidates from the viewer back to the broadcaster,
-    // or queue them if remoteDescription is not yet set.
-    peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        if (peerConnection.remoteDescription) {
-          peerConnection
-            .addIceCandidate(new RTCIceCandidate(event.candidate))
-            .catch(err => console.error("Error adding ICE candidate:", err));
-        } else {
-          candidateQueueRef.current.push(event.candidate.toJSON());
-        }
-        // Also send candidates to broadcaster
-        socket?.emit(socketEvents.liveIceCandidate, {
-          candidate: event.candidate,
-          to: caller,
-          streamerUserId: streamerId
-        });
-      }
-    };
-
-    peerConnection.onconnectionstatechange = () => {
-      console.log("Connection state:", peerConnection.connectionState);
-    };
-
-    return peerConnection;
-  }, [socket, caller]);
-
-  // Listen for broadcaster's live stream events
-  useEffect(() => {
-    socket?.on(socketEvents.userLiveStreamStarted, (data) => {
-      console.log('Live stream started from broadcaster:', data);
-      setCaller(data.socketId || data.from);
-      setName(data.name);
-      setCallerSignal(data.signal);
-    });
-
-    socket?.on(socketEvents.userLiveStreamEnded, (data) => {
-      toast("Live stream ended !")
-      console.log('Live stream ended from broadcaster:', data);
-      cleanupRemoteStream();
-      setRemoteStream(new MediaStream());
-    });
-
-    socket?.on(socketEvents.liveIceCandidate, (candidate: RTCIceCandidateInit) => {
-      if (candidate && connectionRef.current) {
-        if (connectionRef.current.remoteDescription) {
-          connectionRef.current.addIceCandidate(new RTCIceCandidate(candidate))
-            .catch(err => console.error("Error adding ICE candidate:", err));
-        } else {
-          candidateQueueRef.current.push(candidate);
-        }
-      }
-    });
-
-    return () => {
-      socket?.off(socketEvents.userLiveStreamStarted);
-      socket?.off(socketEvents.userLiveStreamEnded);
-      socket?.off(socketEvents.liveIceCandidate);
-    };
-  }, [socket, cleanupRemoteStream]);
-
-  // Create peer connection on mount
-  useEffect(() => {
-    const pc = createPeerConnection();
-    connectionRef.current = pc;
-  }, [createPeerConnection]);
-
-  // When callerSignal (offer from broadcaster) is received,
-  // set remote description, flush queued ICE candidates, create an answer, and send it back.
-  useEffect(() => {
-    socket?.emit(socketEvents.joinRoomLive, { streamerId })
-
-    if (callerSignal && connectionRef.current) {
-      const pc = connectionRef.current;
-      pc.setRemoteDescription(new RTCSessionDescription(callerSignal))
-        .then(() => {
-          // Flush queued ICE candidates
-          candidateQueueRef.current.forEach((candidate) => {
-            pc.addIceCandidate(new RTCIceCandidate(candidate))
-              .catch(err => console.error("Error adding queued ICE candidate:", err));
-          });
-          candidateQueueRef.current = [];
-          return pc.createAnswer();
-        })
-        .then((answer) => {
-          return pc.setLocalDescription(answer).then(() => answer);
-        })
-        .then((answer) => {
-          socket?.emit(socketEvents.answerLiveStream, { signal: answer, to: caller });
-        })
-        .catch((error) => {
-          console.error("Error handling callerSignal:", error);
-        });
-    }
-  }, [callerSignal, socket, caller]);
-
-  // Attach the remote stream to the video element
-  useEffect(() => {
-    if (userVideo.current) {
-      userVideo.current.srcObject = remoteStream;
-      userVideo.current.onloadedmetadata = () => {
-        userVideo.current?.play().catch(err => console.error("Error playing video:", err));
-      };
-    }
-  }, [remoteStream]);
-
+  // End viewing session cleanly
   const handleEndViewing = () => {
-    cleanupRemoteStream()
-    // socket?.emit(socketEvents.liveStreamEnded)
-    socket?.emit(socketEvents.liveUserDisconnect, { streamerId })
-    if (connectionRef.current) {
-      connectionRef.current.close();
-      connectionRef.current = null;
+    if (consumer) {
+      consumer.close();
+      setConsumer(null);
     }
-    handleClose();
-  }
+    if (consumerTransport) {
+      consumerTransport.close();
+      setConsumerTransport(null);
+    }
+    if (userVideo.current) {
+      userVideo.current.srcObject = null;
+    }
+    socket?.emit(socketEvents.userLiveStreamEnded, { message: 'Viewer left' });
+    console.log('Viewing session ended.');
+    handleClose()
+  };
+
+
+  useEffect(() => {
+
+    const startViewing = async (): Promise<void> => {
+      // Validate conditions
+      if (!streamerId || !socket) return;
+      if (hasStartedViewing.current) return;
+      hasStartedViewing.current = true
+      console.log('startViewing called !!! ')
+
+      try {
+        // STEP 1: Get Router RTP Capabilities from the server.
+        const capabilities: any = await new Promise((resolve, reject) => {
+          socket.emit(socketEvents.mediaSoupGetRouterRtpCapabilities, {}, (data: any) => {
+            if (data.error) {
+              reject(new Error(data.error));
+            } else {
+              console.log("get route capabilities success.");
+              resolve(data);
+            }
+          });
+        });
+        console.log("Router RTP Capabilities:", capabilities);
+
+        // STEP 2: Create and load the mediasoup-client Device.
+        const newDevice = new mediasoupClient.Device();
+        await newDevice.load({ routerRtpCapabilities: capabilities });
+        setDevice(newDevice);
+        console.log("Mediasoup client Device loaded.");
+
+        // STEP 3: Request the server to create a Consumer Transport.
+        const transportParamsData: any = await new Promise((resolve, reject) => {
+          socket.emit(
+            socketEvents.mediaSoupCreateWebRtcTransport,
+            { consumer: true },
+            (data: any) => {
+              if (data.error) {
+                reject(new Error(data.error));
+              } else {
+                setTransportParams(data);
+                console.log("create consumer transport success.");
+                resolve(data);
+              }
+            }
+          );
+        });
+
+        // STEP 4: Create and connect the Consumer Transport on the client.
+        const transport = newDevice.createRecvTransport(transportParamsData) as ExtendedTransport;
+        setConsumerTransport(transport);
+
+        // Attach the connect event handler.
+        transport.on("connect", async ({ dtlsParameters }, callback, errback) => {
+          try {
+            if (transport._isConnected) {
+              console.warn("Transport already connected.");
+              return callback();
+            }
+            socket.emit(
+              socketEvents.mediaSoupConnectWebRtcTransport,
+              { dtlsParameters, transportId: transport.id },
+              (response: any) => {
+                if (response.error) {
+                  errback(response.error);
+                } else {
+                  transport._isConnected = true;
+                  console.log("Transport connected.");
+                  callback();
+                }
+              }
+            );
+          } catch (error) {
+            if (error instanceof Error)
+              errback(error);
+          }
+        });
+
+        // STEP 5: Request the server to start consuming media and create a Consumer.
+        const newConsumer: mediasoupClient.types.Consumer = await new Promise((resolve, reject) => {
+          socket.emit(
+            socketEvents.mediaSoupConsume,
+            {
+              transportId: transport.id,
+              rtpCapabilities: newDevice.rtpCapabilities
+            },
+            async (data: any) => {
+              if (data.error) {
+                reject(new Error(data.error));
+              } else {
+                try {
+                  const consumerInstance = await transport.consume({
+                    id: data.id,
+                    producerId: data.producerId,
+                    kind: data.kind,
+                    rtpParameters: data.rtpParameters
+                  });
+                  setConsumer(consumerInstance);
+                  console.warn("consume media success.");
+                  console.log(consumerInstance);
+                  resolve(consumerInstance);
+                } catch (consumeError) {
+                  reject(consumeError);
+                }
+              }
+            }
+          );
+        });
+
+        // STEP 6: Attach the Consumer's track to the video element.
+        const { track } = newConsumer;
+        const stream = new MediaStream([track]);
+        if (userVideo.current) {
+          userVideo.current.srcObject = stream;
+          socket.emit(socketEvents.mediaSoupConsumerResume);
+        }
+        console.log("Consumer created and stream attached.");
+
+      } catch (error) {
+        console.error("Error starting viewing:", error);
+      }
+    };
+
+    // Execute the unified method.
+    startViewing();
+
+    // Cleanup function when component is unmounted or dependencies change.
+    return () => {
+      // Close the consumer and transport if they exist.
+      consumer?.close();
+      consumerTransport?.close();
+      if (userVideo.current) {
+        userVideo.current.srcObject = null;
+      }
+    };
+  }, [streamerId]);
+
+
 
   return (
     <BackdropVerifyOtp onClick={handleEndViewing}>

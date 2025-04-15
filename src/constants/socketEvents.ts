@@ -51,7 +51,17 @@ enum socketEvents {
 
   // * notification event
   getNotificationSocketId = 'get-notification-socket-id',
-  newNotification = 'new-notification'
+  newNotification = 'new-notification',
+
+  // * mediasoup
+  mediaSoupGetRouterRtpCapabilities = 'mediasoup-get-route-rtp-capabilities',
+  mediaSoupConnectWebRtcTransport = 'mediasoup-connect-webrtc-transport',
+  mediaSoupCreateWebRtcTransport = 'mediasoup-create-webrtc-transport',
+  mediaSoupProduce = 'mediasoup-produce',
+  mediaSoupConsume = 'mediasoup-consume',
+  mediaSoupDisconnect = 'mediasoup-disconnect',
+  mediaSoupConsumerResume = 'mediasoup-consumer-resumer'
+
 
 }
 
