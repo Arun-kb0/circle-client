@@ -3,9 +3,11 @@ import SocketIoClient from '../../../config/SocketIoClient';
 import socketEvents from '../../../constants/socketEvents';
 import { useSelector } from 'react-redux';
 import { selectAuthUser } from '../../../features/auth/authSlice';
-import { TransportParamsType } from '../../../constants/types';
+import { ChatUserType, TransportParamsType } from '../../../constants/types';
 import LiveStreamChat from './LiveStreamChat';
 import * as mediasoupClient from 'mediasoup-client'
+import { IoEyeOutline } from 'react-icons/io5';
+import LiveRoomUsers from './LiveRoomUsers';
 
 
 type Props = {
@@ -23,6 +25,10 @@ const LiveStream = ({ }: Props) => {
   const [sendTransport, setSendTransport] = useState<mediasoupClient.types.Transport | null>(null);
   const [producer, setProducer] = useState<mediasoupClient.types.Producer | null>(null);
   const [transportConnectionState, setTransportConnectionState] = useState<Map<string, boolean>>(new Map())
+  const [isStreamEnded, setIsStreamEnded] = useState(false)
+  const [liveRoomUsers, setLiveRoomUsers] = useState<ChatUserType[]>([])
+  const [isLiveRoomUsersOpen, setIsLiveRoomUsersOpen] = useState(false)
+
   const params = {
     encoding: [
       {
@@ -119,6 +125,7 @@ const LiveStream = ({ }: Props) => {
       setSendTransport(transport);
 
       transport.on('connectionstatechange', state => {
+        console.log('event - connectionstatechange - ',state)
         if (state === 'closed') {
           transport.close();
         }
@@ -209,6 +216,7 @@ const LiveStream = ({ }: Props) => {
 
     // Notify the server that the live stream has ended.
     socket?.emit(socketEvents.liveStreamEnded, { userId: user?._id });
+    setIsStreamEnded(true)
     console.log('Live stream ended.');
   }, [localStream, socket]);
 
@@ -220,6 +228,23 @@ const LiveStream = ({ }: Props) => {
   };
 
   useEffect(() => {
+    const handleLiveViewerJoin = (data: { userId: string, usersInStream: ChatUserType[] }) => {
+      console.log(data)
+      setLiveRoomUsers(data.usersInStream)
+    }
+    const handleViewerDisconnect = (data: { userId: string, usersInStream: ChatUserType[] }) => {
+      console.log(data)
+      setLiveRoomUsers(data.usersInStream)
+    }
+    socket?.on(socketEvents.joinedRoomLive, handleLiveViewerJoin)
+    socket?.on(socketEvents.liveUserDisconnected, handleViewerDisconnect)
+    return () => {
+      socket?.off(socketEvents.joinedRoomLive, handleLiveViewerJoin)
+      socket?.off(socketEvents.liveUserDisconnected, handleViewerDisconnect)
+    }
+  }, [socket])
+
+  useEffect(() => {
     console.log("transportConnectionState ")
     console.log(transportConnectionState)
   }, [transportConnectionState])
@@ -229,17 +254,28 @@ const LiveStream = ({ }: Props) => {
 
       <div className='space-y-1'>
 
-        <div className='flex justify-center'>
+        <div className='flex justify-center items-center gap-1 relative'>
           {prepareLiveStream
             ? (
-              <button onClick={liveEnd} className="capitalize rounded-xl text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">
+              <button onClick={liveEnd} className="capitalize rounded-xl text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium text-sm px-5 py-2.5 text-center">
                 end stream
               </button>
             ) : (
-              <button onClick={handlePrepareLive} className="capitalize rounded-xl text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">
+              <button onClick={handlePrepareLive} className="capitalize rounded-xl text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium text-sm px-5 py-2.5 text-center">
                 start live
               </button>
             )
+          }
+          <div >
+            <button onClick={() => setIsLiveRoomUsersOpen(prev => !prev)} className="flex justify-center items-center gap-1 text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 rounded-lg text-sm px-5 py-2.5 text-center">
+              <IoEyeOutline size={20} />
+              {liveRoomUsers.length}
+            </button>
+          </div>
+          {isLiveRoomUsersOpen &&
+            <LiveRoomUsers
+              liveRoomUsers={liveRoomUsers}
+            />
           }
         </div>
 
@@ -253,6 +289,7 @@ const LiveStream = ({ }: Props) => {
         <LiveStreamChat
           socket={socket}
           streamerId={user?._id as string}
+          isStreamEnded={isStreamEnded}
         />
 
       </div>

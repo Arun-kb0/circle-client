@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { ChatUserType, NotificationType, PaginationMessages, StateType } from "../../constants/types"
+import { ChatUserType, NotificationType, PaginationMessages, StateType} from "../../constants/types"
 import { RootState } from "../../app/store"
 import { MessageType } from '../../constants/types'
 import { v4 as uuid } from "uuid"
@@ -51,7 +51,7 @@ const getInitialState = ():ChatStateType => ({
   callSignal: undefined,
   callModelType: undefined,
 
-  lastMessages: []
+  lastMessages: [],
 })
 
 const chatSlice = createSlice({

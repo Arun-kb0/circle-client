@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { LiveMessageType } from '../../../constants/types'
 import socketEvents from '../../../constants/socketEvents'
 import { useForm } from 'react-hook-form'
@@ -12,19 +12,22 @@ import LiveMessage from './LiveMessage'
 type Props = {
   streamerId: string
   socket: Socket | null
+  isStreamEnded: boolean
 }
 
-const LiveStreamChat = ({ streamerId, socket }: Props) => {
+const LiveStreamChat = ({ streamerId, socket, isStreamEnded }: Props) => {
   const user = useSelector(selectAuthUser)
   const [messages, setMessages] = useState<LiveMessageType[]>([])
 
   const {
     register,
-    handleSubmit } = useForm({
-      defaultValues: {
-        messageText: "",
-      },
-    })
+    handleSubmit,
+    reset
+  } = useForm({
+    defaultValues: {
+      messageText: "",
+    },
+  })
 
   useEffect(() => {
     socket?.on(socketEvents.liveReceiveMessage, (msg: LiveMessageType) => {
@@ -51,7 +54,12 @@ const LiveStreamChat = ({ streamerId, socket }: Props) => {
     }
     socket?.emit(socketEvents.liveSendMessage, msg)
     setMessages(prev => [...prev, msg])
+    reset()
   }
+
+  useEffect(() => {
+    setMessages([])
+  }, [isStreamEnded])
 
   return (
     <section className={`absolute sm:top-[38%] top-[30%] md:w-[60vw] w-[90vw] max-w-sm mx-auto h-[53%] bg-transparent bg-opacity-70 rounded-lg shadow-md flex flex-col justify-between`}>

@@ -4,10 +4,12 @@ import socketEvents from '../../../constants/socketEvents';
 import BackdropVerifyOtp from '../../backdrop/BackdropVerifyOtp';
 import { motion } from 'framer-motion'
 import { dropIn } from '../../../constants/animationDropins';
-import { IoClose } from 'react-icons/io5';
+import { IoClose, IoEyeOutline } from 'react-icons/io5';
 import LiveStreamChat from './LiveStreamChat';
 import * as mediasoupClient from 'mediasoup-client';
 import { ExtendedTransport } from '../../../constants/mediasoupTyes';
+import { ChatUserType } from '../../../constants/types';
+import LiveRoomUsers from './LiveRoomUsers';
 
 type Props = {
   streamerId: string,
@@ -22,6 +24,9 @@ const ViewLiveModel = ({ handleClose, streamerId }: Props) => {
   const [consumerTransport, setConsumerTransport] = useState<mediasoupClient.types.Transport | null>(null);
   const [, setTransportParams] = useState<mediasoupClient.types.TransportOptions | null>(null);
   const [consumer, setConsumer] = useState<mediasoupClient.types.Consumer | null>(null);
+  const [isStreamEnded, setIsStreamEnded] = useState(false)
+  const [liveRoomUsers, setLiveRoomUsers] = useState<ChatUserType[]>([])
+  const [isLiveRoomUsersOpen, setIsLiveRoomUsersOpen] = useState(false)
   const hasStartedViewing = useRef(false);
 
 
@@ -38,8 +43,9 @@ const ViewLiveModel = ({ handleClose, streamerId }: Props) => {
     if (userVideo.current) {
       userVideo.current.srcObject = null;
     }
-    socket?.emit(socketEvents.userLiveStreamEnded, { message: 'Viewer left' });
+    socket?.emit(socketEvents.userLiveStreamEnded, { streamerUserId: streamerId });
     console.log('Viewing session ended.');
+    setIsStreamEnded(true)
     handleClose()
   };
 
@@ -54,6 +60,9 @@ const ViewLiveModel = ({ handleClose, streamerId }: Props) => {
       console.log('startViewing called !!! ')
 
       try {
+        socket.emit(socketEvents.joinRoomLive, { streamerId }, (data: any) => {
+          setLiveRoomUsers(data.usersInStream)
+        })
         // STEP 1: Get Router RTP Capabilities from the server.
         const capabilities: any = await new Promise((resolve, reject) => {
           socket.emit(socketEvents.mediaSoupGetRouterRtpCapabilities, {}, (data: any) => {
@@ -94,6 +103,14 @@ const ViewLiveModel = ({ handleClose, streamerId }: Props) => {
         const transport = newDevice.createRecvTransport(transportParamsData) as ExtendedTransport;
         setConsumerTransport(transport);
 
+
+        transport.on('connectionstatechange', state => {
+          console.log('event - connectionstatechange - ', state)
+          if (state === 'closed') {
+            transport.close();
+          }
+        });
+       
         // Attach the connect event handler.
         transport.on("connect", async ({ dtlsParameters }, callback, errback) => {
           try {
@@ -176,10 +193,26 @@ const ViewLiveModel = ({ handleClose, streamerId }: Props) => {
       if (userVideo.current) {
         userVideo.current.srcObject = null;
       }
+      socket?.off(socketEvents.joinRoomLive)
     };
   }, [streamerId]);
 
-
+  useEffect(() => {
+    const handleLiveViewerJoin = (data: { userId: string, usersInStream: ChatUserType[] }) => {
+      console.log(data)
+      setLiveRoomUsers(data.usersInStream)
+    }
+    const handleViewerDisconnect = (data: { userId: string, usersInStream: ChatUserType[] }) => {
+      console.log(data)
+      setLiveRoomUsers(data.usersInStream)
+    }
+    socket?.on(socketEvents.joinedRoomLive, handleLiveViewerJoin)
+    socket?.on(socketEvents.liveUserDisconnected, handleViewerDisconnect)
+    return () => {
+      socket?.off(socketEvents.joinedRoomLive, handleLiveViewerJoin)
+      socket?.off(socketEvents.liveUserDisconnected, handleViewerDisconnect)
+    }
+  }, [socket])
 
   return (
     <BackdropVerifyOtp onClick={handleEndViewing}>
@@ -199,13 +232,33 @@ const ViewLiveModel = ({ handleClose, streamerId }: Props) => {
             playsInline
             className="w-full h-full object-cover"
           />
-          <button onClick={handleEndViewing} className="absolute top-0 right-0 m-3 text-red-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500">
+          {/* <button onClick={handleEndViewing} className="absolute top-0 right-0 m-3 text-red-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500">
             <IoClose size={20} />
-          </button>
+          </button> */}
+
+          <div className='absolute top-0 right-0 flex gap-1 z-10'>
+            <div className='flex justify-center items-center'>
+              <button onClick={() => setIsLiveRoomUsersOpen(prev => !prev)} className="flex justify-center items-center gap-1 text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 rounded-lg text-sm px-5 py-2.5 text-center">
+                <IoEyeOutline size={20} />
+                {liveRoomUsers.length}
+              </button>
+
+              <button onClick={handleEndViewing} className="m-3 text-red-700 border border-red-700 hover:bg-red-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:focus:ring-red-800 dark:hover:bg-red-500">
+                <IoClose size={20} />
+              </button>
+            </div>
+          </div>
+
+          {isLiveRoomUsersOpen &&
+            <LiveRoomUsers
+              liveRoomUsers={liveRoomUsers}
+            />
+          }
 
           <LiveStreamChat
             socket={socket}
             streamerId={streamerId}
+            isStreamEnded={isStreamEnded}
           />
         </section>
 
