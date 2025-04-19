@@ -359,3 +359,11 @@ export type PaginationUserBlockedAccounts = {
   currentPage: number,
   blockedUsers: UserBlockedAccountsType[],
 }
+
+export type TransportParamsType = {
+  id: string;
+  iceParameters: any;
+  iceCandidates: any[];
+  dtlsParameters: any;
+  error?: string;
+}

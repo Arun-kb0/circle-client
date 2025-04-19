@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 type Props = {
   name: string,
   image: string
-  time: Date
+  time?: Date
 }
 
 const UserListCard = ({ name, image, time }: Props) => {
@@ -13,7 +13,7 @@ const UserListCard = ({ name, image, time }: Props) => {
       <img className="w-10 h-10 rounded-full object-cover" src={image} alt="" />
       <div className="font-medium dark:text-white">
         <p>{name}</p>
-        <p className='text-sm font-normal'>{ moment(time).fromNow()}</p>
+        {time && <p className='text-sm font-normal'>{moment(time).fromNow()}</p>}
       </div>
     </Link>
   )

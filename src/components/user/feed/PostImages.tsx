@@ -52,7 +52,7 @@ const PostImages = ({ media, deleteFunction, handleImageCrop, resetActiveIndex =
       className="w-full relative"
       data-carousel="slide"
     >
-      <div className={`${isGridView ? 'w-auto' : "lg:w-[50vw]"} relative h-56 overflow-hidden rounded-lg md:h-96`}>
+      <div className={`${isGridView ? 'w-auto h-56' : "lg:w-[50vw]"} relative h-56 overflow-hidden rounded-lg md:h-96`}>
         <AnimatePresence custom={direction}>
           {media.map((image, index) =>
             index === activeIndex ? (

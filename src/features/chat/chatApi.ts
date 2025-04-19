@@ -154,16 +154,6 @@ export const sendMessage = ({ currentMessage, user, roomId, mediaType }: SendMes
 
 export const receiveMessage = (data: any) => (dispatch: AppDispatch, getState: () => RootState) => {
   try {
-    // if (!socket?.connected) socket?.connect()
-    // socket?.off(socketEvents.receiveMessage)
-    // const user = getState().auth.user
-    // if (!user) return
-
-    // socket?.on(socketEvents.receiveMessage, (data) => {
-    //   dispatch(showMsgNotification({ message: data, userId: user._id }))
-    //   dispatch(addMessage(data))
-    // })
-
     const user = getState().auth.user
     if (!user) return
     dispatch(showMsgNotification({ message: data, userId: user._id }))
@@ -197,22 +187,9 @@ export const joinCallRoom = ({ senderId, receiverId, chatUser }: JoinRoomArgsTyp
 // * call room 
 export const callUserConnection = (data: any) => (dispatch: AppDispatch) => {
   try {
-    // console.log('callUserConnection before socket connection check')
-    // if (!socket?.connected) socket?.connect()
-    // socket?.off(socketEvents.callUserConnected)
-    // const user = getState().auth.user
-    // if (!user) return
-    // console.log('callUserConnection after socket connection check')
-
-    // socket?.on(socketEvents.callUserConnected, (data: { roomId: string, userId: string }) => {
-    //   console.log('callUserConnection call-user-connected event data = ', data)
-    //   dispatch(setCallRoomId({ roomId: data.roomId, user: null }))
-    // })
-
     console.log('callUserConnection call-user-connected event data = ', data)
     dispatch(setCallRoomId({ roomId: data.roomId, user: null }))
   } catch (error) {
     console.error(error)
   }
 }
-

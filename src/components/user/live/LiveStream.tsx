@@ -2,10 +2,12 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import SocketIoClient from '../../../config/SocketIoClient';
 import socketEvents from '../../../constants/socketEvents';
 import { useSelector } from 'react-redux';
-import { selectUserSocketId } from '../../../features/user/userSlice';
 import { selectAuthUser } from '../../../features/auth/authSlice';
-import { AnsweredLiveDataType, LiveUserDataType } from '../../../constants/types';
+import { ChatUserType, TransportParamsType } from '../../../constants/types';
 import LiveStreamChat from './LiveStreamChat';
+import * as mediasoupClient from 'mediasoup-client'
+import { IoEyeOutline } from 'react-icons/io5';
+import LiveRoomUsers from './LiveRoomUsers';
 
 
 type Props = {
@@ -15,197 +17,265 @@ type Props = {
 const LiveStream = ({ }: Props) => {
   const socket = SocketIoClient.getInstance();
   const user = useSelector(selectAuthUser);
-  const userSocketId = useSelector(selectUserSocketId);
-
-  const [_, setAudioLocalStream] = useState<MediaStream | null>(null);
   const myVideo = useRef<HTMLVideoElement>(null);
-  const [isStreamStarted, setIsStreamStarted] = useState<boolean>(false)
   const [prepareLiveStream, setPrepareLiveStream] = useState<boolean>(false)
-  const stream = useRef<MediaStream | null>(null)
-  const peerConnectionRef = useRef<Map<string, RTCPeerConnection>>(new Map)
 
-  // Cleanup: stop all tracks and close connection
-  const cleanupResources = useCallback(() => {
-    if (stream.current) {
-      stream.current?.getTracks().forEach((track) => track.stop());
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [device, setDevice] = useState<mediasoupClient.Device | null>(null);
+  const [sendTransport, setSendTransport] = useState<mediasoupClient.types.Transport | null>(null);
+  const [producer, setProducer] = useState<mediasoupClient.types.Producer | null>(null);
+  const [transportConnectionState, setTransportConnectionState] = useState<Map<string, boolean>>(new Map())
+  const [isStreamEnded, setIsStreamEnded] = useState(false)
+  const [liveRoomUsers, setLiveRoomUsers] = useState<ChatUserType[]>([])
+  const [isLiveRoomUsersOpen, setIsLiveRoomUsersOpen] = useState(false)
+
+  const params = {
+    encoding: [
+      {
+        rid: 'r0',
+        maxBitrate: 100000,
+        scalabilityMode: 'S1T3'
+      },
+      {
+        rid: 'r1',
+        maxBitrate: 300000,
+        scalabilityMode: 'S1T3'
+      },
+      {
+        rid: 'r2',
+        maxBitrate: 900000,
+        scalabilityMode: 'S1T3'
+      }
+    ],
+    codecOptions: {
+      videoGoogleStartBitrate: 1000
     }
-    peerConnectionRef.current.forEach(pc => {
-      pc.close()
-    })
-    peerConnectionRef.current.clear()
-    socket?.emit(socketEvents.liveStreamEnded, { userId: user?._id });
-  }, [stream, socket]);
+  }
 
-  // Acquire local media stream
+  // Get local media stream on component mount.
   useEffect(() => {
-    let activeStream: MediaStream | null = null;
-
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((localStream) => {
-        activeStream = localStream;
-        stream.current = localStream
-        // setStream(localStream)
-        const audioOnlyStream = new MediaStream(localStream.getAudioTracks());
-        setAudioLocalStream(audioOnlyStream);
-        // *  Function to assign stream to the video element once it's available.
-        const assignVideoStream = () => {
-          if (myVideo.current) {
-            console.log('myVideo.current is available, assigning stream.');
-            myVideo.current.srcObject = localStream;
-          } else {
-            console.warn('myVideo.current not available yet, retrying...');
-            requestAnimationFrame(assignVideoStream);
-          }
+    const getMedia = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        setLocalStream(stream);
+        if (myVideo.current) {
+          myVideo.current.srcObject = stream;
+          // Ensure the video element is playing.
+          myVideo.current.play().catch(console.error);
         }
+      } catch (err) {
+        console.error('Error getting user media:', err);
+      }
+    };
 
-        assignVideoStream();
-      })
-      .catch((err) => console.error("Error accessing media devices:", err));
+    getMedia();
 
+    // Cleanup: stop tracks when component unmounts.
     return () => {
-      if (activeStream) {
-        activeStream.getTracks().forEach((track) => track.stop());
-      }
-      socket?.emit(socketEvents.liveStreamEnded, { userId: user?._id });
-    };
-  }, [socket]);
-
-  // Create RTCPeerConnection and add local tracks
-  const createPeerConnection = () => {
-    const peerConnection = new RTCPeerConnection();
-
-    if (stream.current) {
-      const currentStream = stream.current
-      currentStream.getTracks().forEach((track) => {
-        peerConnection.addTrack(track, currentStream);
-      });
-    }
-
-    peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        socket?.emit(socketEvents.liveIceCandidate, {
-          candidate: event.candidate,
-          streamerUserId: user?._id
-        });
+      if (localStream) {
+        localStream.getTracks().forEach((track) => track.stop());
       }
     };
+  }, []);
 
-    peerConnection.onconnectionstatechange = () => {
-      console.log("Connection state:", peerConnection.connectionState);
-    };
-
-    return peerConnection;
-  }
-
-  // const reconnectToUser = (peerConnection: RTCPeerConnection, userId: string) => {
-  //   if (peerConnection.connectionState === 'closed') {
-  //     peerConnection.restartIce()
-  //   }
-  // }
-
-  // End the live stream
-  const liveEnd = () => {
-    cleanupResources()
-    stream.current = null
-    // setStream(null)
-    setIsStreamStarted(false)
-    setPrepareLiveStream(false)
-  }
-
-  const liveStart = async (userId: string) => {
-    if (!stream) {
-      console.error("stream is null in liveStart");
+  // Start the live stream using mediasoup-client.
+  const liveStart = useCallback(async () => {
+    if (!localStream || !socket) {
+      console.error('Local stream or socket not available for liveStart.');
       return;
     }
-    if (!user || !userSocketId) {
-      throw new Error("user or userSocketId is undefined");
-    }
 
-    if (peerConnectionRef.current.has(userId)) {
-      console.log(`connection already exists for ${userId}`)
-      // const existingPc = peerConnectionRef.current.get(userId)
-      // reconnectToUser(existingPc as RTCPeerConnection, userId)
-      return
-    }
-
-    const peerConnection = createPeerConnection();
-    // connectionRef.current = peerConnection;
-    peerConnectionRef.current.set(userId, peerConnection)
-    setIsStreamStarted(true)
     try {
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
+      // 1. Request router RTP capabilities from the server.
+      const routerRtpCapabilities: mediasoupClient.types.RtpCapabilities =
+        await new Promise((resolve, reject) => {
+          socket.emit(socketEvents.mediaSoupGetRouterRtpCapabilities, {}, (data: any) => {
+            if (data.error) {
+              reject(data.error);
+            } else {
+              resolve(data);
+              console.log('get route capabilities success .');
+              console.log(data)
+            }
+          });
+        });
 
-      const liveUserData: LiveUserDataType = {
-        signal: offer,
-        from: userSocketId,
-        name: user.name,
-        userId: user._id
-      };
-      socket?.emit(socketEvents.liveStreamStarted, liveUserData)
-      // Optionally, you can play a ring sound:
-      // new Audio(callRingAudio).play();
-    } catch (err) {
-      console.error("Error creating offer:", err);
+
+      // 2. Create and load the mediasoup-client Device.
+      const newDevice = new mediasoupClient.Device();
+      await newDevice.load({ routerRtpCapabilities });
+      setDevice(newDevice);
+      console.log('Mediasoup client Device loaded.');
+
+      // 3. Request the server to create a WebRTC transport.
+      const transportParams: TransportParamsType = await new Promise((resolve, reject) => {
+        socket.emit(socketEvents.mediaSoupCreateWebRtcTransport, {}, (params: any) => {
+          if (params.error) {
+            reject(params.error);
+          } else {
+            resolve(params);
+            console.log('create producer transport success .')
+            console.log(params)
+          }
+        });
+      });
+
+      // 4. Create a Send Transport from the Device.
+      const transport = newDevice.createSendTransport(transportParams);
+      setSendTransport(transport);
+
+      transport.on('connectionstatechange', state => {
+        console.log('event - connectionstatechange - ',state)
+        if (state === 'closed') {
+          transport.close();
+        }
+      });
+
+      // 5. Handle transport 'connect' event.
+      transport.on('connect', async ({ dtlsParameters }, callback, errback) => {
+        try {
+          if (transportConnectionState.get(transport.id)) {
+            console.warn('Transport already connected.');
+            return;
+          }
+
+          socket.emit(
+            socketEvents.mediaSoupConnectWebRtcTransport,
+            { dtlsParameters, transportId: transportParams.id },
+            (response: any) => {
+              if (response.error) {
+                errback(response.error);
+              } else {
+                setTransportConnectionState(prev => prev.set(transport.id, true))
+                console.warn('Transport connected.');
+                callback();
+              }
+            }
+          );
+        } catch (error) {
+          errback(error as Error);
+        }
+      });
+
+      // 6. Handle transport 'produce' event.
+      transport.on('produce', async ({ kind, rtpParameters }, callback, errback) => {
+        socket.emit(
+          socketEvents.mediaSoupProduce,
+          { kind, rtpParameters, transportId: transportParams.id },
+          (response: any) => {
+            if (response.error) {
+              errback(response.error);
+            } else {
+              callback({ id: response.id });
+            }
+          }
+        );
+      });
+
+
+      // 7. Produce a video track from the local stream.
+      const videoTrack = localStream.getVideoTracks()[0];
+      if (!videoTrack) {
+        console.error('No video track found in the local stream.');
+        return;
+      }
+      const newProducer = await transport.produce({ track: videoTrack, ...params });
+      setProducer(newProducer);
+
+      newProducer.on('trackended', () => {
+        console.log('track ended')
+      })
+
+      console.log('Producer created with id', newProducer.id);
+    } catch (error) {
+      console.error('Error during liveStart:', error);
     }
-  }
+  }, [localStream, socket]);
+
+  // End the live stream: close transports, stop tracks, and notify the server.
+  const liveEnd = useCallback(() => {
+    // Close producer if it exists.
+    if (producer) {
+      producer.close();
+      setProducer(null);
+    }
+    // Close the send transport if it exists.
+    if (sendTransport) {
+      sendTransport.close();
+      setSendTransport(null);
+    }
+    // Optionally, clear the Device.
+    if (device) {
+      setDevice(null);
+    }
+    // Stop all local stream tracks.
+    if (localStream) {
+      localStream.getTracks().forEach((track) => track.stop());
+    }
+    setPrepareLiveStream(false);
+
+    // Notify the server that the live stream has ended.
+    socket?.emit(socketEvents.liveStreamEnded, { userId: user?._id });
+    setIsStreamEnded(true)
+    console.log('Live stream ended.');
+  }, [localStream, socket]);
+
+  // Handler to prepare and start the live stream.
+  const handlePrepareLive = () => {
+    socket?.emit(socketEvents.prepareLiveStream, { userId: user?._id, name: user?.name });
+    setPrepareLiveStream(true);
+    liveStart();
+  };
 
   useEffect(() => {
-    socket?.on(socketEvents.answeredLiveStream, (data: AnsweredLiveDataType) => {
-      console.log(socketEvents.answeredLiveStream)
+    const handleLiveViewerJoin = (data: { userId: string, usersInStream: ChatUserType[] }) => {
       console.log(data)
-      const pc = peerConnectionRef.current.get(data.userId)
-      if (pc) {
-        pc.setRemoteDescription(new RTCSessionDescription(data.signal))
-          .then(() => console.log("Remote description set successfully"))
-          .catch((error) => console.error("Error setting remote description:", error));
-      }
-    })
-
+      setLiveRoomUsers(data.usersInStream)
+    }
+    const handleViewerDisconnect = (data: { userId: string, usersInStream: ChatUserType[] }) => {
+      console.log(data)
+      setLiveRoomUsers(data.usersInStream)
+    }
+    socket?.on(socketEvents.joinedRoomLive, handleLiveViewerJoin)
+    socket?.on(socketEvents.liveUserDisconnected, handleViewerDisconnect)
     return () => {
-      socket?.off(socketEvents.answeredLiveStream)
+      socket?.off(socketEvents.joinedRoomLive, handleLiveViewerJoin)
+      socket?.off(socketEvents.liveUserDisconnected, handleViewerDisconnect)
     }
   }, [socket])
 
   useEffect(() => {
-    socket?.on(socketEvents?.joinedRoomLive, (data: { userId: string }) => {
-      console.log('user joined on live', data)
-      liveStart(data.userId)
-    })
-    socket?.on(socketEvents?.liveUserDisconnected, (data: { userId: string }) => {
-      console.log('user left room', data)
-      peerConnectionRef.current.delete(data.userId)
-    })
-
-    return () => {
-      socket?.off(socketEvents.liveUserDisconnected)
-      socket?.off(socketEvents.joinedRoomLive)
-    }
-  }, [socket, isStreamStarted])
-
-  const handlePrepareLive = () => {
-    socket?.emit(socketEvents.prepareLiveStream, { userId: user?._id, name: user?.name })
-    setPrepareLiveStream(true)
-  }
-
+    console.log("transportConnectionState ")
+    console.log(transportConnectionState)
+  }, [transportConnectionState])
 
   return (
     <section className="flex sm:items-center item-start rounded-lg bg-white dark:bg-gray-900 antialiased h-[80vh] md:w-[60vw] w-[90vw] overflow-hidden">
 
       <div className='space-y-1'>
 
-        <div className='flex justify-center'>
+        <div className='flex justify-center items-center gap-1 relative'>
           {prepareLiveStream
             ? (
-              <button onClick={liveEnd} className="capitalize rounded-xl text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">
+              <button onClick={liveEnd} className="capitalize rounded-xl text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium text-sm px-5 py-2.5 text-center">
                 end stream
               </button>
             ) : (
-              <button onClick={handlePrepareLive} className="capitalize rounded-xl text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">
+              <button onClick={handlePrepareLive} className="capitalize rounded-xl text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium text-sm px-5 py-2.5 text-center">
                 start live
               </button>
             )
+          }
+          <div >
+            <button onClick={() => setIsLiveRoomUsersOpen(prev => !prev)} className="flex justify-center items-center gap-1 text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 rounded-lg text-sm px-5 py-2.5 text-center">
+              <IoEyeOutline size={20} />
+              {liveRoomUsers.length}
+            </button>
+          </div>
+          {isLiveRoomUsersOpen &&
+            <LiveRoomUsers
+              liveRoomUsers={liveRoomUsers}
+            />
           }
         </div>
 
@@ -219,6 +289,7 @@ const LiveStream = ({ }: Props) => {
         <LiveStreamChat
           socket={socket}
           streamerId={user?._id as string}
+          isStreamEnded={isStreamEnded}
         />
 
       </div>
