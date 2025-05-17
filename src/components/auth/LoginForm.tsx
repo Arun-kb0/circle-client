@@ -20,7 +20,7 @@ type Props = {
 }
 
 
-const LoginFrom = ({ role, name, signupPath, loginMsg, loginPath }: Props) => {
+const LoginForm = ({ role, name, signupPath, loginMsg, loginPath }: Props) => {
 
   const dispatch = useDispatch<AppDispatch>()
   const status = useSelector(selectAuthStatus)
@@ -71,7 +71,7 @@ const LoginFrom = ({ role, name, signupPath, loginMsg, loginPath }: Props) => {
             })}
           />
           {errors.email &&
-            <p className="mt-2 text-sm text-red-600 dark:text-red-500"><span className="font-medium">Oh, snapp!</span> {String(errors.email.message)}</p>
+            <p className="mt-2 text-sm text-red-600"><span className="font-medium">Oh, snapp!</span> {String(errors.email.message)}</p>
           }
         </div>
         <div>
@@ -89,38 +89,40 @@ const LoginFrom = ({ role, name, signupPath, loginMsg, loginPath }: Props) => {
             })}
           />
           {errors.password &&
-            <p className="mt-2 text-sm text-red-600 dark:text-red-500"><span className="font-medium">Oh, snapp!</span> {String(errors.password.message)}</p>
+            <p className="mt-2 text-sm text-red-600"><span className="font-medium">Oh, snapp!</span> {String(errors.password.message)}</p>
           }
         </div>
 
 
       </div>
 
-      <button
-        type="submit"
-        className="text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 capitalize">
-        {status === 'loading' &&
-          <Spinner />
-        }
-        Login
-      </button>
+      <div className='flex justify-center items-center'>
+        <button
+          type="submit"
+          className="text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 capitalize">
+          {status === 'loading' &&
+            <Spinner />
+          }
+          Login
+        </button>
+      </div>
 
       <OauthProviders />
 
       <div className='space-y-1 text-black'>
         <div className='flex space-x-2'>
           <p>Don't have an account </p>
-          <Link to={signupPath} className='text-blue-400'> Sign up </Link>
+          <Link to={signupPath} className='text-blue-700'> Sign up </Link>
         </div>
         {role === roles.user &&
           <div className='flex space-x-2'>
             <p>Forgot password?</p>
-            <Link to='/resetPwd' className='text-blue-400'> Reset </Link>
+            <Link to='/resetPwd' className='text-blue-700'> Reset </Link>
           </div>
         }
         <div className='flex space-x-2 '>
           <p>{loginMsg}</p>
-          <Link to={loginPath} className='text-blue-400'> {role === roles.admin ? 'Login as user' : 'Login as admin'} </Link>
+          <Link to={loginPath} className='text-blue-700'> {role === roles.admin ? 'Login as user' : 'Login as admin'} </Link>
         </div>
       </div>
 
@@ -128,4 +130,4 @@ const LoginFrom = ({ role, name, signupPath, loginMsg, loginPath }: Props) => {
   )
 }
 
-export default LoginFrom
+export default LoginForm

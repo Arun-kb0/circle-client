@@ -1,4 +1,4 @@
-import LoginFrom from '../components/auth/LoginFrom'
+import LoginForm from '../components/auth/LoginForm'
 import { roles } from '../constants/enums'
 import AdminLoginImg from '../assets/adminLogin.png'
 
@@ -12,7 +12,7 @@ const AdminLogin = () => {
         backgroundPosition: "center",
       }}>
       <div className='backdrop-blur-sm bg-white/30 p-4 rounded-md shadow-lg '>
-        <LoginFrom
+        <LoginForm
           role={roles.admin}
           name={'Admin Login'}
           homePath='/admin'
