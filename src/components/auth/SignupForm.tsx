@@ -39,7 +39,7 @@ const SignupForm = ({ role, name, homePath, loginPath, openModel }: Props) => {
     if (role === roles.admin) {
       dispatch(adminSignup(userData))
     } else {
-       await dispatch(signup(userData))
+      await dispatch(signup(userData))
       openModel && openModel()
     }
 
@@ -79,7 +79,7 @@ const SignupForm = ({ role, name, homePath, loginPath, openModel }: Props) => {
             })}
           />
           {errors.name &&
-            <p className="mt-2 text-sm text-red-600 dark:text-red-500"><span className="font-medium">Oh, snapp!</span> {String(errors.name.message)}</p>
+            <p className="mt-2 text-sm text-red-600"><span className="font-medium">Oh, snapp!</span> {String(errors.name.message)}</p>
           }
         </div>
         <div>
@@ -99,7 +99,7 @@ const SignupForm = ({ role, name, homePath, loginPath, openModel }: Props) => {
             })}
           />
           {errors.email &&
-            <p className="mt-2 text-sm text-red-600 dark:text-red-500"><span className="font-medium">Oh, snapp!</span> {String(errors.email.message)}</p>
+            <p className="mt-2 text-sm text-red-600"><span className="font-medium">Oh, snapp!</span> {String(errors.email.message)}</p>
           }
         </div>
         <div>
@@ -118,7 +118,7 @@ const SignupForm = ({ role, name, homePath, loginPath, openModel }: Props) => {
             })}
           />
           {errors.password &&
-            <p className="mt-2 text-sm text-red-600 dark:text-red-500"><span className="font-medium">Oh, snapp!</span> {String(errors.password.message)}</p>
+            <p className="mt-2 text-sm text-red-600"><span className="font-medium">Oh, snapp!</span> {String(errors.password.message)}</p>
           }
         </div>
         <div>
@@ -135,21 +135,23 @@ const SignupForm = ({ role, name, homePath, loginPath, openModel }: Props) => {
             })}
           />
           {errors.confirmPassword &&
-            <p className="mt-2 text-sm text-red-600 dark:text-red-500"><span className="font-medium">Oh, snapp!</span> {String(errors.confirmPassword.message)}</p>
+            <p className="mt-2 text-sm text-red-600"><span className="font-medium">Oh, snapp!</span> {String(errors.confirmPassword.message)}</p>
           }
         </div>
 
       </div>
 
-      <button type="submit" className="text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 capitalize">
-        {status === 'loading' && <Spinner />}
-        Signup
-      </button>
+      <div className='flex justify-center items-center'>
+        <button type="submit" className="text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 capitalize">
+          {status === 'loading' && <Spinner />}
+          Signup
+        </button>
+      </div>
 
 
       <div className='flex space-x-2 text-gray-900'>
         <p>Already have an account </p>
-        <Link to={loginPath} className='text-blue-400'> login </Link>
+        <Link to={loginPath} className='text-blue-700'> login </Link>
       </div>
 
 

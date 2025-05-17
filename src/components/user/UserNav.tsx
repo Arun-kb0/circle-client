@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { RxHamburgerMenu } from "react-icons/rx";
 import { BsBell } from "react-icons/bs";
 import SpringButton from '../basic/SpringButton';
@@ -31,7 +31,7 @@ type Props = {
   handleLogout: () => void
 }
 
-const UserNav = ({  }: Props) => {
+const UserNav = ({ }: Props) => {
   const navigate = useNavigate()
   const dispatch = useDispatch<AppDispatch>()
   const location = useLocation()
@@ -178,14 +178,14 @@ const UserNav = ({  }: Props) => {
 
             <div className="flex items-center ms-3 relative ">
               <div>
-                <button onClick={() => setUserDropDown(prev => !prev)} type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" >
+                <button onClick={() => setUserDropDown(prev => !prev)} className="text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 w-auto" >
                   <SpringButton>
                     <Avatar
                       userId={''}
                       image={user?.image?.url}
                       alt={user?.name}
                       disableNavigation={true}
-                      size={32}
+                      size={26}
                     />
                   </SpringButton>
                 </button>

@@ -57,7 +57,7 @@ const ResetPwdForm = ({ openModel }:Props) => {
           })}
         />
         {errors.email && (
-          <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+          <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
         )}
       </div>
 
@@ -83,7 +83,7 @@ const ResetPwdForm = ({ openModel }:Props) => {
           className="bg-gray-50 border border-gray-300 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
         {errors.password && (
-          <p className="text-red-500 text-sm mt-1">
+          <p className="text-red-600 text-sm mt-1">
             {errors.password.message}
           </p>
         )}
@@ -109,7 +109,7 @@ const ResetPwdForm = ({ openModel }:Props) => {
           className="bg-gray-50 border border-gray-300 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
         {errors.confirmPassword && (
-          <p className="text-red-500 text-sm mt-1">
+          <p className="text-red-600 text-sm mt-1">
             {errors.confirmPassword.message}
           </p>
         )}
@@ -120,7 +120,7 @@ const ResetPwdForm = ({ openModel }:Props) => {
       </button>
       <div className='flex space-x-2 text-black'>
         <p> Got to </p>
-        <Link to='/login' className='text-blue-400'> Login </Link>
+        <Link to='/login' className='text-blue-700'> Login </Link>
       </div>
 
     </form>

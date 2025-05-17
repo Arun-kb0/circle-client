@@ -42,7 +42,7 @@ const Avatar = ({ image, alt, userId, size = 34, disableNavigation = false }: Pr
             alt={alt}
             style={{ width: size, height: size, borderRadius: '50%' }}
           />
-          : <FaUserCircle size={size} className={`w-${size} h-${size}`} />
+          : <FaUserCircle size={size} className={`w-${size} h-${size} text-gray-300`} />
         }
       </button>
     </SpringButton>
