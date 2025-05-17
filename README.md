@@ -1,50 +1,75 @@
-# React + TypeScript + Vite
+# Circle social media app
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Circle is a real-time social platform client built with React, Redux, and Tailwind CSS - enabling chat, posts, audio/video calls, and live streaming in one seamless experience.
 
-Currently, two official plugins are available:
+## Repositories
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project’s client and server are maintained in separate repositories: 
+- **Server**: circle-server  
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Frontend
+- **Framework**: React  
+- **Language**: TypeScript  
+- **State Management**: Redux  
+- **Styling**: Tailwind CSS  
+- **Routing & Data Fetching**: React Router, Axios 
 
-- Configure the top-level `parserOptions` property like this:
+### Backend
+- **Runtime & Framework**: Node.js, Express.js  
+- **Language**: TypeScript  
+- **ORM**: Mongoose  
+- **Database**: MongoDB  
+- **Architecture**: Microservices | each service in repository pattern
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Installation
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### Prerequisites
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- **npm** or **yarn**
+
+### Steps
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/Arun-kb0/circle-client.git
+   cd circle-client
+   ```
+
+2. **Install Dependencies**
+   Install all the required dependencies using `npm` or `yarn`:
+   run inside client and server folder
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Set Up Environment Variables**
+   Create a `.env` file in the server dir of the project and configure your database connection:
+   ```env
+   VITE_GOOGLE_CLIENT_ID= for google oauth 
+   VITE_GOOGLE_CLIENT_SECRET= for google oauth 
+   VITE_SERVER_URL= http://localhost:5001
+   VITE_NOTIFICATION_SERVICE= http://localhost:8086
+   VITE_CLD_UPLOAD_PRESET= cloudinary upload preset
+   VITE_CLD_COULD_NAME= cloudinary could name
+   VITE_GIPHY_API_KEY= giphy api key - visit https://giphy.com
+   VITE_BASE_PATH= /circle-client
+   ```
+
+4. **Start the Development Server**
+   Launch the application in development mode:
+   run inside client and server folder
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+5. **Access the Application**
+   Access the API server at `http://localhost:5001` to interact with the backend services.
+   Access the notification service at `http://localhost:8086` 
+   Open the client application at `http://localhost:5173` to explore the user interface and interact with the application.
