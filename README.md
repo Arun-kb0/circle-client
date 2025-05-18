@@ -73,3 +73,17 @@ This project’s client and server are maintained in separate repositories:
    Access the API server at `http://localhost:5001` to interact with the backend services.
    Access the notification service at `http://localhost:8086` 
    Open the client application at `http://localhost:5173` to explore the user interface and interact with the application.
+
+6. **User Credentials**
+   
+**User 1**
+- Username: `hamel55284@nongnue.com`
+- Password: `qwerty123`
+
+ **User 2**
+- Username: `xamibo4593@btcours.com`
+- Password: `qwerty123`
+
+**Admin**
+- Username: `admin@gmail.com`
+- Password: `qwerty123`
