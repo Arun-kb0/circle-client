@@ -83,7 +83,3 @@ This project’s client and server are maintained in separate repositories:
  **User 2**
 - Username: `xamibo4593@btcours.com`
 - Password: `qwerty123`
-
-**Admin**
-- Username: `admin@gmail.com`
-- Password: `qwerty123`
